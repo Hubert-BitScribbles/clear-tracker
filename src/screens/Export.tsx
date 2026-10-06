@@ -46,9 +46,24 @@ export function Export() {
   async function save() {
     if (!file) return;
     const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean };
+    // Computers can share files too (macOS Safari and Chrome), but their share
+    // sheet offers Mail, Messages and AirDrop with no way to save, so the share
+    // sheet is for phones only. On a computer, Chrome and Edge ask where to
+    // save; other browsers download.
+    const picker = (window as Window & {
+      showSaveFilePicker?: (o: unknown) => Promise<{ createWritable: () => Promise<{ write: (b: Blob) => Promise<void>; close: () => Promise<void> }> }>;
+    }).showSaveFilePicker;
     try {
-      if (nav.share && nav.canShare?.({ files: [file] })) {
+      if (P !== 'other' && nav.share && nav.canShare?.({ files: [file] })) {
         await nav.share({ files: [file], title: 'Clear Tracker backup' });
+      } else if (P === 'other' && picker) {
+        const handle = await picker({
+          suggestedName: file.name,
+          types: [{ description: 'Clear Tracker backup', accept: { 'application/json': ['.json'] } }],
+        });
+        const w = await handle.createWritable();
+        await w.write(file);
+        await w.close();
       } else {
         const url = URL.createObjectURL(file);
         const a = Object.assign(document.createElement('a'), { href: url, download: file.name });
@@ -131,7 +146,7 @@ export function Export() {
             <h1 className="fl-title">Your backup is ready</h1>
             <p className="fl-body">
               Choose where to keep it —{' '}
-              {P === 'ios' ? 'Files, iCloud Drive, or another device' : P === 'android' ? 'Google Drive, Files, or email it to yourself' : 'it downloads, and you can move it anywhere'}.
+              {P === 'ios' ? 'Files, iCloud Drive, or another device' : P === 'android' ? 'Google Drive, Files, or email it to yourself' : 'your browser asks where to save it, or puts it in Downloads'}.
               Keep your passphrase somewhere safe.
             </p>
             {saved && <p className="fl-note" role="status">{saved}</p>}

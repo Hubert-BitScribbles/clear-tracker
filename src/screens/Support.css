@@ -25,7 +25,7 @@
 .sp-checked { font-size: 11px; line-height: 16px; margin-top: 14px; color: var(--text-muted); }
 
 /* Help articles */
-.sp-search { width: 100%; font: inherit; font-size: 15px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--card-background); color: var(--text-primary); margin-bottom: 4px; }
+.sp-search { width: 100%; font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--card-background); color: var(--text-primary); margin-bottom: 4px; }
 .sp-articles { padding: 0 14px; }
 .sp-article + .sp-article { border-top: var(--card-border) solid var(--border); }
 .sp-article summary {

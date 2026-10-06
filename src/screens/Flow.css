@@ -19,7 +19,7 @@
 .fl-row strong { color: var(--on-card-primary); }
 .fl-label { display: block; font-size: 12px; margin: 12px 0 4px; color: var(--text-secondary); }
 .fl-input {
-  width: 100%; font: inherit; font-size: 15px; padding: 10px; border-radius: 8px;
+  width: 100%; font: inherit; font-size: 16px; padding: 10px; border-radius: 8px;
   border: 1px solid var(--border); background: var(--card-background); color: var(--text-primary);
 }
 .fl-error { font-size: 12px; margin-top: 8px; text-align: center; color: var(--danger); }

@@ -1,0 +1,54 @@
+/* Values from the native onboarding.tsx StyleSheet. */
+.onboarding {
+  max-width: var(--content-max); margin: 0 auto; min-height: 100%;
+  display: flex; flex-direction: column;
+  padding: calc(env(safe-area-inset-top, 0px) + 8px) 24px calc(env(safe-area-inset-bottom, 0px) + 24px);
+}
+.ob-title-row { display: flex; align-items: center; gap: 10px; align-self: center; margin-bottom: 20px; }
+.ob-icon { border-radius: 12px; }
+.ob-app-title { font-family: var(--font-ui); font-weight: 700; font-size: 25px; letter-spacing: 0.5px; color: var(--primary); }
+.ob-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 24px; }
+.ob-dot { width: 6px; height: 6px; border-radius: 3px; background: var(--border); }
+.ob-dot[data-on] { background: var(--primary); }
+.ob-step { flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; }
+.ob-center { text-align: center; margin-top: 24px; }
+.ob-headline { font-size: 19px; font-weight: 700; margin-bottom: 10px; }
+.ob-step-title { font-size: 17px; font-weight: 700; margin-bottom: 10px; text-align: center; }
+.ob-body { font-size: 13px; line-height: 20px; text-align: center; color: var(--text-secondary); }
+.ob-button { width: 100%; border-radius: 10px; }
+.ob-card { margin-top: 20px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.ob-steps { margin: 0; padding-left: 20px; font-size: 13px; line-height: 20px; color: var(--on-card-secondary); }
+.ob-steps li + li { margin-top: 6px; }
+.ob-note { font-size: 11px; line-height: 16px; text-align: center; color: var(--text-muted); }
+.ob-note-first { font-size: 13px; line-height: 20px; color: var(--on-card-secondary); }
+.ob-actions { display: flex; flex-direction: column; gap: 6px; }
+.ob-secondary {
+  width: 100%; padding: 14px; border-radius: 10px; font: inherit; font-family: var(--font-ui); font-weight: 600;
+  font-size: 14px; background: transparent; color: var(--text-primary); border: var(--card-border) solid var(--border); cursor: pointer;
+}
+.ob-number { display: flex; flex-direction: column; align-items: center; margin-top: 20px; }
+.ob-big { font-family: var(--font-ui); font-weight: 700; font-size: 44px; line-height: 1.1; color: var(--primary); }
+.ob-number-label { font-size: 12px; color: var(--text-muted); }
+.ob-toggle-card { padding: 0; }
+.ob-toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px; }
+.ob-row-label { font-family: var(--font-ui); font-weight: 700; font-size: 13px; color: var(--on-card-primary); }
+.ob-row-sub { font-size: 11px; margin-top: 2px; color: var(--on-card-muted); }
+
+/* Back, on every step after the first; the row keeps its height on the first. */
+.ob-top { min-height: 40px; display: flex; align-items: center; }
+.ob-back {
+  min-height: 40px; padding: 0 8px 0 0; font: inherit; font-size: 14px; font-weight: 600;
+  background: none; border: 0; color: var(--primary-text); cursor: pointer;
+}
+.ob-card-title { font-family: var(--font-ui); font-weight: 700; font-size: 13px; color: var(--on-card-primary); }
+.ob-card-body { font-size: 13px; line-height: 19px; color: var(--on-card-secondary); margin-top: -6px; }
+.ob-card-body + .ob-card-title { margin-top: 4px; }
+.ob-card-body + .ob-card-body { margin-top: 0; }
+.ob-points { list-style: none; margin: 20px 0 0; gap: 12px; }
+.ob-points li { font-size: 13px; line-height: 19px; color: var(--on-card-secondary); }
+.ob-points strong { color: var(--on-card-primary); }
+.ob-link { color: var(--primary-text); font-weight: 600; }
+.ob-practice { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 20px 0 14px; }
+.ob-practice-cell { width: 84px; }
+.ob-practice-level { font-family: var(--font-ui); font-weight: 700; font-size: 14px; min-height: 20px; color: var(--text-primary); }
+.ob-practice-cell .day-cell { width: 100%; }

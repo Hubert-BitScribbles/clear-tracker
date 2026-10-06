@@ -1,0 +1,19 @@
+.byline {
+  display: flex;
+  align-items: baseline;
+  white-space: pre; /* keep the spaces around <bit/> */
+  line-height: 1.2;
+}
+.byline-by,
+.byline-bit {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.byline-by { color: var(--text-muted); }
+.byline-bit { color: var(--primary); }
+.byline-scribbles {
+  font-family: var(--font-script);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--text-secondary);
+}

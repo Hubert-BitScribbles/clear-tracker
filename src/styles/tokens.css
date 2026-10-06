@@ -1,0 +1,221 @@
+/* ==========================================================================
+   Clear Tracker — colour tokens as CSS custom properties
+   Direct translation of the native lib/theme.ts: same token names (camelCase
+   → kebab-case, e.g. onCardMuted → --on-card-muted) and the same values in
+   all four palettes, with one deliberate change (--on-accent in both dark
+   palettes, marked below). The colour doc records both.
+
+   Modes: <html data-theme="light|dark" data-contrast="normal|high">.
+   "System" is resolved to light or dark in JavaScript, so each palette
+   appears exactly once below.
+   ========================================================================== */
+
+/* ---- LIGHT --------------------------------------------------------------- */
+:root {
+  color-scheme: light;
+
+  /* surfaces */
+  --background: #FAFAF9;
+  --card-background: #FFFFFF;
+  --sheet-background: #FFFFFF;
+  --border: #DEE1E5;
+  --scrim: rgba(20, 23, 28, 0.55);
+
+  /* text */
+  --text-primary: #14171C;
+  --text-secondary: #3A404A;
+  --text-muted: #6B7280;
+  --on-accent: #FFFFFF;
+  --on-card-primary: #14171C;
+  --on-card-secondary: #3A404A;
+  --on-card-muted: #6B7280;
+
+  /* interactive */
+  --primary: #0E8175;
+  --primary-text: #0E8175;
+  --primary-light: #C6E7E1;
+  --track: #DEE1E5;
+
+  /* day types (identical across themes; strengthened in high contrast) */
+  --clear-fill: #C6E7E1;
+  --clear-mark: #0E8175;
+  --drinking-fill: #E9D7CB;
+  --drinking-mark: #8C5643;
+  --on-fill-text: #14171C;
+  /* "A few" marks sit on the page, not on a fill. The outline matches the
+     clear-day fill; the tick matches the drinking marks. In light mode the
+     outline is faint (1.3:1), so the tick (5.7:1) is what identifies the
+     day; the outline adds the "partly clear" look. */
+  --a-few-line: var(--clear-fill);
+  --a-few-tick: var(--drinking-mark);
+  /* Soft edges for filled chart areas (Trends day-of-week bars): one step
+     deeper than each fill. High contrast uses the full marks instead. */
+  --clear-edge: #9BD6CC;
+  --drinking-edge: #D8BCA8;
+
+  /* alignment scale */
+  --align-unlogged: #E6E8EB;
+  /* The pale fill keeps "nothing logged" quiet; the outline makes the shape
+     visible (3:1 or more in every mode). Web only. */
+  --align-unlogged-edge: #8C939D;
+  --align-partial: #C6E7E1;
+  --align-met: #16B3A3;
+  --align-exceeded: #0E8175;
+  /* ✓ and ✦ on the week chips. Native used white on both, but white on the
+     met teal is 2.6:1; ink is 6.9:1. High contrast darkens the chips, where
+     white works (4.8:1 and above). Web only. */
+  --align-met-glyph: #14171C;
+  --align-exceeded-glyph: #FFFFFF;
+
+  /* milestones */
+  --locked-fill: #F0F1F2;
+  --locked-glyph: #6B7280;
+  /* Earned badge circles and count chips. Native used primaryLight with the
+     clear mark, which is 1.7:1 in dark mode and 1.0:1 in dark high
+     contrast; the dark palettes below use a light glyph instead. Web only. */
+  --badge-earned-fill: var(--primary-light);
+  --badge-earned-glyph: var(--clear-mark);
+  /* "×3" chips are text, which needs 4.5:1: the clear mark is only 3.6:1. */
+  --badge-chip-text: #0A5A52;
+
+  /* destructive */
+  --danger: #B04A3A;
+  --danger-bg: #F6EAE6;
+
+  /* ---- Not colours: sizes and type, from the native StyleSheets ---- */
+  --mark-dot: 7px;         /* clear day */
+  --mark-tick: 4px;        /* drinking amount, 1–3 of these */
+  --mark-stroke: 2px;      /* the "A few" outline */
+  --card-radius: 10px;
+  --card-border: 0.5px;
+  --cell-radius: 9px;
+  --chip-radius: 999px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --content-max: 560px;
+  --tabbar-height: 64px;
+
+  --font-ui: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-script: 'Caveat', 'Bradley Hand', cursive;
+}
+
+/* ---- LIGHT_HC ------------------------------------------------------------ */
+:root[data-contrast='high'] {
+  --border: #6B7280;
+  --text-primary: #000000;
+  --text-secondary: #14171C;
+  --text-muted: #3A404A;
+  --on-card-primary: #000000;
+  --on-card-secondary: #14171C;
+  --on-card-muted: #3A404A;
+  --primary: #0A5A52;
+  --primary-text: #0A5A52;
+  --track: #BCC1C8;
+
+  --clear-fill: #9BD6CC;
+  --clear-mark: #0A5A52;
+  --drinking-fill: #D8BCA8;
+  --drinking-mark: #5E3A2D;
+  --on-fill-text: #000000;
+  --align-partial: #9BD6CC;
+  --align-met: #0E8175;
+  --align-exceeded: #0A5A52;
+  --align-unlogged: #DEE1E5;
+  --align-met-glyph: #FFFFFF;
+  /* High contrast is for strong edges: matching the fill would be 1.6:1. */
+  --a-few-line: #0A5A52;
+  --clear-edge: var(--clear-mark);
+  --align-unlogged-edge: #6B7280;
+  /* Larger calendar marks in high contrast (both themes). */
+  --mark-dot: 9px;
+  --mark-tick: 5px;
+  --mark-stroke: 2.5px;
+  --drinking-edge: var(--drinking-mark);
+}
+
+/* ---- DARK ---------------------------------------------------------------- */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --background: #1E2228;
+  --card-background: #272C33;
+  --sheet-background: #272C33;
+  --border: #3D444D;
+  --scrim: rgba(0, 0, 0, 0.65);
+
+  --text-primary: #FAFAF9;
+  --text-secondary: #BCC1C8;
+  --text-muted: #8E96A0; /* 5.3:1 on the page, 4.7:1 on cards */
+  /* Deliberate departure from theme.ts, which has white. White on the dark
+     primary is 2.4:1 (1.8:1 in high contrast); dark ink is 7.6:1 (9.9:1).
+     Dark high contrast inherits this. See the colour doc. */
+  --on-accent: #14171C;
+  --on-card-primary: #FAFAF9;
+  --on-card-secondary: #BCC1C8;
+  --on-card-muted: #8E96A0; /* 4.7:1 on cards (was #8A929C, 4.46:1) */
+
+  --primary: #3FBBAC;
+  --primary-text: #3FBBAC;
+  --primary-light: #0A5A52;
+  --track: #3D444D;
+
+  --align-unlogged: #333941;
+  --align-unlogged-edge: #7A828C;
+
+  --locked-fill: #2F353C;
+  --locked-glyph: #8A929C;
+  --badge-earned-glyph: #C6E7E1;
+  --badge-chip-text: #C6E7E1;
+
+  --danger: #E08585;
+  --danger-bg: #3A2224;
+
+  /* The drinking marks are too dark on a dark page (2.7:1), so the tick
+     gets a lighter clay. The outline still matches the clear-day fill. */
+  --a-few-line: var(--clear-fill); /* 12.1:1 on the page */
+  --a-few-tick: #B5735A; /* 4.2:1 */
+}
+
+/* ---- DARK_HC: DARK plus the high-contrast data colours (from the LIGHT_HC
+   block above, which also matches here) and these overrides. ------------- */
+:root[data-theme='dark'][data-contrast='high'] {
+  --border: #8A929C;
+  --text-primary: #FFFFFF;
+  --text-secondary: #FFFFFF;
+  --text-muted: #D2D7DD;
+  --on-card-primary: #FFFFFF;
+  --on-card-secondary: #FFFFFF;
+  --on-card-muted: #D2D7DD;
+  --primary: #5AD3C4;
+  --primary-text: #5AD3C4;
+  --track: #6B7280;
+  --align-unlogged: #3D444D;
+  --align-unlogged-edge: #8A929C;
+  --a-few-line: var(--clear-fill); /* the high-contrast fill, 9.8:1 */
+  --a-few-tick: #D8BCA8;
+}
+
+/* ---- PRINT: always the light palette, whatever the theme on screen, so a
+   printed or saved-as-PDF report reads well and uses little ink. Last in
+   the file, with selectors as specific as any above, so it always wins. */
+@media print {
+  :root,
+  :root[data-theme],
+  :root[data-theme][data-contrast] {
+    color-scheme: light;
+    --background: #FFFFFF; --card-background: #FFFFFF; --sheet-background: #FFFFFF;
+    --border: #DEE1E5; --track: #EEF0F2;
+    --text-primary: #14171C; --text-secondary: #3A404A; --text-muted: #6B7280;
+    --on-card-primary: #14171C; --on-card-secondary: #3A404A; --on-card-muted: #6B7280;
+    --primary: #0E8175; --primary-text: #0E8175; --primary-light: #C6E7E1; --on-accent: #FFFFFF;
+    --clear-fill: #C6E7E1; --clear-mark: #0E8175; --clear-edge: #9BD6CC;
+    --drinking-fill: #E9D7CB; --drinking-mark: #8C5643; --drinking-edge: #D8BCA8;
+    --a-few-line: #9BD6CC; --a-few-tick: #8C5643; --on-fill-text: #14171C;
+  }
+}

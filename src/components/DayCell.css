@@ -1,0 +1,102 @@
+/* Values from the native index.tsx StyleSheet. Cells are laid out in a
+   7-column grid with no gap; the 3px padding gives 6px between tiles. */
+.day-cell {
+  display: block;
+  aspect-ratio: 1;
+  padding: 3px;
+  min-width: 0;
+  /* reset for when the cell is a button */
+  border: 0;
+  margin: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+}
+button.day-cell {
+  cursor: pointer;
+  transition: transform 80ms;
+}
+button.day-cell:active:not(:disabled) {
+  transform: scale(0.92); /* native: pressed scale 0.92 */
+}
+button.day-cell:disabled {
+  cursor: default;
+}
+button.day-cell:focus-visible {
+  outline: none;
+}
+button.day-cell:focus-visible .day-inner {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+.day-cell[data-future] {
+  opacity: 0.35;
+}
+.day-inner {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--cell-radius);
+}
+.day-clear { background: var(--clear-fill); }
+/* A few: no fill, a solid teal line (inset, so nothing shifts). */
+.day-a-few { box-shadow: inset 0 0 0 var(--mark-stroke) var(--a-few-line); }
+.day-a-few .mark-tick { background: var(--a-few-tick); }
+.day-moderate,
+.day-a-lot { background: var(--drinking-fill); }
+
+.day-numeral {
+  position: relative;
+  top: 2px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-primary);
+}
+.day-clear .day-numeral,
+.day-moderate .day-numeral,
+.day-a-lot .day-numeral {
+  color: var(--on-fill-text);
+}
+
+.mark-dot {
+  position: absolute;
+  top: 6px;
+  width: var(--mark-dot);
+  height: var(--mark-dot);
+  border-radius: 50%;
+  background: var(--clear-mark);
+}
+.mark-ticks {
+  position: absolute;
+  top: 7px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.mark-tick {
+  width: var(--mark-tick);
+  height: var(--mark-tick);
+  border-radius: 1px;
+  background: var(--drinking-mark);
+}
+/* Selected day: a short teal bar under the numeral (an outline would be
+   confused with "A few"). On the page it uses the theme's teal; on the pale
+   clear and clay fills, which are the same in every theme, the darker teal
+   of the clear-day dot, which stays visible there in dark mode too. */
+.selection-bar {
+  position: absolute;
+  left: 30%;
+  right: 30%;
+  bottom: 4px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--primary);
+  pointer-events: none;
+}
+.day-clear .selection-bar,
+.day-moderate .selection-bar,
+.day-a-lot .selection-bar {
+  background: var(--clear-mark);
+}

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#FAFAF9" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Clear Tracker" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <title>Clear Tracker</title>
+    <script>
+      // Runs before first paint so the page never flashes the wrong theme.
+      // Must stay in step with src/theme/appearance.ts.
+      (function () {
+        var pref = { theme: 'system', highContrast: false };
+        try {
+          var saved = JSON.parse(localStorage.getItem('ct-appearance') || 'null');
+          if (saved) pref = saved;
+        } catch (e) {}
+        var dark = pref.theme === 'dark' ||
+          (pref.theme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        var root = document.documentElement;
+        root.dataset.theme = dark ? 'dark' : 'light';
+        root.dataset.contrast = pref.highContrast ? 'high' : 'normal';
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', dark ? '#14171C' : '#FAFAF9');
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

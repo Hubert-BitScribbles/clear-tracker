@@ -1,0 +1,28 @@
+.mc { margin: 10px 0 4px; }
+.mc-plot { cursor: pointer; touch-action: pan-y; border-radius: 4px; }
+.mc-plot:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
+.mc-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.mc-axis { stroke: var(--border); stroke-width: 1; }
+.mc-tick, .mc-month { font-size: 9px; fill: var(--on-card-muted); font-family: var(--font-body); }
+.mc-month-sel { fill: var(--on-card-primary); font-weight: 700; }
+.mc-line { fill: none; stroke: var(--primary); stroke-width: 2; stroke-linecap: round; }
+.mc-dot { fill: var(--primary); }
+.mc-dot-sofar { fill: var(--card-background); stroke: var(--primary); stroke-width: 1.5; }
+.mc-dot-sel { stroke: var(--card-background); stroke-width: 2; }
+.mc-dot-sofar.mc-dot-sel { stroke: var(--primary); }
+.mc-bar { fill: var(--clear-fill); stroke: var(--clear-edge); stroke-width: 1; }
+.mc-bar-over { fill: var(--drinking-fill); stroke: var(--drinking-edge); }
+.mc-bar[data-sofar] { stroke-dasharray: 3 2; }
+.mc-bar-sel { stroke: var(--clear-mark); stroke-width: 1.5; }
+.mc-bar-over.mc-bar-sel { stroke: var(--drinking-mark); }
+.mc-sel { fill: var(--primary); }
+.mc-detail { margin-top: 10px; padding-top: 10px; border-top: var(--card-border) solid var(--border); }
+.mc-detail-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.mc-detail-title { flex: 1; text-align: center; margin: 0; font-family: var(--font-ui); font-weight: 700; font-size: 13px; color: var(--on-card-primary); }
+.mc-step {
+  min-width: 36px; min-height: 36px; font: inherit; font-size: 20px; line-height: 1; border-radius: 8px; border: 0;
+  background: none; color: var(--on-card-secondary); cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+}
+.mc-step:disabled { opacity: 0.3; cursor: default; }
+.mc-detail-line { font-size: 12px; line-height: 18px; margin-top: 4px; text-align: center; color: var(--on-card-secondary); }
+.mc-detail-link { display: block; text-align: center; margin-top: 6px; font-size: 13px; font-weight: 600; color: var(--primary-text); text-decoration: none; }

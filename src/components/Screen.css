@@ -1,0 +1,16 @@
+.screen {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding:
+    calc(env(safe-area-inset-top, 0px) + var(--space-5))
+    var(--space-4)
+    calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px) + var(--space-5));
+}
+.screen-header {
+  margin-bottom: var(--space-5);
+}
+.screen-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}

@@ -1,0 +1,22 @@
+.ch-intro { font-size: 12px; line-height: 18px; margin-bottom: 16px; color: var(--text-muted); }
+.ch-card { padding: 0; overflow: hidden; margin-bottom: 8px; }
+.ch-row { display: flex; align-items: center; gap: 12px; padding: 14px; }
+.ch-row + .ch-row { border-top: var(--card-border) solid var(--border); }
+.ch-row-text { flex: 1; min-width: 0; }
+.ch-label { font-family: var(--font-ui); font-weight: 700; font-size: 14px; color: var(--on-card-primary); }
+.ch-sub { font-size: 12px; margin-top: 2px; color: var(--on-card-muted); }
+.ch-empty { padding: 14px 14px 0; }
+.ch-remove { font: inherit; font-size: 12px; font-weight: 600; background: none; border: 0; color: var(--danger); cursor: pointer; padding: 6px 0; }
+.ch-select {
+  flex: 1; font: inherit; font-size: 15px; padding: 9px 10px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--background); color: var(--text-primary);
+}
+.ch-add-btn { min-height: 40px; border-radius: 10px; padding: 0 18px; }
+.ch-label { margin: 0; }
+h2.ch-label { font-size: 14px; }
+.ch-month { font-family: var(--font-ui); font-weight: 700; font-size: 13px; color: var(--on-card-primary); }
+.ch-detail { padding: 0 14px 12px; margin-top: -4px; }
+.ch-line { font-size: 12px; line-height: 18px; color: var(--on-card-secondary); }
+.ch-now { font-weight: 600; color: var(--on-card-primary); }
+.ch-badges { padding: 0 10px 2px; }
+.ch-badges .badge { box-shadow: none; border: var(--card-border) solid var(--border); }

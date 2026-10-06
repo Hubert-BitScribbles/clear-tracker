@@ -1,0 +1,113 @@
+/* Values from the native index.tsx StyleSheet. */
+.checkin {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 16px)
+    16px
+    calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px) + 16px);
+}
+/* :where() keeps this reset at the lowest priority, so it never overrides
+   a component's own styles (the check-in sheet sits inside this screen). */
+:where(.checkin) button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Header */
+.ci-title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.ci-app-icon { width: 28px; height: 28px; border-radius: 6px; margin-top: 3px; }
+.ci-app-title {
+  font-family: var(--font-ui); font-weight: 700; font-size: 16px;
+  letter-spacing: 0.5px; color: var(--primary);
+}
+.ci-byline { margin: -6px 0 14px; }
+.ci-title { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+.ci-challenge { font-size: 13px; margin: -14px 0 16px; color: var(--text-secondary); }
+
+/* Stat cards */
+.ci-stats { display: flex; gap: 10px; margin-bottom: 16px; }
+.ci-stat { flex: 1; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; }
+/* Values line up along the bottom even when one label wraps. */
+.ci-stat-label { font-size: 11px; margin-bottom: 4px; color: var(--on-card-muted); }
+.ci-stat-value { font-family: var(--font-ui); font-weight: 700; font-size: 20px; line-height: 1.2; }
+
+/* Month header */
+.ci-month-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+}
+.checkin .ci-arrow {
+  font-size: 22px; line-height: 1; padding: 4px 8px; color: var(--text-secondary);
+  min-width: 36px; min-height: 36px;
+}
+.checkin .ci-month-title { font-family: var(--font-ui); font-weight: 700; font-size: 17px; }
+.ci-month-right { display: flex; align-items: center; gap: 12px; }
+.checkin .ci-today { font-size: 13px; font-weight: 600; color: var(--primary); padding: 6px 0; }
+
+/* Month picker */
+.ci-picker { border-radius: 12px; padding: 14px; margin-bottom: 16px; }
+.ci-picker-year {
+  display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 12px;
+}
+.ci-picker-year-label { font-family: var(--font-ui); font-weight: 700; font-size: 15px; }
+.ci-picker-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.checkin .ci-picker-month {
+  padding: 10px 0; border-radius: 8px; background: var(--background);
+  color: var(--on-card-secondary); font-size: 13px; font-weight: 600; text-align: center;
+}
+.checkin .ci-picker-month[aria-pressed='true'] { background: var(--primary); color: var(--on-accent); }
+
+/* Alignment card (a link to the Intention screen) */
+.ci-align {
+  display: block; padding: 14px; margin-bottom: 16px;
+  color: var(--on-card-primary); text-decoration: none;
+}
+.ci-row-between { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.ci-secondary { font-size: 13px; color: var(--on-card-secondary); }
+.ci-week-count {
+  display: inline-flex; align-items: center;
+  font-family: var(--font-ui); font-weight: 700; font-size: 13px;
+}
+.ci-icon-glyph {
+  display: inline-block; font-size: 14px; font-weight: 700; margin-right: 5px;
+  color: var(--primary-text);
+  animation: ci-pop 450ms cubic-bezier(0.34, 1.56, 0.64, 1); /* springy, like native */
+}
+@keyframes ci-pop { from { transform: scale(0); } to { transform: scale(1); } }
+/* Native used black at 8% in every theme, which vanished on dark cards; the
+   track token works in all four modes. */
+.ci-track { height: 6px; border-radius: 4px; overflow: hidden; margin-top: 6px; background: var(--track); }
+.ci-fill { height: 100%; transition: width 500ms ease-in-out; }
+.ci-align-note { font-size: 12px; line-height: 17px; margin-top: 8px; color: var(--on-card-muted); }
+.ci-align-head { margin-bottom: 8px; }
+.ci-align-title { font-family: var(--font-ui); font-weight: 700; font-size: 14px; margin: 0; color: var(--on-card-primary); }
+.ci-align-change { font-size: 12px; font-weight: 600; color: var(--primary-text); }
+
+/* Calendar */
+.ci-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); margin-top: 4px; }
+.ci-weekdays span { text-align: center; font-size: 12px; margin-bottom: 4px; color: var(--text-muted); }
+.ci-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+
+.ci-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; }
+.ci-legend-item {
+  display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-secondary);
+}
+.ci-swatch { width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; }
+.ci-swatch-unlogged { background: var(--card-background); border: 1px solid var(--border); }
+.ci-swatch-a-few { box-shadow: inset 0 0 0 var(--mark-stroke) var(--a-few-line); }
+
+/* Selected-day details */
+.ci-details { margin-top: 16px; padding: 14px; }
+.ci-details-date { font-family: var(--font-ui); font-weight: 700; font-size: 14px; }
+
+/* Gentle notes above the stats: backup reminder, month in review. */
+.ci-note { padding: 12px 14px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; }
+.ci-note-text { font-size: 12px; line-height: 18px; color: var(--on-card-secondary); }
+.ci-note-actions { display: flex; gap: 16px; align-items: center; }
+.ci-note-link { font-size: 13px; font-weight: 600; color: var(--primary-text); text-decoration: none; }
+.checkin .ci-note-later { font-size: 13px; color: var(--on-card-muted); padding: 4px 0; }
+.checkin .ci-grid { touch-action: pan-y; } /* sideways moves are month swipes */

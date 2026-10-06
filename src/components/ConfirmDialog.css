@@ -1,0 +1,17 @@
+.confirm { border: 0; padding: 0; background: transparent; max-width: min(340px, calc(100% - 32px)); }
+.confirm::backdrop { background: var(--scrim); }
+.confirm-panel {
+  background: var(--sheet-background); color: var(--text-primary);
+  border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 10px;
+}
+.confirm-title { font-family: var(--font-ui); font-weight: 700; font-size: 16px; }
+.confirm-body { font-size: 13px; line-height: 19px; color: var(--text-secondary); }
+.confirm-actions { display: flex; gap: 10px; margin-top: 8px; }
+.confirm-btn {
+  flex: 1; font: inherit; font-family: var(--font-ui); font-weight: 600; font-size: 14px;
+  padding: 12px; border-radius: 10px; cursor: pointer;
+  border: 1px solid var(--border); background: transparent; color: var(--text-primary);
+}
+.confirm-primary { background: var(--primary); border-color: var(--primary); color: var(--on-accent); }
+.confirm-danger { background: var(--danger); border-color: var(--danger); color: #FFFFFF; }
+:root[data-theme='dark'] .confirm-danger { color: #14171C; }

@@ -1,0 +1,51 @@
+/* Values from the native settings.tsx StyleSheet. */
+.settings {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 16px)
+    16px
+    calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px) + 16px);
+}
+.st-title { font-size: 20px; font-weight: 700; margin-bottom: 2px; }
+.st-sec {
+  font-family: var(--font-body); font-weight: 400; font-size: 11px; text-transform: uppercase;
+  letter-spacing: 0.04em; margin: 18px 0 6px; color: var(--text-muted); scroll-margin-top: 16px;
+}
+.st-card { padding: 0; overflow: hidden; }
+.st-row { display: flex; align-items: center; gap: 12px; padding: 14px; }
+.st-row-text { flex: 1; min-width: 0; }
+.st-block { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.st-label { font-family: var(--font-ui); font-weight: 700; font-size: 14px; color: var(--on-card-primary); }
+.st-sub { font-size: 12px; margin-top: 2px; line-height: 17px; color: var(--on-card-muted); }
+.st-sub-first { margin-top: 0; color: var(--on-card-secondary); }
+.st-divider { height: var(--card-border); background: var(--border); margin-left: 14px; }
+.st-pills { display: flex; gap: 8px; }
+.st-pill {
+  flex: 1; padding: 8px 0; border-radius: 8px; border: var(--card-border) solid var(--border);
+  background: transparent; font: inherit; font-size: 12px; font-weight: 600;
+  color: var(--on-card-secondary); cursor: pointer;
+}
+.st-pill[aria-checked='true'] { background: var(--primary); border-color: var(--primary); color: var(--on-accent); }
+.st-link {
+  display: flex; align-items: center; justify-content: space-between; width: 100%;
+  padding: 14px; background: none; border: 0; font: inherit; text-align: left;
+  text-decoration: none; cursor: pointer;
+}
+.st-chevron { font-size: 18px; color: var(--on-card-muted); }
+.st-danger { color: var(--danger); }
+.st-notice { font-size: 12px; margin-top: 8px; color: var(--text-secondary); }
+.st-steps { margin: 0; padding-left: 20px; font-size: 12px; line-height: 18px; color: var(--on-card-secondary); }
+.st-steps li + li { margin-top: 4px; }
+.st-link-row { display: flex; align-items: center; gap: 10px; }
+.st-code {
+  flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; font-family: var(--font-mono); font-size: 11px;
+  padding: 8px 10px; border-radius: 8px; background: var(--background); color: var(--on-card-secondary);
+  user-select: all;
+}
+.st-copy {
+  flex: none; font: inherit; font-size: 12px; font-weight: 600; padding: 8px 12px; border-radius: 8px;
+  border: 1px solid var(--border); background: transparent; color: var(--primary-text); cursor: pointer;
+}
+.st-dev { margin-top: 18px; font-size: 13px; }
+

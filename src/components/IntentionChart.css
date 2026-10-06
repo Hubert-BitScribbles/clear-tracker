@@ -1,0 +1,21 @@
+/* Week grid: one row per month, a tile per week (see IntentionChart.tsx). */
+.wg { display: flex; flex-direction: column; gap: 10px; }
+.wg-row { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 8px; }
+.wg-month { font-size: 12px; font-weight: 600; color: var(--on-card-secondary); }
+.wg-weeks { display: grid; grid-template-columns: repeat(5, minmax(0, 40px)); gap: 6px; }
+.wg-cell { display: block; }
+.wg-tile {
+  position: relative; display: flex; align-items: center; justify-content: center;
+  width: 100%; aspect-ratio: 1; padding: 0; border: 0; border-radius: 8px; cursor: pointer;
+  font: inherit; font-family: var(--font-ui); font-weight: 700; font-size: 14px;
+}
+.wg-tile:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+/* Selected week: a teal bar beneath, as for the selected day on Check-in. */
+.wg-tile[data-selected]::after {
+  content: ''; position: absolute; left: 20%; right: 20%; bottom: -6px; height: 3px; border-radius: 2px; background: var(--primary);
+}
+.wg-unlogged { background: var(--align-unlogged); box-shadow: inset 0 0 0 1px var(--align-unlogged-edge); color: var(--on-card-secondary); }
+.wg-partial { background: var(--align-partial); color: #14171c; }
+.wg-met { background: var(--align-met); color: var(--align-met-glyph); }
+.wg-exceeded { background: var(--align-exceeded); color: var(--align-exceeded-glyph); }
+.wg-sum { font-size: 12px; color: var(--on-card-muted); white-space: nowrap; min-width: 44px; text-align: right; }

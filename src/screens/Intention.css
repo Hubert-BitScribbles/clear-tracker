@@ -1,0 +1,28 @@
+/* Values from the native intention.tsx StyleSheet. */
+.intention {
+  max-width: var(--content-max); margin: 0 auto;
+  padding: calc(env(safe-area-inset-top, 0px) + 20px) 20px calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px) + 20px);
+}
+.in-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.in-close {
+  font: inherit; font-size: 18px; min-width: 36px; min-height: 36px; background: none; border: 0;
+  color: var(--text-secondary); cursor: pointer;
+}
+.in-title { font-size: 16px; font-weight: 700; }
+.in-desc { font-size: 13px; line-height: 20px; text-align: center; margin-bottom: 20px; color: var(--text-secondary); }
+.in-number { display: flex; flex-direction: column; align-items: center; margin-bottom: 8px; }
+.in-big { font-family: var(--font-ui); font-weight: 700; font-size: 48px; line-height: 1.1; color: var(--primary); }
+.in-number-label { font-size: 12px; color: var(--text-muted); }
+
+.in-pending { font-size: 12px; text-align: center; margin: -10px 0 12px; color: var(--text-secondary); }
+.in-footnote { font-size: 11px; line-height: 16px; margin-top: 16px; text-align: center; color: var(--text-muted); }
+.in-save { width: 100%; margin-top: 24px; border-radius: 10px; }
+.in-history { margin-top: 24px; }
+.in-history-label { font-size: 11px; text-align: center; margin-bottom: 10px; color: var(--text-muted); }
+.in-history ul { list-style: none; margin: 0; padding: 0; border-top: var(--card-border) solid var(--border); }
+.in-history li {
+  display: flex; justify-content: space-between; padding: 8px 0; font-size: 12px;
+  border-bottom: var(--card-border) solid var(--border);
+}
+.in-h-target { font-weight: 600; color: var(--text-secondary); }
+.in-h-date { color: var(--text-muted); }

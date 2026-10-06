@@ -1,0 +1,40 @@
+.tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--card-background);
+  border-top: var(--card-border) solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  z-index: 10;
+}
+.tabbar ul {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  max-width: var(--content-max);
+  height: var(--tabbar-height);
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  height: 100%;
+  color: var(--text-muted);
+  text-decoration: none;
+  /* iOS tab bars use the system font, as the native app does. */
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+}
+.tab.active {
+  color: var(--primary);
+}
+/* High contrast: the active tab also gets a bar, so it isn't colour alone. */
+:root[data-contrast='high'] .tab.active {
+  box-shadow: inset 0 3px 0 var(--primary);
+}

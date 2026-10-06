@@ -1,0 +1,58 @@
+/* Values from the native milestones.tsx and all-milestones.tsx StyleSheets. */
+.milestones {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 16px)
+    16px
+    calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px) + 16px);
+}
+.ms-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.ms-lede { font-size: 12px; line-height: 18px; margin-bottom: 16px; color: var(--text-muted); }
+.ms-empty { margin-top: 40px; padding: 0 12px; text-align: center; }
+.ms-empty-title { font-family: var(--font-ui); font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+.ms-empty-body { font-size: 13px; line-height: 20px; color: var(--text-muted); }
+.ms-sec { font-family: var(--font-ui); font-weight: 700; font-size: 13px; margin-top: 20px; }
+.ms-note { font-size: 11px; margin-bottom: 8px; color: var(--text-muted); }
+.ms-view-all {
+  display: block; text-align: center; margin: 18px 0 8px;
+  font-size: 13px; font-weight: 600; color: var(--primary-text); text-decoration: none;
+}
+
+/* All milestones */
+.ms-all-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.ms-back {
+  font-size: 22px; line-height: 1; padding: 4px 8px; min-width: 36px; min-height: 36px;
+  color: var(--text-secondary); text-decoration: none; display: flex; align-items: center;
+}
+.ms-all-title { font-size: 16px; font-weight: 700; }
+.ms-all-sec {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;
+  margin: 20px 0 2px; color: var(--text-muted); font-family: var(--font-body); font-weight: 400;
+}
+.ms-all-sec:first-of-type { margin-top: 0; }
+.ms-all-note { font-size: 11px; margin-bottom: 8px; color: var(--text-muted); }
+
+.ms-inline-link { color: var(--primary-text); font-weight: 600; text-decoration: none; }
+
+/* Year selector, as in Trends */
+.ms-scope { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 6px; }
+.ms-scope-pill {
+  font: inherit; font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: var(--chip-radius);
+  border: var(--card-border) solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer;
+}
+.ms-scope-pill[aria-checked='true'] { background: var(--primary); border-color: var(--primary); color: var(--on-accent); }
+
+/* Earned timeline, grouped by month */
+.ms-month { margin-bottom: 12px; }
+.ms-month-title { font-family: var(--font-ui); font-weight: 700; font-size: 12px; margin: 10px 0 6px; color: var(--text-secondary); }
+.ms-month-count { font-weight: 400; color: var(--text-muted); }
+.ms-list { list-style: none; margin: 0; padding: 4px 12px; }
+.ms-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+.ms-item + .ms-item { border-top: var(--card-border) solid var(--border); }
+.ms-item-glyph {
+  flex: none; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; background: var(--badge-earned-fill); color: var(--badge-earned-glyph);
+}
+.ms-item-title { flex: 1; min-width: 0; font-size: 13px; color: var(--on-card-primary); }
+.ms-item-date { flex: none; font-size: 11px; color: var(--on-card-muted); }

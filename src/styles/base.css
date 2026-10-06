@@ -174,7 +174,7 @@ button {
 .st-field { display: flex; flex-direction: column; gap: 4px; }
 .st-field-label { font-size: 12px; color: var(--on-card-secondary); }
 .st-select {
-  font: inherit; font-size: 15px; padding: 9px 10px; border-radius: 8px;
+  font: inherit; font-size: 16px; padding: 9px 10px; border-radius: 8px;
   border: 1px solid var(--border); background: var(--background); color: var(--text-primary);
 }
 

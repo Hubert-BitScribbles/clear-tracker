@@ -40,7 +40,7 @@ with sync_playwright() as p:
         check(f'{plat} Help backups/sounds/trouble/PDF', {
           'ios': 'iCloud Drive' in t and 'silent switch' in t and 'separate records' in t and 'tap Share in the print preview' in t,
           'android': 'Google Drive' in t and 'media volume' in t and 'separate records' not in t and "Chrome’s storage" in t and 'Save as PDF as the printer' in t and 'iCloud' not in t,
-          'other': 'it downloads' in t and 'silent switch' not in t and 'separate records' not in t}[plat], t[:0])
+          'other': 'puts it in Downloads' in t and 'silent switch' not in t and 'separate records' not in t}[plat], t[:0])
         pg.goto("http://localhost:5173/#/trends/review?year=2026&month=8"); pg.reload(); pg.wait_for_timeout(1200)
         t=pg.locator('.rv-share').inner_text()
         check(f'{plat} report PDF hint', {'ios':'On iPhone' in t,'android':'On Android' in t,'other':'On iPhone' not in t and 'On Android' not in t}[plat], t)

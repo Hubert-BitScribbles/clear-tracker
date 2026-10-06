@@ -129,7 +129,7 @@ const ARTICLES: Article[] = [
     id: 'backups', title: 'Backups', keywords: 'export import restore passphrase password file encrypted lost',
     body: (
       <>
-        <p>Your record lives only in this browser, so a backup is the only copy anywhere else. <strong>Export</strong> creates an encrypted file of your days, intentions and settings, and you choose where to keep it — {P === 'ios' ? 'Files, iCloud Drive, or another device' : P === 'android' ? 'Google Drive, Files, or email it to yourself' : 'it downloads, and you can move it anywhere'}.</p>
+        <p>Your record lives only in this browser, so a backup is the only copy anywhere else. <strong>Export</strong> creates an encrypted file of your days, intentions and settings, and you choose where to keep it — {P === 'ios' ? 'Files, iCloud Drive, or another device' : P === 'android' ? 'Google Drive, Files, or email it to yourself' : 'your browser asks where to save it, or puts it in Downloads'}.</p>
         <p>Your passphrase needs at least 8 characters, and can't be recovered: without it, the backup can't be opened. Keep it somewhere safe.</p>
         <p><strong>Import</strong> replaces everything on this device with the backup's contents, after showing you what's in it. Check-in reminds you to back up 30 days after your last backup.</p>
       </>

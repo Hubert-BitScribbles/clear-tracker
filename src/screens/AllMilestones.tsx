@@ -227,7 +227,7 @@ export function AllMilestones() {
       {ex.money && (
         <>
           <h2 className="ms-all-sec">Money kept</h2>
-          <p className="ms-all-note">Clear days at your savings baseline and price</p>
+          <p className="ms-all-note">Your estimated savings, counted at the low end, so never more than Trends shows</p>
           <TierBadges size="all" mode="all" glyph="$" tiers={MONEY_KEPT_TIERS} earned={ex.money.earned}
             progress={ex.money.total} title={(t) => `${money(t)} kept`} formatDate={formatShort} unit={(n) => money(n)} />
         </>

@@ -14,6 +14,9 @@ with sync_playwright() as p:
         if ua: kw['user_agent']=ua
         ctx=b.new_context(**kw); pg=ctx.new_page(); errs=[]; pg.on('pageerror',lambda e: errs.append(str(e)))
         pg.goto("http://localhost:5173/#/onboarding"); pg.wait_for_timeout(900)
+        t=pg.locator('main').inner_text()
+        check(f'{plat} welcome: "already on your Home Screen? … search" only on iPhone',
+              ('Already added Clear Tracker to your Home Screen' in t and 'search for' in t) == (plat=='ios'), t[-300:])
         pg.get_by_role('button',name='Get started').click(); pg.wait_for_timeout(200)
         t=pg.locator('main').inner_text()
         if plat=='ios': check('ios onboarding: Share steps, data won\'t move', 'Add to Home Screen' in t and "won't move across" in t)
@@ -34,7 +37,8 @@ with sync_playwright() as p:
         t=pg.locator('#help-install').inner_text()
         check(f'{plat} Help install: both sets of steps; right storage note', 'Install app' in t and 'Add to Home Screen' in t
               and (('separate' not in t and 'own storage' not in t) if plat=='android' else 'own storage' in t)
-              and (('shares Chrome' in t) == (plat!='ios')), t)
+              and (('shares Chrome' in t) == (plat!='ios'))
+              and (('search for it' in t) == (plat!='android')), t)
         pg.evaluate("document.querySelectorAll('details').forEach(d=>d.open=true)")
         t=pg.locator('.sp-articles').inner_text()
         check(f'{plat} Help backups/sounds/trouble/PDF', {

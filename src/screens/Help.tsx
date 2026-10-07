@@ -114,7 +114,8 @@ const ARTICLES: Article[] = [
       <>
         <p>Each level is a range of drinks — A few is 1–2, Moderate 3–4, A lot 5 or more — so estimates are ranges too: "About 9–12 drinks a week". When a period includes an A lot day, the top is open: "About 9 or more". Only logged days count.</p>
         <p>Trend charts and statements need one number per level to compare periods, so they use 1.5, 3.5 and 5.</p>
-        <p><strong>Savings</strong> compare your drinking with a baseline — drinks a week before tracking — at your price per drink. Type the baseline yourself, or measure it from your first 3 months of tracking (a chosen challenge month is left out). Periods over the baseline are shown honestly. "Money kept" milestones stay earned if you change the baseline.</p>
+        <p><strong>Savings</strong> compare your drinking with a baseline — drinks a week before tracking — at your price per drink. Type the baseline yourself, or measure it from your first 3 months of tracking (a chosen challenge month is left out). Periods over the baseline are shown honestly.</p>
+        <p><strong>Money kept</strong> milestones follow the same estimate, at its low end: each day counts at the top of its range (A few as 2 drinks, Moderate as 4, A lot as 6), so a milestone never claims more than Trends shows. A drinking day above your baseline takes a little back; a milestone, once reached, stays earned — even if you change the baseline.</p>
       </>
     ),
   },
@@ -147,7 +148,7 @@ const ARTICLES: Article[] = [
           Installed, Clear Tracker opens like an app and works offline.
         </p>
         {P !== 'android' && (
-          <p>On iPhone it also keeps your record safer: Safari can clear a website's data after seven days without a visit, but not a Home Screen app's. The installed app has its own storage, though — days logged in Safari don't move across by themselves, so export a backup in one and import it in the other.</p>
+          <p>On iPhone it also keeps your record safer: Safari can clear a website's data after seven days without a visit, but not a Home Screen app's. The installed app has its own storage, though — days logged in Safari don't move across by themselves, so export a backup in one and import it in the other. Opening the website in Safari or Chrome again starts it fresh too: open Clear Tracker from your Home Screen instead, or swipe down from the middle of the Home Screen and search for it.</p>
         )}
         {P !== 'ios' && (
           <p>On Android and computers, the installed app shares Chrome's storage, so your days come with you. Chrome doesn't clear it on a timer; installing makes it less likely to be cleared when space runs low.</p>

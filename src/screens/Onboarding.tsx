@@ -3,13 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import iconUrl from '../assets/clear-icon-96.png';
 import { DayCell } from '../components/DayCell';
 import { RegionFields } from '../components/RegionFields';
-import { nextLevel, saveIntention, setSetting, type DayLevel } from '../data/database';
+import { getSetting, nextLevel, saveIntention, setSetting, type DayLevel } from '../data/database';
 import { mondayOf, todayIso } from '../data/dates';
 import {
   canPromptInstall, isAndroid, isInstalled, isIos, onInstallAvailability, promptInstall, requestPersistentStorage,
 } from '../lib/install';
 import { deviceTimeZone, parseRegion, regionLabel, type Region } from '../lib/regions';
 import { playLoggingSound, unlockAudio } from '../lib/sounds';
+import { ML } from '../lib/trendText';
 import { Estimate } from './Intention';
 import './Onboarding.css';
 
@@ -41,10 +42,20 @@ export function Onboarding() {
   const [target, setTarget] = useState(3);
   const [audioCues, setAudioCues] = useState(true);
   const [practice, setPractice] = useState<DayLevel | null>(null);
+  const [tried, setTried] = useState(false);
   const [region, setRegion] = useState<Region>(() => parseRegion('', deviceTimeZone()));
   const [saving, setSaving] = useState(false);
   const [canInstall, setCanInstall] = useState(canPromptInstall());
   useEffect(() => onInstallAvailability(() => setCanInstall(canPromptInstall())), []);
+
+  // Already set up? Go to Check-in. The app can open here when it isn't
+  // needed: the browser hands the tab's address to the installed app, or an
+  // app window reopens where it was left. Going through again would re-save
+  // this week's intention, sounds and region.
+  const [needed, setNeeded] = useState(false);
+  useEffect(() => {
+    getSetting('onboarding_complete', 'false').then((v) => (v === 'true' ? navigate('/', { replace: true }) : setNeeded(true)));
+  }, [navigate]);
 
   const step = steps[i];
   const go = (d: number) => {
@@ -59,6 +70,7 @@ export function Onboarding() {
     if (audioCues) unlockAudio(); // during the tap, before anything else
     const level = nextLevel(practice);
     setPractice(level);
+    setTried(true);
     if (audioCues && level) playLoggingSound(level);
   }
 
@@ -72,6 +84,8 @@ export function Onboarding() {
     await persist;
     navigate('/', { replace: true });
   }
+
+  if (!needed) return null;
 
   return (
     <main className="onboarding">
@@ -189,6 +203,9 @@ export function Onboarding() {
               not logged. Try it on this practice day — it isn't saved.
             </p>
             <div className="ob-practice">
+              <p className="ob-practice-month" aria-hidden="true">
+                {ML[Number(today.slice(5, 7)) - 1].slice(0, 3)} {today.slice(0, 4)}
+              </p>
               <div className="ob-practice-cell">
                 <DayCell
                   day={Number(today.slice(8, 10))}
@@ -197,7 +214,7 @@ export function Onboarding() {
                   label={`Practice day: ${practice ? LEVEL_SHOWN[practice] : 'not logged'}. Tap for the next level.`}
                 />
               </div>
-              <p className="ob-practice-level" aria-live="polite">{practice ? LEVEL_SHOWN[practice] : 'Not logged'}</p>
+              <p className="ob-practice-level" aria-live="polite">{practice ? LEVEL_SHOWN[practice] : tried ? 'Not logged' : 'Tap the day to try it'}</p>
             </div>
             <p className="ob-note">
               Days you don't log are simply not logged — nothing assumes how they went. Past days can be logged or

@@ -5,7 +5,8 @@
 }
 .sp-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
 .sp-lede { font-size: 13px; line-height: 19px; margin-bottom: 12px; color: var(--text-secondary); }
-.sp-lede a, .sp-checked a, .sp-body a { color: var(--primary-text); font-weight: 600; }
+/* Links in text only: the Contact buttons are links too, with their own colours. */
+.sp-lede a, .sp-checked a, .sp-body a:not(.sp-action) { color: var(--primary-text); font-weight: 600; }
 .sp-sec { font-family: var(--font-body); font-weight: 400; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; margin: 18px 0 6px; color: var(--text-muted); }
 .sp-card { padding: 4px 14px; }
 .sp-urgent { padding: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }

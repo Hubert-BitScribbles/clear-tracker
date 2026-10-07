@@ -49,11 +49,12 @@ function Contact() {
   }, []);
   const report = mailto(
     'Clear Tracker: a problem',
-    `What happened, and what did you expect?\n\n\n\n---\nTechnical details (no personal or health data):\n${details}`,
+    `What happened, and what did you expect?\n(Please leave out health or personal details, beyond how to reach you.)\n\n\n\n---\nTechnical details (no personal or health data):\n${details}`,
   );
   return (
     <>
       <p>Clear Tracker has no app store page, so this is the way to reach bitScribbles. Both open your own email app, addressed to {SUPPORT_EMAIL}; nothing is sent until you press Send there.</p>
+      <p><strong>Please don't include health details or anything personal</strong> beyond how to reach you. To help, bitScribbles only needs to know what you noticed — nothing about your days or your drinking.</p>
       <div className="sp-buttons">
         <a className="sp-action sp-action-strong" href={mailto('Clear Tracker: feedback', '')}>Send feedback</a>
         <a className="sp-action" href={report}>Report a problem</a>
@@ -61,8 +62,9 @@ function Contact() {
       <details className="sp-details">
         <summary>What "Report a problem" includes</summary>
         <pre>{details}</pre>
+        <p>Only the app version and how your device and browser are set up — nothing from your record (days, intentions or settings) is ever added, and you can read or delete every line before sending.</p>
       </details>
-      <p>An email is between you and bitScribbles, like any other. Include only what you're comfortable sharing; nothing from your record is ever added.</p>
+      <p>An email is between you and bitScribbles, like any other, and goes from your own email address.</p>
     </>
   );
 }

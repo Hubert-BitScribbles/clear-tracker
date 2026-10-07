@@ -49,6 +49,7 @@
 .ob-points strong { color: var(--on-card-primary); }
 .ob-link { color: var(--primary-text); font-weight: 600; }
 .ob-practice { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 20px 0 14px; }
+.ob-practice-month { font-family: var(--font-ui); font-weight: 700; font-size: 13px; color: var(--text-secondary); margin-bottom: -2px; }
 .ob-practice-cell { width: 84px; }
 .ob-practice-level { font-family: var(--font-ui); font-weight: 700; font-size: 14px; min-height: 20px; color: var(--text-primary); }
 .ob-practice-cell .day-cell { width: 100%; }

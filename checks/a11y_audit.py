@@ -53,6 +53,8 @@ with sync_playwright() as p:
           await db.setChallenges({{weekendRuns:[{{from:'2026-06-05'}}],weekRuns:[],months:['2026-09','2026-12']}}); }}""")
         for name,path,setup in STATES:
             if only and not any(o.lower() in name.lower() for o in only): continue
+            # Onboarding steps aside once set up, so show it as not yet done.
+            pg.evaluate(f"async () => (await import('/src/data/database.ts')).setSetting('onboarding_complete', '{'false' if path == '/onboarding' else 'true'}')")
             pg.goto("http://localhost:5173/#"+path); pg.reload(); pg.wait_for_timeout(900)
             if setup: pg.evaluate(setup); pg.wait_for_timeout(500)
             pg.add_script_tag(content=AXE)

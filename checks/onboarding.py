@@ -49,6 +49,9 @@ with sync_playwright() as p:
     pg.expose_function('ctSound', lambda lv: sounds.append(lv))
     pg.evaluate("window.addEventListener('ct:sound', e => window.ctSound(e.detail))")
     cell = pg.locator('.ob-practice .day-cell')
+    month = pg.locator('.ob-practice-month').inner_text()
+    check('practice day shows its month and year (not just a number)', bool(__import__('re').fullmatch(r'[A-Z][a-z]{2} \d{4}', month)), month)
+    check('practice day invites a tap before the first try', pg.locator('.ob-practice-level').inner_text() == 'Tap the day to try it')
     seen, marks = [], []
     for _ in range(5):
         cell.click(); pg.wait_for_timeout(120)
@@ -136,6 +139,18 @@ with sync_playwright() as p:
     pg.goto(BASE + '/settings'); pg.wait_for_timeout(800)
     check('Settings: Region says what it decides, linking Resources',
           pg.locator('#region + section').get_by_role('link', name='Resources').get_attribute('href') == '#/settings/resources')
+    # Once set up, onboarding steps aside: the installed app can open on the
+    # tab's address, and going through again re-saves this week's intention.
+    pg.goto(BASE + '/onboarding'); pg.reload(); pg.wait_for_timeout(1200)
+    check('onboarding, when already set up, goes to Check-in', '/onboarding' not in pg.url and pg.locator('.onboarding').count() == 0, pg.url)
+    # Contact: both buttons readable (text a different colour from the button).
+    pg.goto(BASE + '/settings/help?topic=contact'); pg.reload(); pg.wait_for_timeout(900)
+    cols = [pg.locator(sel).first.evaluate("e => { const c = getComputedStyle(e); return [e.textContent.trim(), c.color, c.backgroundColor]; }")
+            for sel in ('.sp-action-strong', '.sp-action:not(.sp-action-strong)')]
+    check('Contact: "Send feedback" and "Report a problem" have visible text', [c[0] for c in cols] == ['Send feedback', 'Report a problem']
+          and all(c[1] != c[2] for c in cols), cols)
+    body = pg.locator('#help-contact').inner_text()
+    check('Contact: asks for no health or personal details', "Please don't include health details or anything personal" in body)
     check('no page errors (screens)', not pg.errors, pg.errors)
     ctx.close()
     b.close()

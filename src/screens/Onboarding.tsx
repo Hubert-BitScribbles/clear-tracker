@@ -122,6 +122,15 @@ export function Onboarding() {
                 your drinking, a healthcare professional can help.
               </p>
             </div>
+            {isIos() && !installed && (
+              // On iPhone a browser tab can't see a Home Screen copy (separate
+              // storage, and no way to ask), so it always looks like a first visit.
+              <p className="ob-note ob-already">
+                Already added Clear Tracker to your Home Screen? Open it from there — this browser tab keeps its own,
+                separate record. Can't spot the icon? Swipe down from the middle of the Home Screen and search for
+                “Clear Tracker”.
+              </p>
+            )}
           </div>
           <button type="button" className="btn btn-primary ob-button" onClick={next}>Get started</button>
         </section>

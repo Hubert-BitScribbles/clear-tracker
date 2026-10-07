@@ -273,10 +273,14 @@ export async function getSavingsSettings(today = todayIso()): Promise<SavingsSet
 /**
  * Money kept tiers, kept earned for good: tiers reached under any baseline
  * are recorded, so switching baselines (or lowering one) can't un-earn them.
+ * Recorded under a new key in 1.0.0-rc.3, when Money kept changed from "clear
+ * days only" to the conservative savings estimate: tiers recorded the old
+ * way (often ahead of Trends) are set aside and re-earned the new way.
  */
+const MONEY_KEPT_KEY = 'money_kept_earned_v2';
 export async function getMoneyKept(effective: { baselinePerWeek: number; price: number } | null) {
   const d = await data();
-  const stored: Record<string, string> = JSON.parse((await getSetting('money_kept_earned', '')) || '{}');
+  const stored: Record<string, string> = JSON.parse((await getSetting(MONEY_KEPT_KEY, '')) || '{}');
   const now = effective ? M.moneyKept(d, effective.baselinePerWeek, effective.price) : { total: 0, earned: [] };
   let changed = false;
   for (const e of now.earned) {
@@ -285,11 +289,12 @@ export async function getMoneyKept(effective: { baselinePerWeek: number; price: 
       changed = true;
     }
   }
-  if (changed) await setSetting('money_kept_earned', JSON.stringify(stored));
+  if (changed) await setSetting(MONEY_KEPT_KEY, JSON.stringify(stored));
   const earned = Object.entries(stored)
     .map(([tier, reachedIso]) => ({ tier: Number(tier), reachedIso }))
     .sort((a, b) => a.tier - b.tier);
-  return effective || earned.length ? { total: now.total, earned } : null;
+  // Progress shows from zero: a stretch over baseline isn't shown as "−$40 of $100".
+  return effective || earned.length ? { total: Math.max(0, now.total), earned } : null;
 }
 
 // ---- Challenges ---------------------------------------------------------------

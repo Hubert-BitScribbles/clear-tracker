@@ -53,3 +53,4 @@
 .ob-practice-cell { width: 84px; }
 .ob-practice-level { font-family: var(--font-ui); font-weight: 700; font-size: 14px; min-height: 20px; color: var(--text-primary); }
 .ob-practice-cell .day-cell { width: 100%; }
+.ob-already { margin-top: 14px; font-size: 12px; line-height: 18px; color: var(--text-secondary); }

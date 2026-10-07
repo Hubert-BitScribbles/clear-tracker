@@ -111,20 +111,32 @@ export function honestLoggingDates(d: Data): Iso[] {
 }
 
 /**
- * Money kept on clear days: each clear day keeps baseline ÷ 7 drinks' worth.
- * Returns the date each money tier was reached, plus the running total.
- * Clear days only, so it never goes negative and needs no "up to".
+ * Drinks per level for Money kept: the top of each level's range, so the
+ * milestone never claims more than the savings estimate in Trends. "A lot"
+ * (5 or more) has no top, so it counts as 6 — one above its minimum, as
+ * A few and Moderate are.
+ */
+export const MONEY_KEPT_DRINKS = { clear: 0, 'a-few': 2, moderate: 4, 'a-lot': 6 } as const;
+
+/**
+ * Money kept: the savings estimate, kept conservatively, as a running total
+ * over logged days in date order. Each logged day "should" have had
+ * baseline ÷ 7 drinks; it keeps (that − its drinks) × price, so a drinking day
+ * above the baseline takes some back. A tier is reached the day the total
+ * first gets there. Unlogged days are left out, as in Trends.
+ * total is the running total now (it can fall; earned tiers stay earned).
  */
 export function moneyKept(d: Data, baselinePerWeek: number, price: number): { total: number; earned: TierEarn[] } {
-  const perDay = (baselinePerWeek / 7) * price;
+  const perDay = baselinePerWeek / 7;
   const earned: TierEarn[] = [];
   let total = 0;
   let next = 0;
-  for (const iso of d.datesAsc) {
-    if (d.status(iso) !== 'clear') continue;
-    total += perDay;
+  const entries = [...d.snap.entries].sort((a, b) => a.entry_date.localeCompare(b.entry_date));
+  for (const e of entries) {
+    const drinks = e.status === 'clear' ? 0 : MONEY_KEPT_DRINKS[e.amount ?? 'a-lot'];
+    total += (perDay - drinks) * price;
     while (next < MONEY_KEPT_TIERS.length && total >= MONEY_KEPT_TIERS[next] - 1e-9) {
-      earned.push({ tier: MONEY_KEPT_TIERS[next], reachedIso: iso });
+      earned.push({ tier: MONEY_KEPT_TIERS[next], reachedIso: e.entry_date });
       next++;
     }
   }

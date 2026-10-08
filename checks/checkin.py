@@ -83,14 +83,17 @@ with sync_playwright() as p:
     touch = pg.locator('.ci-grid').evaluate("e => getComputedStyle(e).touchAction")
     check('page still scrolls vertically over the calendar', touch == 'pan-y', touch)
 
-    # Trends: the chart starts at the first intention
+    # Trends: the grid starts at the first logged week (rc.6); weeks before the
+    # first intention are shown as "before", not measured.
     pg.goto(BASE + "/trends"); pg.wait_for_timeout(1200)
     weeks = sorted(pg.locator('.wg-tile').evaluate_all("els => els.map(e => e.dataset.week)"))
-    check('Trends chart starts at the first intention week', weeks and weeks[0] == '2026-09-07', weeks[:3])
+    check('Trends grid starts at the first logged week', weeks and weeks[0] == '2026-08-24', weeks[:3])
+    before = sorted(pg.locator('.wg-before').evaluate_all("els => els.map(e => e.dataset.week)"))
+    check('weeks before the first intention are neutral "before" tiles', before == ['2026-08-24', '2026-08-31'], before)
     stat = pg.locator('div', has=pg.locator('.tr-stat-label', has_text='weeks met intention')).last.locator('.tr-stat-value').inner_text()
     check('At a glance: weeks met counted from the first intention (1 / 4)', stat.replace(' ', '') == '1/4', stat)
     rows = pg.locator('.wg-row').evaluate_all("els => els.map(e => e.querySelector('.wg-month').textContent + ':' + e.querySelector('.wg-sum').textContent)")
-    check('week grid: a row per month, newest first; week in progress not counted until met', rows == ['Oct:0 of 1', 'Sep:1 of 3'], rows)
+    check('week grid: a row per month, newest first; week in progress not counted until met; before-weeks not counted', rows == ['Oct:0 of 1', 'Sep:1 of 3', 'Aug:'], rows)
     tiles = pg.locator('.wg-row').first.locator('.wg-tile')
     tiles.last.click(); pg.wait_for_timeout(300)
     check('tapping a tile selects that week', 'Week of Oct 5' in pg.locator('.tr-detail-week').inner_text(), pg.locator('.tr-detail-week').inner_text())

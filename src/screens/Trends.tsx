@@ -20,8 +20,8 @@ import { SavingsCard } from '../components/SavingsCard';
 import { TrendsNav } from '../components/SegmentNav';
 import { LevelLegend } from '../components/LevelLegend';
 import { buildReport, sameStretchLastYear, summarizeRange, weekdaySummary } from '../data/report';
-import { alignmentOf, IntentionChart, isMeasured, type MeasuredWeek } from '../components/IntentionChart';
-import { comparisonText, drinksText, typicalDayText } from '../lib/reportText';
+import { ALIGNMENT_NAMES, alignmentOf, IntentionChart, type MeasuredWeek } from '../components/IntentionChart';
+import { comparisonText, drinksText, typicalDayText, wholeDrinks } from '../lib/reportText';
 import { momentumIncludes } from '../data/baseline';
 import { chartMonths, monthlyRates, SIX_MONTHS, THREE_MONTHS, windowChange } from '../data/trend';
 import { MonthlyChart } from '../components/MonthlyChart';
@@ -197,9 +197,9 @@ export function Trends() {
           };
         })(),
         dowStats: dow,
-        // Only weeks with an intention: days logged from before the app was
-        // first used have nothing to be measured against.
-        weeks: wy.filter((w) => w.weekStartIso <= currentMonday).filter(isMeasured),
+        // From the first logged week to now. Weeks before the first intention
+        // are shown (neutral, with their clear days) but not measured.
+        weeks: wy.filter((w) => w.weekStartIso <= currentMonday && !!d.earliest && w.weekStartIso >= mondayOf(d.earliest)),
         intentionStart: d.intentionStart,
       });
     })();
@@ -287,7 +287,7 @@ export function Trends() {
             <MonthlyChart
               kind="line"
               name={`Months of ${scopeLabel}: estimated drinks a week`}
-              format={(v) => (Math.round(v * 10) / 10).toString()}
+              format={(v) => String(wholeDrinks(v))}
               points={data.trend.points.map((p) => ({ label: ML[p.month - 1].slice(0, 3), full: `${ML[p.month - 1]} ${p.year}`, value: p.perWeek, soFar: p.soFar }))}
               detail={(_, i) => {
                 const p = data.trend.points[i];
@@ -299,7 +299,7 @@ export function Trends() {
                 const r = summarizeRange(data.snap, start, end);
                 return (
                   <>
-                    <p className="mc-detail-line">About {Math.round(p.perWeek * 10) / 10} drinks a week</p>
+                    <p className="mc-detail-line">About {wholeDrinks(p.perWeek)} drink{wholeDrinks(p.perWeek) === 1 ? '' : 's'} a week</p>
                     {(() => {
                       const c = monthVsPrevious(p);
                       return c && <p className="mc-detail-line">{drinksChangeText(c.lead, c.diff, c.vs)}</p>;
@@ -441,14 +441,17 @@ export function Trends() {
             {scope === 'all' ? ' (most recent year)' : ''}
           </h2>
           <div className="tr-legend">
-            {(['exceeded', 'met', 'partial', 'unlogged'] as const).map((a) => (
+            {(['exceeded', 'met', 'partial', 'unclear', 'unlogged', ...(data.weeks.some((w) => w.target === null) ? (['before'] as const) : [])] as const).map((a) => (
               <span key={a} className="tr-legend-item">
                 <span className={`tr-swatch tr-align-${a}`} />
-                {a[0].toUpperCase() + a.slice(1)}
+                {ALIGNMENT_NAMES[a]}
               </span>
             ))}
           </div>
-          <p className="tr-grid-key">Each tile is a week, showing its clear days. "2 of 4": weeks met that month.</p>
+          <p className="tr-grid-key">
+            Each tile is a week, showing its clear days. "2 of 4": weeks met that month. "Not enough logged": short of the
+            intention, but with days not logged that could still make it — log them to settle it.
+          </p>
           {data.weeks.length === 0 ? (
             <p className="tr-empty-text">
               {data.intentionStart && data.intentionStart.slice(0, 4) > String(alignmentYear)
@@ -468,12 +471,12 @@ export function Trends() {
                     <div className="tr-detail" aria-live="polite">
                       <div className="tr-detail-nav">
                         <button type="button" className="tr-step" aria-label="Previous week" disabled={at === 0} onClick={() => setExpandedWeek(data.weeks[at - 1].weekStartIso)}>‹</button>
-                        <p className="tr-detail-week">Week of {labelFor(w.weekStartIso)} · {a}</p>
+                        <p className="tr-detail-week">Week of {labelFor(w.weekStartIso)} · {ALIGNMENT_NAMES[a].toLowerCase()}</p>
                         <button type="button" className="tr-step" aria-label="Next week" disabled={at === data.weeks.length - 1} onClick={() => setExpandedWeek(data.weeks[at + 1].weekStartIso)}>›</button>
                       </div>
                       <div className="tr-detail-stats">
-                        <span>Intention: {w.target} clear days</span>
-                        <span>Actual: {w.hasEntries ? w.count : '—'}</span>
+                        <span>{w.target === null ? 'No intention yet' : `Intention: ${w.target} clear days`}</span>
+                        <span>Actual: {w.hasEntries ? w.count : '—'}{w.hasEntries && (w.logged ?? 7) < 7 ? ` (${w.logged} of 7 days logged)` : ''}</span>
                       </div>
                       <Link className="tr-view-week" to={`/?year=${w.weekStartIso.slice(0, 4)}&month=${Number(w.weekStartIso.slice(5, 7))}`}>
                         View week →

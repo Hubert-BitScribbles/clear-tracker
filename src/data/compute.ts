@@ -103,6 +103,12 @@ export class Data {
     return n;
   }
 
+  loggedBetween(start: Iso, end: Iso): number {
+    let n = 0;
+    for (let d = start; d <= end; d = addDays(d, 1)) if (this.byDate.has(d)) n++;
+    return n;
+  }
+
   anyEntryBetween(start: Iso, end: Iso): boolean {
     for (let d = start; d <= end; d = addDays(d, 1)) if (this.byDate.has(d)) return true;
     return false;
@@ -112,6 +118,25 @@ export class Data {
   weekMet(weekStart: Iso): boolean {
     const target = this.targetForWeek(weekStart);
     return target !== null && this.clearCountBetween(weekStart, addDays(weekStart, 6)) >= target;
+  }
+
+  /**
+   * Missed for certain: the intention couldn't have been met even if every
+   * unlogged day had been clear. A week short of its intention with enough
+   * unlogged days to have met it is neither met nor missed — "not enough
+   * logged to say" — since unlogged days assume nothing.
+   */
+  weekMissed(weekStart: Iso): boolean {
+    const target = this.targetForWeek(weekStart);
+    if (target === null) return false;
+    let clear = 0;
+    let unlogged = 0;
+    for (let d = weekStart, i = 0; i < 7; i++, d = addDays(d, 1)) {
+      const st = this.status(d);
+      if (st === 'clear') clear++;
+      else if (st === null) unlogged++;
+    }
+    return clear + unlogged < target;
   }
 
   /**
@@ -140,6 +165,8 @@ export interface WeekAlignment {
   count: number;
   target: number | null; // null: before the first intention
   hasEntries?: boolean;
+  /** Days logged in the week (any level). */
+  logged?: number;
 }
 export interface DayOfWeekStats {
   weekday: number; // 0 = Sunday … 6 = Saturday
@@ -280,6 +307,7 @@ export function weeksForYear(d: Data, year: number): WeekAlignment[] {
         count: d.clearCountBetween(w, end),
         target: d.targetForWeek(w),
         hasEntries: d.anyEntryBetween(w, end),
+        logged: d.loggedBetween(w, end),
       });
     }
   }

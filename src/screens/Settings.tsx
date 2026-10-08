@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { DeviceFields, useDevice } from '../components/DeviceFields';
+import { wholeDrinks } from '../lib/reportText';
 import { installKeepsOwnRecord, isAndroid, isIos, linksOpenApp } from '../lib/install';
 import { Link, useLocation } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
@@ -141,7 +142,7 @@ export function Settings() {
             <div className="st-row-text">
               <span className="st-label">
                 {savings.effective
-                  ? `About ${Math.round(savings.effective.baselinePerWeek * 10) / 10} drinks a week, at ${priceText(savings.effective.price)} a drink`
+                  ? `About ${wholeDrinks(savings.effective.baselinePerWeek)} drinks a week, at ${priceText(savings.effective.price)} a drink`
                   : `First 3 months, at ${priceText(savings.price!)} a drink`}
               </span>
               <p className="st-sub">

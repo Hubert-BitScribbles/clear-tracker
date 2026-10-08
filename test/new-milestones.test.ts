@@ -22,17 +22,17 @@ describe('back on track', () => {
   it('a met week after an unmet one counts; the first week never does', () => {
     const entries = [
       ...week('2026-01-05', 'ccc....'), // met (target 3) — first week, can't count
-      ...week('2026-01-12', 'cmm....'), // not met
+      ...week('2026-01-12', 'cmmmmmm'), // missed for certain
       ...week('2026-01-19', 'cccm...'), // met after unmet → counts
       ...week('2026-01-26', 'ccc....'), // met after met → no
-      // 2 Feb week unlogged → not met
-      ...week('2026-02-09', 'ccc....'), // met after unlogged → counts
+      // 2 Feb week unlogged → not a miss (rc.6)
+      ...week('2026-02-09', 'ccc....'), // met after unlogged → doesn't count
     ];
     const d = new Data({ entries, intentions: [target(3)] });
-    expect(backOnTrackWeeks(d, '2026-03-01')).toEqual(['2026-01-25', '2026-02-15']);
+    expect(backOnTrackWeeks(d, '2026-03-01')).toEqual(['2026-01-25']);
   });
   it('the week in progress never counts', () => {
-    const entries = [...week('2026-01-05', 'm......'), ...week('2026-01-12', 'ccc....')];
+    const entries = [...week('2026-01-05', 'mmmmmmm'), ...week('2026-01-12', 'ccc....')];
     const d = new Data({ entries, intentions: [target(3)] });
     expect(backOnTrackWeeks(d, '2026-01-15')).toEqual([]);
     expect(backOnTrackWeeks(d, '2026-01-19')).toEqual(['2026-01-18']);

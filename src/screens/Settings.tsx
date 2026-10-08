@@ -146,7 +146,7 @@ export function Settings() {
               </span>
               <p className="st-sub">
                 {savings.effective ? `Baseline: ${baselineText(savings)}.` : 'Your first 3 months aren’t measured yet; savings will appear once they are.'}{' '}
-                Used by the savings estimate in Trends and Money kept in Milestones.
+                Used by the savings estimate in Trends.
               </p>
             </div>
           </div>
@@ -199,13 +199,13 @@ export function Settings() {
           </div>
         </div>
         <div className="st-divider" />
-        <Link className="st-link" to="/settings/export">
-          <span className="st-label">Export data</span>
+        <Link className="st-link" to="/settings/backup">
+          <span className="st-label">Back up</span>
           <span className="st-chevron" aria-hidden="true">›</span>
         </Link>
         <div className="st-divider" />
-        <Link className="st-link" to="/settings/import">
-          <span className="st-label">Import data</span>
+        <Link className="st-link" to="/settings/restore">
+          <span className="st-label">Restore from a backup</span>
           <span className="st-chevron" aria-hidden="true">›</span>
         </Link>
         <div className="st-divider" />

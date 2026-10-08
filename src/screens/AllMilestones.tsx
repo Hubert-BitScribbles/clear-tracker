@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Badge } from '../components/Badge';
 import { TierBadges } from '../components/TierBadges';
-import { money } from '../lib/savings';
 import { monthStatusText, monthTitle } from '../lib/challengeText';
 import {
   BACK_ON_TRACK_TIERS,
@@ -10,9 +9,7 @@ import {
   CLEAR_DAY_TIERS,
   HONEST_LOGGING_TIERS,
   KEPT_TO_A_FEW_TIERS,
-  MONEY_KEPT_TIERS,
   tiersFrom,
-  YEAR_WEEKS_MET,
   getMilestoneExtras,
   getChallengeStatus,
   WEEK_TIERS,
@@ -23,7 +20,6 @@ import {
   getCurrentStreak,
   getLoggingTierEarnings,
   getLongestLoggingRun,
-  getSetting,
   getStreakTierFirsts,
   LOGGING_TIERS,
   STREAK_TIERS_WEEKS,
@@ -45,8 +41,11 @@ import './Milestones.css';
 //   it duplicated the all-time count with different numbers.
 // - "Showing up" progress counts the longest run ever, not the current run.
 // - Earned badges and chips stay visible in dark mode (tokens.css).
-// - New (web): Coming back, Kept it to a few, Honest logging, This year,
-//   Personal bests, Money kept; Beyond target became tiers.
+// - New (web): Coming back, Kept it to a few, Honest logging, Personal
+//   bests; Beyond target became tiers. ("This year" and "Money kept" were
+//   dropped in 1.0.0-rc.5: they repeated Trends' weeks met and savings.)
+// - Consistency (week streaks) shows for everyone; native tied it to the
+//   clear-day-streak setting, but week streaks never punish a drinking day.
 
 const MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const formatShort = (iso: string) => {
@@ -62,7 +61,6 @@ interface Data {
   loggingEarnings: LoggingTierEarn[];
   currentStreak: number;
   longestRun: number;
-  showDayStreak: boolean;
   extras: Awaited<ReturnType<typeof getMilestoneExtras>>;
   challenges: Awaited<ReturnType<typeof getChallengeStatus>>;
 }
@@ -73,7 +71,7 @@ export function AllMilestones() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const [m, dates, ce, se, logging, cs, lr, dsOn, ex, ch] = await Promise.all([
+      const [m, dates, ce, se, logging, cs, lr, ex, ch] = await Promise.all([
         computeMilestones(),
         getClearDatesOrdered(),
         getClearTierEarnings(),
@@ -81,14 +79,13 @@ export function AllMilestones() {
         getLoggingTierEarnings(),
         getCurrentStreak(),
         getLongestLoggingRun(),
-        getSetting('day_streak_enabled', 'false'),
         getMilestoneExtras(),
         getChallengeStatus(),
       ]);
       if (cancelled) return;
       setData({
         m, clearDates: dates, clearEarned: ce, streakEarned: se, loggingEarnings: logging,
-        currentStreak: cs, longestRun: lr, showDayStreak: dsOn === 'true', extras: ex, challenges: ch,
+        currentStreak: cs, longestRun: lr, extras: ex, challenges: ch,
       });
     })();
     return () => {
@@ -136,23 +133,19 @@ export function AllMilestones() {
         earned={!!m.firstClearWeekEndIso}
       />
 
-      {data.showDayStreak && (
-        <>
-          <h2 className="ms-all-sec">Consistency</h2>
-          <p className="ms-all-note">Weeks in a row meeting your intention</p>
-          {streakTiers.map(({ weeks, reached }) => (
-            <Badge
-              key={weeks}
-              size="all"
-              glyph="🔥"
-              title={`${weeks}-week streak`}
-              sub={reached ? 'Earned' : `${data.currentStreak} of ${weeks} weeks`}
-              earned={reached}
-              progress={pct(data.currentStreak, weeks)}
-            />
-          ))}
-        </>
-      )}
+      <h2 className="ms-all-sec">Consistency</h2>
+      <p className="ms-all-note">Weeks in a row meeting your intention</p>
+      {streakTiers.map(({ weeks, reached }) => (
+        <Badge
+          key={weeks}
+          size="all"
+          glyph="🔥"
+          title={`${weeks}-week streak`}
+          sub={reached ? 'Earned' : `${data.currentStreak} of ${weeks} weeks`}
+          earned={reached}
+          progress={pct(data.currentStreak, weeks)}
+        />
+      ))}
 
       <h2 className="ms-all-sec">Showing up</h2>
       <p className="ms-all-note">Logging any day — clear or drinking — counts here</p>
@@ -207,12 +200,6 @@ export function AllMilestones() {
         earned={tiersFrom(ex.honest, HONEST_LOGGING_TIERS)} progress={ex.honest.length}
         title={(t) => (t === 1 ? 'Logged a drinking day the same day' : `${t} drinking days logged the same day`)} formatDate={formatShort} />
 
-      <h2 className="ms-all-sec">This year</h2>
-      <p className="ms-all-note">Weeks meeting your intention this year. Resets each January</p>
-      <TierBadges size="all" mode="all" glyph="◷" tiers={YEAR_WEEKS_MET}
-        earned={ex.yearWeeks.earned} progress={ex.yearWeeks.count}
-        title={(t) => `${t} week${t === 1 ? '' : 's'} met this year`} formatDate={formatShort} />
-
       <h2 className="ms-all-sec">Personal bests</h2>
       <p className="ms-all-note">Each time a month beats every month before it</p>
       {ex.bestMonths.length === 0 ? (
@@ -222,15 +209,6 @@ export function AllMilestones() {
           <Badge key={`${b.year}-${b.month}`} size="all" glyph="▲" title={`Best month yet: ${MONTH_SHORT[b.month - 1]} ${b.year}`}
             sub={`${b.clearDays} clear days · reached ${formatShort(b.reachedIso)}`} earned />
         ))
-      )}
-
-      {ex.money && (
-        <>
-          <h2 className="ms-all-sec">Money kept</h2>
-          <p className="ms-all-note">Your estimated savings, counted at the low end, so never more than Trends shows</p>
-          <TierBadges size="all" mode="all" glyph="$" tiers={MONEY_KEPT_TIERS} earned={ex.money.earned}
-            progress={ex.money.total} title={(t) => `${money(t)} kept`} formatDate={formatShort} unit={(n) => money(n)} />
-        </>
       )}
 
       {(data.challenges.settings.weekendRuns.length > 0 || data.challenges.settings.weekRuns.length > 0 || data.challenges.months.some((x) => x.state !== 'ended')) && (

@@ -178,7 +178,7 @@ export function Onboarding() {
               {g.canInstall && (
                 <p className="ob-note">
                   {installKeepsOwnRecord(dev)
-                    ? "You can still install later, but your days won't move across by themselves — you'd export a backup here and import it there."
+                    ? "You can still install later, but your days won't move across by themselves — you'd back up here and restore it there."
                     : `You can install later from the browser menu; your days come with you.`}
                 </p>
               )}
@@ -194,13 +194,13 @@ export function Onboarding() {
             <ul className="card ob-card ob-points">
               <li><strong>No account, no cloud.</strong> Nothing you log is sent to bitScribbles or anyone else, and there are no ads.</li>
               <li><strong>Only here.</strong> Your days are stored on this device{installed ? '' : ', in this browser'}. Clearing its website data, or losing the device, loses them.</li>
-              <li><strong>Back up now and then.</strong> Settings can export an encrypted backup, protected by a passphrase you choose, to keep wherever you like. Check-in reminds you after 30 days.</li>
+              <li><strong>Back up now and then.</strong> Settings can make an encrypted backup, protected by a passphrase you choose, to keep wherever you like. Check-in reminds you after 30 days.</li>
             </ul>
           </div>
           <div className="ob-actions">
             <button type="button" className="btn btn-primary ob-button" onClick={next}>Continue</button>
             <p className="ob-note">
-              Restoring from a backup? <Link className="ob-link" to="/settings/import">Import it</Link> instead.
+              Have a backup? <Link className="ob-link" to="/settings/restore">Restore it</Link> instead.
             </p>
           </div>
         </section>

@@ -21,6 +21,10 @@ Both load test data from `test/helpers.ts`, so they never touch real data.
 - `python3 checks/platforms.py` — the wording that differs by device
   (installing, storage, backups, sounds, reminders, PDFs) as an iPhone, an
   Android phone and a computer.
+- `python3 checks/rc5.py` — two windows of one record staying in step
+  (and a tap in an out-of-date window), the new-milestone line on Check-in,
+  Trends comparing the selected month with the one before, and Backup /
+  Restore (including the old addresses).
 - `python3 checks/paths.py` — device and browser paths: what's detected
   (iPhone Safari and Chrome, Mac Safari, Chrome and Firefox, Samsung
   Internet), the "Not right? Change" override, and the install step,

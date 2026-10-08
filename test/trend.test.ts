@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { Data } from '../src/data/compute';
-import { chartMonths, monthChange, monthlyRates, rate, windowChange } from '../src/data/trend';
+import { chartMonths, monthlyRates, rate, windowChange } from '../src/data/trend';
+import { monthVsPrevious } from '../src/lib/trendText';
 import { drinksChangeText, savingsChangeText } from '../src/lib/trendText';
 
 type Lv = 'clear' | 'a-few' | 'moderate' | 'a-lot';
@@ -28,13 +29,19 @@ describe('rates', () => {
 });
 
 describe('changes', () => {
-  it('this month so far against last month', () => {
-    const d = new Data({ entries: [...run('2026-08-01', 31, 'moderate'), ...run('2026-09-01', 20, 'a-few')], intentions: [] });
-    expect(monthChange(d, '2026-09-20')).toMatchObject({ month: 9, vsMonth: 8, soFar: true, recent: 10.5, previous: 24.5 });
+  it('each month carries the month before it, so a selected month compares with its own previous month', () => {
+    const d = new Data({ entries: [...run('2026-06-01', 30, 'a-lot'), ...run('2026-07-01', 31, 'moderate'), ...run('2026-08-01', 31, 'a-few'), ...run('2026-09-01', 3, 'clear')], intentions: [] });
+    const pts = monthlyRates(d, '2026-09-03', chartMonths('2026-09-03', 2026));
+    const at = (m: number) => pts.find((p) => p.month === m)!;
+    expect(monthVsPrevious(at(8))).toEqual({ lead: 'August', diff: 10.5 - 24.5, vs: 'July' });
+    expect(monthVsPrevious(at(7))).toEqual({ lead: 'July', diff: 24.5 - 35, vs: 'June' });
+    expect(monthVsPrevious(at(9))).toBeNull(); // September has only 3 logged days
+    expect(monthVsPrevious(at(6))).toBeNull(); // May wasn't logged
   });
-  it('early in a month: last month against the one before', () => {
-    const d = new Data({ entries: [...run('2026-07-01', 31, 'moderate'), ...run('2026-08-01', 31, 'a-few'), ...run('2026-09-01', 3, 'clear')], intentions: [] });
-    expect(monthChange(d, '2026-09-03')).toMatchObject({ month: 8, vsMonth: 7, soFar: false, recent: 10.5, previous: 24.5 });
+  it('January compares with the December before, across the year boundary', () => {
+    const d = new Data({ entries: [...run('2025-12-01', 31, 'moderate'), ...run('2026-01-01', 31, 'a-few')], intentions: [] });
+    const jan = monthlyRates(d, '2026-02-10', [{ year: 2026, month: 1 }])[0];
+    expect(monthVsPrevious(jan)).toEqual({ lead: 'January', diff: 10.5 - 24.5, vs: 'December' });
   });
   it('3 and 6 month windows need enough logged days', () => {
     const today = '2026-09-30';

@@ -111,3 +111,9 @@
 .ci-note-link { font-size: 13px; font-weight: 600; color: var(--primary-text); text-decoration: none; }
 .checkin .ci-note-later { font-size: 13px; color: var(--on-card-muted); padding: 4px 0; }
 .checkin .ci-grid { touch-action: pan-y; } /* sideways moves are month swipes */
+
+/* A milestone just earned: its title, linking to Milestones, and a dismiss ✕. */
+.ci-milestone { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -10px 0 14px; }
+.ci-milestone-link { font-size: 13px; font-weight: 600; color: var(--primary-text); text-decoration: none; min-height: 32px; display: inline-flex; align-items: center; gap: 2px; }
+.ci-milestone-glyph { margin-right: 4px; }
+.checkin .ci-milestone-x { font: inherit; font-size: 13px; color: var(--text-muted); background: none; border: 0; min-width: 32px; min-height: 32px; cursor: pointer; }

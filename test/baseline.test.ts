@@ -51,34 +51,3 @@ describe('momentum', () => {
   });
 });
 
-describe('Money kept stays earned when the baseline changes', () => {
-  it('switching to a much lower baseline keeps tiers already reached', async () => {
-    const P = await import('../src/data/database');
-    await P.resetDatabase();
-    await P.restoreFromBackup(days('2026-01-01', 120, ['clear']) as never, []);
-    const high = await P.getMoneyKept({ baselinePerWeek: 14, price: 10 }); // $20 per clear day → $2,400
-    expect(high?.earned.map((e) => e.tier)).toEqual([100, 250, 500, 1000]);
-    const low = await P.getMoneyKept({ baselinePerWeek: 1, price: 10 }); // $1.43 a day → $171: only $100 by itself
-    expect(low?.earned.map((e) => e.tier)).toEqual([100, 250, 500, 1000]);
-    expect(low?.earned[0].reachedIso).toBe(high?.earned[0].reachedIso); // kept its original date
-    expect(low?.total).toBeCloseTo(120 * (10 / 7));
-  });
-
-  it('tiers recorded the old way (clear days only) are set aside, and re-earned the new way', async () => {
-    const P = await import('../src/data/database');
-    await P.resetDatabase();
-    // 30 clear days, then 30 "A lot" days, at 14 a week and $10: clear days
-    // alone are $600 by Jan 30; each A lot day (counted as 6) takes $40 back.
-    const entries = [...days('2026-01-01', 30, ['clear']), ...days('2026-01-31', 30, ['a-lot'])];
-    await P.restoreFromBackup(entries as never, []);
-    // As 1.0.0-rc.2 recorded it, including a $1,000 tier the estimate never reached.
-    await P.setSetting('money_kept_earned', JSON.stringify({ 100: '2025-12-01', 250: '2025-12-02', 500: '2025-12-03', 1000: '2025-12-04' }));
-    const r = await P.getMoneyKept({ baselinePerWeek: 14, price: 10 });
-    expect(r?.earned).toEqual([
-      { tier: 100, reachedIso: '2026-01-05' },
-      { tier: 250, reachedIso: '2026-01-13' },
-      { tier: 500, reachedIso: '2026-01-25' },
-    ]);
-    expect(r?.total).toBe(0); // $600 − 30 × $40 = −$600, shown from zero
-  });
-});

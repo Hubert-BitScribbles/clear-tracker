@@ -13,8 +13,12 @@ import {
   setSetting,
   getMonthCells,
   getSetting,
+  getNewMilestones,
   getWeekSummary,
+  GLYPH,
   levelOf,
+  markMilestonesSeen,
+  type Earned,
   nextLevel,
   type DayCell as DayCellData,
   type DayLevel,
@@ -99,6 +103,18 @@ export function CheckIn() {
     }
     setChallengeLine(null);
   }, []);
+
+  // A milestone just earned: its own title, a link to Milestones, and ✕.
+  // Shown one at a time, newest first; opening or dismissing it marks it seen.
+  const [newMilestone, setNewMilestone] = useState<Earned | null>(null);
+  const refreshMilestone = useCallback(async () => {
+    const fresh = await getNewMilestones();
+    setNewMilestone(fresh[0] ?? null);
+  }, []);
+  const seeMilestone = async (m: Earned) => {
+    await markMilestonesSeen([m.title]);
+    refreshMilestone();
+  };
   const [pickerOpen, setPickerOpen] = useState(false);
   const [ready, setReady] = useState(false);
   const [week, setWeek] = useState<WeekState>({
@@ -174,6 +190,7 @@ export function CheckIn() {
     setMonthClearCount(mCount);
     setMonthMet(mMet);
     refreshChallenge();
+    refreshMilestone();
     setReady(true);
   }, []);
 
@@ -262,6 +279,7 @@ export function CheckIn() {
     setMonthClearCount(mCount);
     setMonthMet(mMet);
     refreshChallenge();
+    refreshMilestone();
   }
 
   function goMonth(delta: number) {
@@ -327,6 +345,16 @@ export function CheckIn() {
       </div>
       <h1 className="ci-title">Check-in</h1>
       {challengeLine && <p className="ci-challenge">{challengeLine}</p>}
+      {newMilestone && (
+        <div className="ci-milestone" role="status">
+          <Link className="ci-milestone-link" to="/milestones" onClick={() => markMilestonesSeen([newMilestone.title])}>
+            <span className="ci-milestone-glyph" aria-hidden="true">{GLYPH[newMilestone.kind]}</span> {newMilestone.title}
+          </Link>
+          <button type="button" className="ci-milestone-x" aria-label={`Dismiss: ${newMilestone.title}`} onClick={() => seeMilestone(newMilestone)}>
+            ✕
+          </button>
+        </div>
+      )}
 
       {reviewNote && (
         <div className="card ci-note" role="note">
@@ -356,7 +384,7 @@ export function CheckIn() {
             A backup is the only copy outside this browser.
           </p>
           <div className="ci-note-actions">
-            <Link className="ci-note-link" to="/settings/export">Back up now</Link>
+            <Link className="ci-note-link" to="/settings/backup">Back up now</Link>
             <button
               type="button"
               className="ci-note-later"

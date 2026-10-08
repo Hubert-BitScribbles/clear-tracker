@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { Data, sameDayDrinkingLogs, savingsEstimate } from '../src/data/compute';
+import { Data, sameDayDrinkingLogs } from '../src/data/compute';
 import {
-  backOnTrackWeeks, bestMonths, honestLoggingDates, keptToAFewWeeks, moneyKept, tiersFrom,
-  yearWeeksMetTiers,
+  backOnTrackWeeks, bestMonths, honestLoggingDates, keptToAFewWeeks, tiersFrom,
 } from '../src/data/milestones';
 import { scenario } from './helpers';
 
@@ -81,43 +80,3 @@ describe('honest logging', () => {
   });
 });
 
-describe('money kept', () => {
-  it('follows the savings estimate at its low end, day by day', () => {
-    // 14 a week at $10: each day "should" have had 2 drinks ($20).
-    // Clear keeps $20; Moderate counts as 4 drinks, taking $20 back.
-    const entries = Array.from({ length: 13 }, (_, i) => e(plus('2026-01-05', i), i % 2 ? 'moderate' : 'clear'));
-    const r = moneyKept(new Data({ entries, intentions: [] }), 14, 10);
-    expect(r.total).toBeCloseTo(7 * 20 - 6 * 20); // 7 clear, 6 moderate → $20
-    expect(r.earned).toEqual([]); // never reaches $100, though 7 clear days alone are $140
-  });
-
-  it('A few counts as 2 drinks and A lot as 6; a tier is reached when the total first gets there', () => {
-    // 21 a week at $10: 3 drinks a day expected ($30).
-    // clear +30, a few (2) +10, a lot (6) −30, then clear days.
-    const entries = [
-      e('2026-01-05', 'clear'), e('2026-01-06', 'a-few'), e('2026-01-07', 'a-lot'),
-      e('2026-01-08', 'clear'), e('2026-01-09', 'clear'), e('2026-01-10', 'clear'), e('2026-01-11', 'clear'),
-    ];
-    const r = moneyKept(new Data({ entries, intentions: [] }), 21, 10);
-    expect(r.total).toBeCloseTo(30 + 10 - 30 + 4 * 30); // $130
-    expect(r.earned).toEqual([{ tier: 100, reachedIso: '2026-01-10' }]); // 30, 40, 10, 40, 70, 100, 130
-  });
-
-  it('never claims more than the savings estimate shows', () => {
-    const levels = ['clear', 'a-few', 'moderate', 'a-lot'] as const;
-    const entries = Array.from({ length: 120 }, (_, i) => e(plus('2026-01-01', i), levels[(i * 7) % 4 === 0 ? 0 : i % 4]));
-    const d = new Data({ entries, intentions: [] });
-    const r = moneyKept(d, 20, 9);
-    const est = savingsEstimate(d, 20);
-    expect(r.total).toBeLessThanOrEqual(est.mostDrinks * 9 + 1e-9);
-    if (est.leastDrinks !== null) expect(r.total).toBeLessThanOrEqual(est.leastDrinks * 9 + 1e-9);
-  });
-});
-
-describe('this year', () => {
-  it('weeks-met tiers reach 4 on the fourth met week of the year', () => {
-    const entries = ['2026-01-05', '2026-01-12', '2026-01-19', '2026-01-26'].flatMap((m) => week(m, 'ccc....'));
-    const r = yearWeeksMetTiers(new Data({ entries, intentions: [target(3)] }), '2026-03-01', 2026);
-    expect(r).toEqual({ count: 4, earned: [{ tier: 4, reachedIso: '2026-02-01' }] });
-  });
-});

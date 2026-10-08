@@ -41,7 +41,7 @@ with sync_playwright() as p:
     t = pg.locator('main').inner_text()
     check('privacy: three points, "in this browser", backup advice', h1(pg) == 'Your record stays on this device'
           and pg.locator('.ob-points li').count() == 3 and 'in this browser' in t and '30 days' in t)
-    check('privacy: restore link to Import', pg.get_by_role('link', name='Import it').get_attribute('href') == '#/settings/import')
+    check('privacy: restore link', pg.get_by_role('link', name='Restore it').get_attribute('href') == '#/settings/restore')
     button(pg, 'Continue').click(); pg.wait_for_timeout(200)
 
     check('logging step', h1(pg) == 'Logging a day')
@@ -113,8 +113,8 @@ with sync_playwright() as p:
     button(pg, 'Get started').click(); pg.wait_for_timeout(200)
     check('installed app: privacy follows welcome, without "in this browser"', h1(pg) == 'Your record stays on this device'
           and 'in this browser' not in pg.locator('main').inner_text())
-    pg.get_by_role('link', name='Import it').click(); pg.wait_for_timeout(900)
-    check('"Import it" opens Import', h1(pg) == 'Import a backup')
+    pg.get_by_role('link', name='Restore it').click(); pg.wait_for_timeout(900)
+    check('"Restore it" opens Restore', h1(pg) == 'Restore from a backup')
     check('no page errors (installed)', not pg.errors, pg.errors)
     ctx.close()
 
@@ -129,8 +129,8 @@ with sync_playwright() as p:
         '/milestones/challenges': ('How challenges work', 'milestones'),
         '/trends': ('About Trends and reports', 'trends'),
         '/trends/review?year=2026&month=8': ('About reports', 'trends'),
-        '/settings/export': ('About backups and passphrases', 'backups'),
-        '/settings/import': ('About backups', 'backups'),
+        '/settings/backup': ('About backups and passphrases', 'backups'),
+        '/settings/restore': ('About backups', 'backups'),
     }
     for path, (text, topic) in expect.items():
         pg.goto(BASE + path); pg.reload(); pg.wait_for_timeout(900)

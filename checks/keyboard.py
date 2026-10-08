@@ -1,6 +1,6 @@
 import datetime
 from playwright.sync_api import sync_playwright
-SCREENS=['/','/trends','/trends/review?year=2026&month=8','/milestones','/milestones/all','/milestones/challenges','/settings','/settings/about','/settings/help','/settings/resources','/intention','/settings/export','/settings/import','/onboarding']
+SCREENS=['/','/trends','/trends/review?year=2026&month=8','/milestones','/milestones/all','/milestones/challenges','/settings','/settings/about','/settings/help','/settings/resources','/intention','/settings/backup','/settings/restore','/onboarding']
 results=[]
 def check(name, cond, detail=''): results.append((bool(cond), name, detail))
 with sync_playwright() as p:

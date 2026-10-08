@@ -34,8 +34,8 @@ STATES=[
  ('Help: sounds','/settings/help?topic=sounds',None),
  ('Resources','/settings/resources',None),
  ('Intention','/intention',None),
- ('Export: passphrase','/settings/export',"[...document.querySelectorAll('button')].find(b=>b.textContent==='Continue').click()"),
- ('Import','/settings/import',None),
+ ('Backup: passphrase','/settings/backup',"[...document.querySelectorAll('button')].find(b=>b.textContent==='Continue').click()"),
+ ('Restore','/settings/restore',None),
 ]
 only=sys.argv[1:]  # optional filter
 found=defaultdict(lambda: {'impact':'', 'help':'', 'where':set(), 'nodes':[]})

@@ -28,6 +28,8 @@ export interface MonthPoint {
   perWeek: number | null; // null with fewer than 7 logged days
   logged: number;
   soFar: boolean; // the current month, still running
+  /** The month before, for "about 2 fewer drinks a week than August". perWeek null with fewer than 7 logged days. */
+  prev: { year: number; month: number; perWeek: number | null };
 }
 
 /** Drinks a week for each month in a span (up to today). */
@@ -39,7 +41,13 @@ export function monthlyRates(d: Data, today: Iso, months: { year: number; month:
       const endFull = isoOf(year, month, daysInMonth(year, month));
       const end = endFull < today ? endFull : today;
       const r = rate(d, start, end);
-      return { year, month, perWeek: r.logged >= MIN_LOGGED_MONTH ? r.perWeek : null, logged: r.logged, soFar: endFull >= today };
+      const py = month === 1 ? year - 1 : year;
+      const pm = month === 1 ? 12 : month - 1;
+      const pr = rate(d, isoOf(py, pm, 1), isoOf(py, pm, daysInMonth(py, pm)));
+      return {
+        year, month, perWeek: r.logged >= MIN_LOGGED_MONTH ? r.perWeek : null, logged: r.logged, soFar: endFull >= today,
+        prev: { year: py, month: pm, perWeek: pr.logged >= MIN_LOGGED_MONTH ? pr.perWeek : null },
+      };
     });
 }
 
@@ -58,21 +66,6 @@ export interface Change {
   recent: number; // drinks a week
   previous: number;
   diff: number; // recent − previous; negative = fewer drinks lately
-}
-
-/**
- * This month so far against last month — or, if this month has fewer than
- * 7 logged days yet, last month against the one before.
- */
-export function monthChange(d: Data, today: Iso): (Change & { month: number; vsMonth: number; soFar: boolean }) | null {
-  const [cur, prev, prev2] = monthlyRates(d, today, chartMonths(today, 'all')).slice(-3).reverse();
-  if (cur?.perWeek != null && prev?.perWeek != null) {
-    return { recent: cur.perWeek, previous: prev.perWeek, diff: cur.perWeek - prev.perWeek, month: cur.month, vsMonth: prev.month, soFar: true };
-  }
-  if (prev?.perWeek != null && prev2?.perWeek != null) {
-    return { recent: prev.perWeek, previous: prev2.perWeek, diff: prev.perWeek - prev2.perWeek, month: prev.month, vsMonth: prev2.month, soFar: false };
-  }
-  return null;
 }
 
 /** The last `days` (ending today) against the `days` before. Null without enough logged days in each. */

@@ -118,7 +118,6 @@ function articles(d: Device): Article[] {
         <p>Each level is a range of drinks — A few is 1–2, Moderate 3–4, A lot 5 or more — so estimates are ranges too: "About 9–12 drinks a week". When a period includes an A lot day, the top is open: "About 9 or more". Only logged days count.</p>
         <p>Trend charts and statements need one number per level to compare periods, so they use 1.5, 3.5 and 5.</p>
         <p><strong>Savings</strong> compare your drinking with a baseline — drinks a week before tracking — at your price per drink. Type the baseline yourself, or measure it from your first 3 months of tracking (a chosen challenge month is left out). Periods over the baseline are shown honestly.</p>
-        <p><strong>Money kept</strong> milestones follow the same estimate, at its low end: each day counts at the top of its range (A few as 2 drinks, Moderate as 4, A lot as 6), so a milestone never claims more than Trends shows. A drinking day above your baseline takes a little back; a milestone, once reached, stays earned — even if you change the baseline.</p>
       </>
     ),
   },
@@ -132,12 +131,12 @@ function articles(d: Device): Article[] {
     ),
   },
   {
-    id: 'backups', title: 'Backups', keywords: 'export import restore passphrase password file encrypted lost',
+    id: 'backups', title: 'Backups', keywords: 'backup back up restore export import passphrase password file encrypted lost',
     body: (
       <>
-        <p>Your record lives only in this browser, so a backup is the only copy anywhere else. <strong>Export</strong> creates an encrypted file of your days, intentions and settings, and you choose where to keep it — {P === 'ios' ? 'Files, iCloud Drive, or another device' : P === 'android' ? 'Google Drive, Files, or email it to yourself' : 'your browser asks where to save it, or puts it in Downloads'}.</p>
+        <p>Your record lives only in this browser, so a backup is the only copy anywhere else. <strong>Back up</strong> creates an encrypted file of your days, intentions and settings, and you choose where to keep it — {P === 'ios' ? 'Files, iCloud Drive, or another device' : P === 'android' ? 'Google Drive, Files, or email it to yourself' : 'your browser asks where to save it, or puts it in Downloads'}.</p>
         <p>Your passphrase needs at least 8 characters, and can't be recovered: without it, the backup can't be opened. Keep it somewhere safe.</p>
-        <p><strong>Import</strong> replaces everything on this device with the backup's contents, after showing you what's in it. Check-in reminds you to back up 30 days after your last backup.</p>
+        <p><strong>Restore</strong> replaces everything on this device with the backup's contents, after showing you what's in it. Check-in reminds you to back up 30 days after your last backup.</p>
       </>
     ),
   },
@@ -160,7 +159,7 @@ function articles(d: Device): Article[] {
           );
         })()}
         {installKeepsOwnRecord(d) && (
-          <p>Because the installed app has its own record, days logged in the browser don't move across by themselves: export a backup in one and import it in the other.{isIos(d) ? ' Can’t find the app? Swipe down from the middle of the Home Screen and search for “Clear Tracker”.' : ' Can’t find it? Search for “Clear Tracker” with Spotlight.'}</p>
+          <p>Because the installed app has its own record, days logged in the browser don't move across by themselves: back up in one and restore in the other.{isIos(d) ? ' Can’t find the app? Swipe down from the middle of the Home Screen and search for “Clear Tracker”.' : ' Can’t find it? Search for “Clear Tracker” with Spotlight.'}</p>
         )}
         <p><strong>Other devices:</strong> iPhone and iPad — Share, then Add to Home Screen (in any browser; the Home Screen app keeps its own record). Android — Chrome's ⋮ menu, Install app. Mac with Safari — File → Add to Dock (its own record). Chrome or Edge on a computer — Install, from the address bar or menu (same record as the browser). Each device keeps its own record.</p>
         <p>Updates arrive automatically; you may see the new version the next time you open the app.</p>

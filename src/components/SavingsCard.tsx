@@ -4,6 +4,7 @@ import { getSavingsEstimate, getSavingsSettings, type FirstThreeMonths, type Sav
 import { describeSavings, priceText } from '../lib/savings';
 import { monthPhrase } from '../lib/challengeText';
 import { MonthlyChart } from './MonthlyChart';
+import { wholeDrinks } from '../lib/reportText';
 import { challengeNote, ML, monthVsPrevious, savingsChangeText, type DrinksTrend } from '../lib/trendText';
 import './SavingsCard.css';
 
@@ -17,7 +18,7 @@ const fmt = (iso: string) => `${SHORT[Number(iso.slice(5, 7)) - 1]} ${Number(iso
 /** "about 11 drinks a week, from your first 3 months (Apr 4, 2026 – Jul 3, 2026)" */
 export function baselineText(s: SavingsSettings): string {
   if (!s.effective) return '';
-  const n = Math.round(s.effective.baselinePerWeek * 10) / 10;
+  const n = wholeDrinks(s.effective.baselinePerWeek);
   const drinks = `about ${n} drink${n === 1 ? '' : 's'} a week`;
   return s.source === 'first3' && s.first3.status === 'ready'
     ? `${drinks}, from your first 3 months (${fmt(s.first3.start)} – ${fmt(s.first3.end)}${s.first3.skipped.length ? `, after ${s.first3.skipped.map(monthPhrase).join(' and ')}` : ''})`
@@ -198,7 +199,7 @@ export function SavingsSetup({
             Measured from my first 3 months
             <span className="sv-radio-note">
               {first3Ready && first3.status === 'ready'
-                ? `About ${Math.round(first3.perWeek * 10) / 10} drinks a week (${first3.logged} logged days${first3.skipped.length ? `; starts after ${first3.skipped.map(monthPhrase).join(' and ')}` : ''})`
+                ? `About ${wholeDrinks(first3.perWeek)} drinks a week (${first3.logged} logged days${first3.skipped.length ? `; starts after ${first3.skipped.map(monthPhrase).join(' and ')}` : ''})`
                 : first3WaitingText(first3)}
             </span>
           </span>

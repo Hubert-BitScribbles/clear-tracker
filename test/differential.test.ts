@@ -29,7 +29,8 @@ function asNative(key: string, value: unknown, firstIntention: string | null, fi
     return 3;
   }
   if (!WEEK_LISTS.test(key) || !Array.isArray(value)) return value;
-  return value.map((w: { weekStartIso: string; target: number | null }) => {
+  // rc.6 added `logged` (days logged in the week), which native doesn't have.
+  return value.map(({ logged: _logged, ...w }: { weekStartIso: string; target: number | null; logged?: number }) => {
     if (w.target !== null) return w;
     expect(firstIntention === null || w.weekStartIso < firstIntention, `${key}: null target on ${w.weekStartIso}`).toBe(true);
     nullsChecked++;

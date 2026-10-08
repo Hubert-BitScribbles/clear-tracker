@@ -4,6 +4,23 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.0.0-rc.6 — 8 October 2026
+
+- Partly logged weeks are judged fairly. Unlogged days assume nothing, so a
+  finished week is met (or beyond) with enough clear days logged, missed
+  ("Partial") only if it couldn't have been met even with every unlogged day
+  clear, and otherwise "Not enough logged" — a neutral, dashed tile. Logging
+  the missing days settles it. A "Not enough logged" week ends a streak,
+  isn't counted as met, and isn't a miss for "Back on track"; an unlogged
+  week isn't a miss either.
+- Trends → Intention shows weeks from the first logged week, including those
+  before the first intention, as outlined tiles with their clear days —
+  shown, not measured, and not counted in a month's tally. The week details
+  say how many days were logged.
+- Drinks are whole numbers everywhere (Trends, reports, baselines): .5 and
+  under rounds down, over .5 rounds up. A typical day reads "About 1–2
+  drinks", or "Up to 1 drink".
+
 ## 1.0.0-rc.5 — 7 October 2026
 
 Fixes from testing on the Mac, and a tidier split between Trends and

@@ -44,9 +44,10 @@ describe('weeks before the first intention', () => {
     const m = milestones(d, today);
     expect(m.firstClearWeekEndIso).toBe('2026-09-20'); // not Aug 30
     expect(m.beyondTargetInstances.map((b) => b.weekStartIso)).toEqual(['2026-09-14']);
-    // Sep 14 met after Sep 7 missed: back on track. Sep 7 itself can't be
+    // Sep 7 (1 clear, 6 unlogged) isn't missed for certain — not enough logged
+    // to say — so Sep 14 isn't "back on track" (rc.6). Sep 7 itself can't be
     // "back" from the unmeasured weeks before it.
-    expect(backOnTrackWeeks(d, today)).toEqual(['2026-09-20']);
+    expect(backOnTrackWeeks(d, today)).toEqual([]);
   });
   it('still count as clear days', () => {
     // The 7th clear day is Aug 30, backfilled from before the first intention.

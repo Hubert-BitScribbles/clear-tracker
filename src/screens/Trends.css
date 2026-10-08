@@ -150,3 +150,5 @@
 .tr-trends li::before { content: '–'; position: absolute; left: 0; color: var(--on-card-muted); }
 
 .tr-help { color: var(--primary-text); font-weight: 600; text-decoration: none; white-space: nowrap; }
+.tr-align-unclear { background: var(--align-unlogged); border: 1.5px dashed var(--align-unlogged-edge); box-sizing: border-box; }
+.tr-align-before { background: transparent; box-shadow: inset 0 0 0 1px var(--align-unlogged-edge); }

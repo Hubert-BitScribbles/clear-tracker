@@ -27,8 +27,9 @@ describe('month in review', () => {
     // Weeks with Thursday in August: Jul 27 (Thu Jul 30 → July, no), Aug 3, 10, 17, 24, 31 (Thu Sep 3 → no) = 4
     expect(r.weeks).toEqual({ counted: 4, met: 1, exceeded: 0, before: 0 });
     expect(r.targets).toEqual([{ target: 3, from: '2026-08-03' }]);
-    // Week of Jul 27 (first of the record) had 1 clear day: missed. Aug 3 met → back on track.
-    expect(r.backOnTrack).toBe(1);
+    // Week of Jul 27 (first of the record) had 1 clear day and blanks: not
+    // enough logged to say, so Aug 3 met isn't "back on track" (rc.6).
+    expect(r.backOnTrack).toBe(0);
   });
   it('drinks per week: a range, open-ended with an "A lot" day', () => {
     // least = 1+3+1+5 = 10 drinks over 8 logged days → 10 × 7/8 = 8.75 a week; most open-ended
@@ -61,7 +62,9 @@ describe('no comparison with a period tracked only partway', () => {
 
 describe('back on track inside a report', () => {
   it('counts a met week after a missed one', () => {
-    const entries = [e('2026-08-03', 'moderate'), ...['2026-08-10', '2026-08-11', '2026-08-12'].map((x) => e(x, 'clear'))];
+    // A week missed for certain (every day a drinking day), then a met week.
+    const missed = ['03', '04', '05', '06', '07', '08', '09'].map((d) => e(`2026-08-${d}`, 'moderate'));
+    const entries = [...missed, ...['2026-08-10', '2026-08-11', '2026-08-12'].map((x) => e(x, 'clear'))];
     const r = buildReport(new Data({ entries, intentions: t3 }), { year: 2026, month: 8 }, '2026-09-30', null);
     expect(r.backOnTrack).toBe(1);
     expect(r.milestones.map((m) => m.title)).toContain('Back on track after a missed week');
@@ -143,7 +146,7 @@ describe('weekday details', async () => {
     expect(w.levels).toEqual({ clear: 1, 'a-few': 1, moderate: 1, 'a-lot': 0 });
     expect(w.perDay?.least).toBeCloseTo(4 / 3);
     expect(w.perDay?.most).toBeCloseTo(2);
-    expect(typicalDayText(w.perDay!.least, w.perDay!.most, 'Friday')).toBe('About 1.3–2 drinks on a typical Friday');
+    expect(typicalDayText(w.perDay!.least, w.perDay!.most, 'Friday')).toBe('About 1–2 drinks on a typical Friday');
   });
   it('wording edge cases', () => {
     expect(typicalDayText(0, 0, 'Monday')).toBe('No drinks on a typical Monday');

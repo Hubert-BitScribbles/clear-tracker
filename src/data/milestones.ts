@@ -22,14 +22,16 @@ export const HONEST_LOGGING_TIERS = [1, 10, 25, 50, 100];
 
 /**
  * Back on track: completed weeks that met their intention after a week that
- * didn't (an unlogged week counts as not met). The first week of tracking
+ * was missed for certain (an unlogged or too-little-logged week isn't a miss). The first week of tracking
  * can't qualify: there's nothing to come back from. Returns week-end dates.
  */
 export function backOnTrackWeeks(d: Data, today: Iso): Iso[] {
   const weeks = d.intentionWeeks(today); // nothing to come back from before the first intention
   const out: Iso[] = [];
   for (let i = 1; i < weeks.length; i++) {
-    if (d.weekMet(weeks[i]) && !d.weekMet(weeks[i - 1])) out.push(addDays(weeks[i], 6));
+    // Coming back from a week that was missed for certain — not from one
+    // with too little logged to say.
+    if (d.weekMet(weeks[i]) && d.weekMissed(weeks[i - 1])) out.push(addDays(weeks[i], 6));
   }
   return out;
 }

@@ -7,20 +7,38 @@ const SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'O
 const LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const label = (iso: string) => `${SHORT[Number(iso.slice(5, 7)) - 1]} ${Number(iso.slice(8, 10))}`;
 
-/** A week measured against an intention (weeks before the first one aren't shown). */
-export type MeasuredWeek = WeekAlignment & { target: number };
-export const isMeasured = (w: WeekAlignment): w is MeasuredWeek => w.target !== null;
+/** A week on the grid; target null = before the first intention (shown, not measured). */
+export type MeasuredWeek = WeekAlignment;
+export const isMeasured = (w: WeekAlignment): boolean => w.target !== null;
 
-export type Alignment = 'unlogged' | 'partial' | 'met' | 'exceeded';
-export function alignmentOf(w: MeasuredWeek): Alignment {
+/**
+ * How a week went:
+ * - before: before the first intention — not measured.
+ * - unlogged: nothing logged.
+ * - met / exceeded: enough clear days logged, whatever the gaps.
+ * - partial: missed for certain — short even if every unlogged day had been clear.
+ * - unclear: short so far, with enough unlogged days that it can't be said
+ *   ("not enough logged"). Logging the gaps later settles it.
+ */
+export type Alignment = 'before' | 'unlogged' | 'unclear' | 'partial' | 'met' | 'exceeded';
+export function alignmentOf(w: WeekAlignment): Alignment {
+  if (w.target === null) return 'before';
   if (!w.hasEntries) return 'unlogged';
   if (w.count > w.target) return 'exceeded';
   if (w.count >= w.target) return 'met';
-  return 'partial';
+  const unlogged = 7 - (w.logged ?? 7);
+  return w.count + unlogged < w.target ? 'partial' : 'unclear';
 }
 
-export function weekLabel(w: MeasuredWeek): string {
-  return `Week of ${label(w.weekStartIso)}: ${w.hasEntries ? `${w.count} of ${w.target} clear days, ${alignmentOf(w)}` : 'nothing logged'}`;
+export const ALIGNMENT_NAMES: Record<Alignment, string> = {
+  exceeded: 'Beyond', met: 'Met', partial: 'Partial', unclear: 'Not enough logged', unlogged: 'Unlogged', before: 'Before your intention',
+};
+
+export function weekLabel(w: WeekAlignment): string {
+  const a = alignmentOf(w);
+  if (a === 'before') return `Week of ${label(w.weekStartIso)}: ${w.hasEntries ? `${w.count} clear day${w.count === 1 ? '' : 's'}, ` : 'nothing logged, '}before your first intention`;
+  if (a === 'unlogged') return `Week of ${label(w.weekStartIso)}: nothing logged`;
+  return `Week of ${label(w.weekStartIso)}: ${w.count} of ${w.target} clear days, ${ALIGNMENT_NAMES[a].toLowerCase()}`;
 }
 
 type Props = { weeks: MeasuredWeek[]; selected: string; onSelect: (weekStart: string) => void; year: number };
@@ -89,7 +107,8 @@ export function IntentionChart({ weeks, selected, onSelect, year }: Props) {
     <div className="wg" role="grid" aria-label={`Weeks of ${year}, by month`} ref={grid} onKeyDown={key}>
       {rows.map((r) => {
         const isMet = (w: MeasuredWeek) => alignmentOf(w) === 'met' || alignmentOf(w) === 'exceeded';
-        const counted = r.weeks.filter((w) => w.weekStartIso < current || isMet(w));
+        // Weeks before the first intention aren't measured, so they're not counted.
+        const counted = r.weeks.filter((w) => w.target !== null && (w.weekStartIso < current || isMet(w)));
         const met = counted.filter(isMet).length;
         return (
           <div key={r.month} className="wg-row" role="row">

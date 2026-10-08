@@ -13,11 +13,12 @@ import * as CH from './challenges';
 import * as T from './timeline';
 import { db, generateId, initDatabase, type DayEntryRow, type DayStatus, type DrinkAmount, type IntentionRow } from './db';
 import { mondayOf, todayIso } from './dates';
+import { announceChange } from './changes';
 
 export { initDatabase, generateId, todayIso };
 export { CLEAR_DAY_TIERS, LOGGING_TIERS, STREAK_TIERS_WEEKS } from './compute';
 export {
-  BACK_ON_TRACK_TIERS, HONEST_LOGGING_TIERS, KEPT_TO_A_FEW_TIERS, MONEY_KEPT_TIERS, tiersFrom, YEAR_WEEKS_MET,
+  BACK_ON_TRACK_TIERS, HONEST_LOGGING_TIERS, KEPT_TO_A_FEW_TIERS, tiersFrom,
 } from './milestones';
 export type { BestMonth, TierEarn } from './milestones';
 export type { FirstThreeMonths } from './baseline';
@@ -72,28 +73,36 @@ export function nextLevel(current: DayLevel | null): DayLevel | null {
  * returns that level (null = unlogged again). The row keeps its created_at
  * while it stays logged, so "logged on the day" still means the first tap.
  */
-export async function cycleDay(entryDateIso: string, current: DayLevel | null): Promise<DayLevel | null> {
+export async function cycleDay(entryDateIso: string, _shown?: DayLevel | null): Promise<DayLevel | null> {
+  // Steps from what's stored, not from what the screen shows: another window
+  // of the same record may have changed this day since the screen loaded.
   await initDatabase();
-  const next = nextLevel(current);
   const t = now();
-  if (next === null) {
-    await db.day_entries.where('entry_date').equals(entryDateIso).delete();
-  } else if (current === null) {
-    await db.day_entries.add({
-      id: generateId(),
-      entry_date: entryDateIso,
-      status: 'clear',
-      amount: null,
-      created_at: t,
-      updated_at: t,
-    });
-  } else {
-    await db.day_entries.where('entry_date').equals(entryDateIso).modify({
-      status: next === 'clear' ? 'clear' : 'drinking',
-      amount: next === 'clear' ? null : next,
-      updated_at: t,
-    });
-  }
+  const next = await db.transaction('rw', db.day_entries, async () => {
+    const row = await db.day_entries.where('entry_date').equals(entryDateIso).first();
+    const current: DayLevel | null = row ? (row.status === 'clear' ? 'clear' : (row.amount ?? 'a-lot')) : null;
+    const nextLv = nextLevel(current);
+    if (nextLv === null) {
+      await db.day_entries.where('entry_date').equals(entryDateIso).delete();
+    } else if (!row) {
+      await db.day_entries.add({
+        id: generateId(),
+        entry_date: entryDateIso,
+        status: 'clear',
+        amount: null,
+        created_at: t,
+        updated_at: t,
+      });
+    } else {
+      await db.day_entries.where('entry_date').equals(entryDateIso).modify({
+        status: nextLv === 'clear' ? 'clear' : 'drinking',
+        amount: nextLv === 'clear' ? null : nextLv,
+        updated_at: t,
+      });
+    }
+    return nextLv;
+  });
+  announceChange();
   return next;
 }
 
@@ -136,6 +145,7 @@ export async function saveIntention(weeklyTarget: number, effectiveDateIso: stri
     created_at: t,
     updated_at: t,
   });
+  announceChange();
 }
 
 export async function weekHasEntries(weekStartIso: string, weekEndIso: string): Promise<boolean> {
@@ -157,7 +167,10 @@ export async function getSetting(key: string, defaultValue: string): Promise<str
 
 export async function setSetting(key: string, value: string): Promise<void> {
   await initDatabase();
+  const old = await db.settings.get(key);
+  if (old?.value === value) return; // unchanged: nothing to tell other windows
   await db.settings.put({ key, value, updated_at: now() });
+  announceChange();
 }
 
 /** Erase all data: entries, intentions and settings. */
@@ -166,6 +179,7 @@ export async function resetDatabase(): Promise<void> {
   await db.transaction('rw', db.day_entries, db.intentions, db.settings, async () => {
     await Promise.all([db.day_entries.clear(), db.intentions.clear(), db.settings.clear()]);
   });
+  announceChange();
 }
 
 // ---- Weeks, streaks, stats ---------------------------------------------------
@@ -270,33 +284,6 @@ export async function getSavingsSettings(today = todayIso()): Promise<SavingsSet
   return { source, entered, price, first3, effective: baseline !== null && price !== null ? { baselinePerWeek: baseline, price } : null };
 }
 
-/**
- * Money kept tiers, kept earned for good: tiers reached under any baseline
- * are recorded, so switching baselines (or lowering one) can't un-earn them.
- * Recorded under a new key in 1.0.0-rc.3, when Money kept changed from "clear
- * days only" to the conservative savings estimate: tiers recorded the old
- * way (often ahead of Trends) are set aside and re-earned the new way.
- */
-const MONEY_KEPT_KEY = 'money_kept_earned_v2';
-export async function getMoneyKept(effective: { baselinePerWeek: number; price: number } | null) {
-  const d = await data();
-  const stored: Record<string, string> = JSON.parse((await getSetting(MONEY_KEPT_KEY, '')) || '{}');
-  const now = effective ? M.moneyKept(d, effective.baselinePerWeek, effective.price) : { total: 0, earned: [] };
-  let changed = false;
-  for (const e of now.earned) {
-    if (!stored[e.tier]) {
-      stored[e.tier] = e.reachedIso;
-      changed = true;
-    }
-  }
-  if (changed) await setSetting(MONEY_KEPT_KEY, JSON.stringify(stored));
-  const earned = Object.entries(stored)
-    .map(([tier, reachedIso]) => ({ tier: Number(tier), reachedIso }))
-    .sort((a, b) => a.tier - b.tier);
-  // Progress shows from zero: a stretch over baseline isn't shown as "−$40 of $100".
-  return effective || earned.length ? { total: Math.max(0, now.total), earned } : null;
-}
-
 // ---- Challenges ---------------------------------------------------------------
 
 export type { ChallengeSettings, MonthChallenge, SpanStatus } from './challenges';
@@ -340,21 +327,43 @@ export async function getChallengeStatus(today = todayIso()) {
 /** Everything earned (oldest first) and what's closest — for the Milestones screen. */
 export async function getTimeline(today = todayIso()) {
   const d = await data();
-  const [savings, challenges, ds] = await Promise.all([getSavingsSettings(today), getChallenges(), getSetting('day_streak_enabled', 'false')]);
-  const money = await getMoneyKept(savings.effective);
+  const challenges = await getChallenges();
   return {
-    earned: T.earnedMilestones(d, today, { moneyEarned: money?.earned, challenges, showWeekStreaks: ds === 'true' }),
-    next: T.upNext(d, today, { moneyTotal: savings.effective ? money?.total : undefined, moneyEarned: money?.earned }),
+    earned: T.earnedMilestones(d, today, { challenges }),
+    next: T.upNext(d, today),
     years: [...new Set(d.datesAsc.map((x) => Number(x.slice(0, 4))))].sort((a, b) => b - a),
   };
+}
+
+/**
+ * Milestones earned since they were last shown, newest first — for the line
+ * on Check-in. Keyed by title (each title names one milestone). The first
+ * time this runs (a new install, or a restore without it), everything already
+ * earned counts as seen, so a long history doesn't arrive as a flood.
+ */
+const SEEN_KEY = 'milestones_seen';
+export async function getNewMilestones(today = todayIso()): Promise<T.Earned[]> {
+  const earned = T.earnedMilestones(await data(), today, { challenges: await getChallenges() });
+  const raw = await getSetting(SEEN_KEY, '');
+  if (raw === '') {
+    await setSetting(SEEN_KEY, JSON.stringify(earned.map((m) => m.title)));
+    return [];
+  }
+  const seen = new Set<string>(JSON.parse(raw));
+  return earned.filter((m) => !seen.has(m.title)).reverse();
+}
+/** Marks milestones as shown (opened or dismissed on Check-in). */
+export async function markMilestonesSeen(titles: string[]): Promise<void> {
+  const raw = await getSetting(SEEN_KEY, '');
+  const seen = new Set<string>(raw ? JSON.parse(raw) : []);
+  titles.forEach((t) => seen.add(t));
+  await setSetting(SEEN_KEY, JSON.stringify([...seen]));
 }
 
 /** Everything the newer milestones need, in one read. */
 export async function getMilestoneExtras(today = todayIso()) {
   const d = await data();
-  const year = Number(today.slice(0, 4));
   const target = d.scaleTarget(mondayOf(today));
-  const savings = await getSavingsSettings(today);
   const beyond = C.milestones(d, today).beyondTargetInstances.map((x) => x.weekEndIso).reverse();
   return {
     target,
@@ -363,8 +372,6 @@ export async function getMilestoneExtras(today = todayIso()) {
     bestMonths: M.bestMonths(d),
     honest: M.honestLoggingDates(d),
     beyondTarget: beyond, // oldest first
-    money: await getMoneyKept(savings.effective),
-    yearWeeks: M.yearWeeksMetTiers(d, today, year),
   };
 }
 export async function getIntentionsMetInMonth(year: number, month: number) {
@@ -454,6 +461,7 @@ export async function restoreBackup(payload: {
       { key: 'onboarding_complete', value: 'true', updated_at: t },
     ]);
   });
+  announceChange();
 }
 
 /**
@@ -487,4 +495,5 @@ export async function restoreFromBackup(dayEntries: any[], intentions: any[]): P
     await db.day_entries.bulkAdd(entries);
     await db.intentions.bulkAdd(ints);
   });
+  announceChange();
 }

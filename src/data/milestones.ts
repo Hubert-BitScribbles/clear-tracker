@@ -19,8 +19,6 @@ export function tiersFrom(eventsAsc: Iso[], tiers: number[]): TierEarn[] {
 export const BACK_ON_TRACK_TIERS = [1, 3, 10, 25];
 export const KEPT_TO_A_FEW_TIERS = [1, 3, 10, 25];
 export const HONEST_LOGGING_TIERS = [1, 10, 25, 50, 100];
-export const MONEY_KEPT_TIERS = [100, 250, 500, 1000, 2500, 5000, 10000];
-export const YEAR_WEEKS_MET = [4, 13, 26, 39];
 
 /**
  * Back on track: completed weeks that met their intention after a week that
@@ -110,44 +108,3 @@ export function honestLoggingDates(d: Data): Iso[] {
     .sort();
 }
 
-/**
- * Drinks per level for Money kept: the top of each level's range, so the
- * milestone never claims more than the savings estimate in Trends. "A lot"
- * (5 or more) has no top, so it counts as 6 — one above its minimum, as
- * A few and Moderate are.
- */
-export const MONEY_KEPT_DRINKS = { clear: 0, 'a-few': 2, moderate: 4, 'a-lot': 6 } as const;
-
-/**
- * Money kept: the savings estimate, kept conservatively, as a running total
- * over logged days in date order. Each logged day "should" have had
- * baseline ÷ 7 drinks; it keeps (that − its drinks) × price, so a drinking day
- * above the baseline takes some back. A tier is reached the day the total
- * first gets there. Unlogged days are left out, as in Trends.
- * total is the running total now (it can fall; earned tiers stay earned).
- */
-export function moneyKept(d: Data, baselinePerWeek: number, price: number): { total: number; earned: TierEarn[] } {
-  const perDay = baselinePerWeek / 7;
-  const earned: TierEarn[] = [];
-  let total = 0;
-  let next = 0;
-  const entries = [...d.snap.entries].sort((a, b) => a.entry_date.localeCompare(b.entry_date));
-  for (const e of entries) {
-    const drinks = e.status === 'clear' ? 0 : MONEY_KEPT_DRINKS[e.amount ?? 'a-lot'];
-    total += (perDay - drinks) * price;
-    while (next < MONEY_KEPT_TIERS.length && total >= MONEY_KEPT_TIERS[next] - 1e-9) {
-      earned.push({ tier: MONEY_KEPT_TIERS[next], reachedIso: e.entry_date });
-      next++;
-    }
-  }
-  return { total, earned };
-}
-
-/** This year, weeks met: tiers of 4, 13, 26, 39 weeks (Thursday rule). */
-export function yearWeeksMetTiers(d: Data, today: Iso, year: number): { count: number; earned: TierEarn[] } {
-  const events: Iso[] = [];
-  for (const w of d.completedWeeks(today)) {
-    if (yearOf(addDays(w, 3)) === year && d.weekMet(w)) events.push(addDays(w, 6));
-  }
-  return { count: events.length, earned: tiersFrom(events, YEAR_WEEKS_MET) };
-}

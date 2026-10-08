@@ -4,6 +4,32 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.0.0-rc.5 — 7 October 2026
+
+Fixes from testing on the Mac, and a tidier split between Trends and
+Milestones.
+
+- Windows that share a record (two tabs, or Chrome's tab and its installed
+  app) now update each other straight away. And a tap always steps from the
+  level that's stored, so an out-of-date window can no longer step a day
+  from the wrong level. (Safari and its Dock app, or an iPhone browser and
+  its Home Screen app, keep separate records and can't be linked.)
+- Trends: the month you pick on the drinks or savings chart is compared with
+  the month before it ("August: about 1 more drink a week than July"). It
+  used to compare only the current month, whichever month was picked.
+- Milestones and Trends no longer repeat each other. Trends holds the
+  numbers; Milestones marks moments. "Money kept" (Trends shows estimated
+  savings) and "This year" (Trends shows weeks met) are gone.
+- Week streaks ("4-week streak") are milestones for everyone, and appear in
+  Up next. They used to need the clear-day-streak setting, which now only
+  affects clear-day streaks.
+- A milestone just earned appears on Check-in, by its own name, with a link
+  to Milestones and a ✕ to dismiss it. On first run, milestones already
+  earned count as seen.
+- Export and Import are now Back up and Restore (Settings, Help, onboarding
+  and the backup reminder). "Export" is kept for a possible future research
+  export. Old addresses still work.
+
 ## 1.0.0-rc.4 — 7 October 2026
 
 Guidance that fits the device and browser in use.

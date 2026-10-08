@@ -23,9 +23,9 @@ import { buildReport, sameStretchLastYear, summarizeRange, weekdaySummary } from
 import { alignmentOf, IntentionChart, isMeasured, type MeasuredWeek } from '../components/IntentionChart';
 import { comparisonText, drinksText, typicalDayText } from '../lib/reportText';
 import { momentumIncludes } from '../data/baseline';
-import { chartMonths, monthChange, monthlyRates, SIX_MONTHS, THREE_MONTHS, windowChange } from '../data/trend';
+import { chartMonths, monthlyRates, SIX_MONTHS, THREE_MONTHS, windowChange } from '../data/trend';
 import { MonthlyChart } from '../components/MonthlyChart';
-import { challengeNote, drinksChangeText, ML, type DrinksTrend } from '../lib/trendText';
+import { challengeNote, drinksChangeText, ML, monthVsPrevious, type DrinksTrend } from '../lib/trendText';
 import { chosenMonthRanges, getChallenges } from '../data/database';
 import './Trends.css';
 
@@ -191,7 +191,6 @@ export function Trends() {
           const ranges = chosenMonthRanges(await getChallenges());
           return {
             points: monthlyRates(d, today, chartMonths(today, scope)),
-            month: now ? monthChange(d, today) : null,
             three: now ? windowChange(d, today, THREE_MONTHS, 30) : null,
             six: now ? windowChange(d, today, SIX_MONTHS, 60) : null,
             notes: { three: momentumIncludes(today, ranges, THREE_MONTHS), six: momentumIncludes(today, ranges, SIX_MONTHS) },
@@ -301,6 +300,10 @@ export function Trends() {
                 return (
                   <>
                     <p className="mc-detail-line">About {Math.round(p.perWeek * 10) / 10} drinks a week</p>
+                    {(() => {
+                      const c = monthVsPrevious(p);
+                      return c && <p className="mc-detail-line">{drinksChangeText(c.lead, c.diff, c.vs)}</p>;
+                    })()}
                     <p className="mc-detail-line">
                       {r.levels.clear} clear · {r.levels['a-few']} a few · {r.levels.moderate} moderate · {r.levels['a-lot']} a lot · {p.logged} days logged
                     </p>
@@ -309,11 +312,8 @@ export function Trends() {
                 );
               }}
             />
-            {(data.trend.month || data.trend.three || data.trend.six) && (
+            {(data.trend.three || data.trend.six) && (
               <ul className="tr-trends">
-                {data.trend.month && (
-                  <li>{drinksChangeText(`${ML[data.trend.month.month - 1]}${data.trend.month.soFar ? ' so far' : ''}`, data.trend.month.diff, ML[data.trend.month.vsMonth - 1])}</li>
-                )}
                 {data.trend.three && <li>{drinksChangeText('Last 3 months', data.trend.three.diff, 'the 3 before')}{challengeNote(data.trend.notes.three)}</li>}
                 {data.trend.six && <li>{drinksChangeText('Last 6 months', data.trend.six.diff, 'the 6 before')}{challengeNote(data.trend.notes.six)}</li>}
               </ul>

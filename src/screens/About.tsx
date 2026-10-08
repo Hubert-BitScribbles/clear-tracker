@@ -56,7 +56,7 @@ export function About() {
         <ul className="ab-principles">
           <li><strong>A record, not a score.</strong> Nothing you log undoes anything. A drinking day counts as much as a clear one.</li>
           <li><strong>Your aim, your call.</strong> Cutting back and stepping away completely are both valid. You set the intention, and can change it any time.</li>
-          <li><strong>Private by design.</strong> No account and no cloud: everything stays on this device unless you export it.</li>
+          <li><strong>Private by design.</strong> No account and no cloud: everything stays on this device unless you back it up.</li>
           <li><strong>Calm, not clinical.</strong> Plain words, no warnings or rebukes, and no streak that punishes a choice you made.</li>
           <li><strong>Made for everyone.</strong> Works with screen readers and keyboards, in light, dark and high contrast, and respects reduced motion.</li>
         </ul>
@@ -74,7 +74,7 @@ export function About() {
           {installKeepsOwnRecord(dev)
             ? `, and Safari can delete a site's data after seven days without a visit — unless the app is added to your ${isIos(dev) ? 'Home Screen' : 'Dock'}, which keeps its own record.`
             : ', and the browser may clear it if the device runs very low on space — less likely once installed.'}{' '}
-          Export a backup from time to time.
+          Back up from time to time.
         </p>
         <ul className="ab-status" aria-label="This device">
           <li>

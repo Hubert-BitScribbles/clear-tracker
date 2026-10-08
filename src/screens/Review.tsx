@@ -7,7 +7,7 @@ import { DayCell } from '../components/DayCell';
 import { LevelLegend } from '../components/LevelLegend';
 import { TrendsNav } from '../components/SegmentNav';
 import { Data } from '../data/compute';
-import { getBackupData, getChallenges, getMoneyKept, getSavingsSettings, getSetting, setSetting } from '../data/database';
+import { getBackupData, getChallenges, getSavingsSettings, getSetting, setSetting } from '../data/database';
 import { addDays, daysInMonth, isoOf, todayIso, weekdayOf } from '../data/dates';
 import { buildReport, defaultPeriod, periodBounds, previousPeriod, type Period, type Report } from '../data/report';
 import { comparisonText, drinksText } from '../lib/reportText';
@@ -52,12 +52,11 @@ export function Review() {
     let cancelled = false;
     (async () => {
       const [all, sv, h, ch] = await Promise.all([getBackupData(), getSavingsSettings(), getSetting('report_hidden_sections', ''), getChallenges()]);
-      const money = await getMoneyKept(sv.effective);
       if (cancelled) return;
       const savings = sv.effective;
       setSavingsSet(!!savings);
       setHidden(new Set(h ? (h.split(',') as Section[]) : []));
-      setReport(buildReport(new Data({ entries: all.dayEntries, intentions: all.intentions }), period, today, savings, money?.earned, ch));
+      setReport(buildReport(new Data({ entries: all.dayEntries, intentions: all.intentions }), period, today, savings, ch));
       // Opening a month's review counts as seeing it (for the Check-in note).
       if (period.month) setSetting(`report_seen_${period.year}-${String(period.month).padStart(2, '0')}`, 'true');
     })();

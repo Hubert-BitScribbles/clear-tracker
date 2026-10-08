@@ -3,25 +3,24 @@
 // next"). Titles match All milestones. Pure: takes the data and options.
 
 import {
-  clearTierEarnings, CLEAR_DAY_TIERS, Data, fullyLoggedMonths, LOGGING_TIERS, loggingTierEarnings, longestLoggingRun,
-  milestones as baseMilestones, streakTierFirsts, trackingAnniversaries,
+  clearTierEarnings, CLEAR_DAY_TIERS, currentWeekStreak, Data, fullyLoggedMonths, LOGGING_TIERS, loggingTierEarnings,
+  longestLoggingRun, milestones as baseMilestones, STREAK_TIERS_WEEKS, streakTierFirsts, trackingAnniversaries,
 } from './compute';
 import { clearWeekends, clearWeeks, monthChallenge, WEEK_TIERS, WEEKEND_TIERS, type ChallengeSettings } from './challenges';
-import { daysInMonth, isoOf, yearOf, type Iso } from './dates';
+import { daysInMonth, isoOf, type Iso } from './dates';
 import {
   BACK_ON_TRACK_TIERS, backOnTrackWeeks, bestMonths, HONEST_LOGGING_TIERS, honestLoggingDates, KEPT_TO_A_FEW_TIERS,
-  keptToAFewWeeks, MONEY_KEPT_TIERS, tiersFrom, YEAR_WEEKS_MET, yearWeeksMetTiers, type TierEarn,
+  keptToAFewWeeks, tiersFrom,
 } from './milestones';
 
 export const BEYOND_TARGET_TIERS = [1, 5, 15, 40, 100];
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const money = (n: number) => `$${n.toLocaleString('en-CA')}`;
 
 export type Kind =
-  | 'first' | 'logging' | 'clear' | 'deciding' | 'back' | 'year' | 'best' | 'money' | 'months' | 'anniversary' | 'streak' | 'growth' | 'challenge';
+  | 'first' | 'logging' | 'clear' | 'deciding' | 'back' | 'best' | 'months' | 'anniversary' | 'streak' | 'growth' | 'challenge';
 /** The badge glyph for each kind, as on All milestones. */
 export const GLYPH: Record<Kind, string> = {
-  first: '✓', logging: '◆', clear: '★', deciding: '✎', back: '↺', year: '◷', best: '▲', money: '$', months: '▦',
+  first: '✓', logging: '◆', clear: '★', deciding: '✎', back: '↺', best: '▲', months: '▦',
   anniversary: '◎', streak: '🔥', growth: '✦', challenge: '○',
 };
 
@@ -32,9 +31,7 @@ export interface Earned {
 }
 
 export interface TimelineOptions {
-  moneyEarned?: TierEarn[];
   challenges?: ChallengeSettings;
-  showWeekStreaks?: boolean;
 }
 
 /** Every milestone earned up to today, oldest first. */
@@ -68,21 +65,15 @@ export function earnedMilestones(d: Data, today: Iso, opts: TimelineOptions = {}
   for (const e of tiersFrom(beyond, BEYOND_TARGET_TIERS)) add(e.tier === 1 ? 'Beyond target' : `Beyond target ${e.tier} weeks`, e.reachedIso, 'growth');
 
   for (const b of bestMonths(d)) add(`Best month yet: ${MONTHS[b.month - 1].slice(0, 3)} ${b.year}`, b.reachedIso, 'best');
-  if (d.earliest) {
-    for (let y = yearOf(d.earliest); y <= yearOf(today); y++) {
-      for (const e of yearWeeksMetTiers(d, today, y).earned) add(`${e.tier} weeks met in ${y}`, e.reachedIso, 'year');
-    }
-  }
   // Fully logged months count once the month is over.
   for (const f of fullyLoggedMonths(d, today)) {
     const end = isoOf(f.year, f.month, daysInMonth(f.year, f.month));
     if (end < today) add(`${MONTHS[f.month - 1]} ${f.year} fully logged`, end, 'months');
   }
-  for (const e of opts.moneyEarned ?? []) add(`${money(e.tier)} kept`, e.reachedIso, 'money');
   for (const a of trackingAnniversaries(d, today)) if (a.reached) add(`${a.years} year${a.years === 1 ? '' : 's'} of tracking`, a.reachedIso, 'anniversary');
-  if (opts.showWeekStreaks) {
-    for (const e of streakTierFirsts(d, today)) add(`${e.tierWeeks}-week streak`, e.reachedWeekEndIso, 'streak');
-  }
+  // Weeks in a row meeting the intention: for everyone (unlike clear-day
+  // streaks, they never punish a chosen drinking day).
+  for (const e of streakTierFirsts(d, today)) add(`${e.tierWeeks}-week streak`, e.reachedWeekEndIso, 'streak');
   const c = opts.challenges;
   if (c) {
     for (const e of tiersFrom(clearWeekends(d, today, c.weekendRuns), WEEKEND_TIERS)) {
@@ -110,7 +101,7 @@ export interface NextUp {
 export function upNext(
   d: Data,
   today: Iso,
-  opts: { moneyTotal?: number; moneyEarned?: TierEarn[]; limit?: number } = {},
+  opts: { limit?: number } = {},
 ): NextUp[] {
   const out: NextUp[] = [];
   const push = (title: string, have: number, need: number, kind: Kind, sub?: string) => {
@@ -141,15 +132,8 @@ export function upNext(
   const nt = nextOf(BEYOND_TARGET_TIERS, beyond);
   if (nt) push(nt === 1 ? 'Beyond target' : `Beyond target ${nt} weeks`, beyond, nt, 'growth');
 
-  const y = yearOf(today);
-  const yw = yearWeeksMetTiers(d, today, y);
-  const nw = nextOf(YEAR_WEEKS_MET, yw.count);
-  if (nw) push(`${nw} weeks met in ${y}`, yw.count, nw, 'year');
-
-  if (opts.moneyTotal !== undefined) {
-    const earned = new Set((opts.moneyEarned ?? []).map((e) => e.tier));
-    const nmk = MONEY_KEPT_TIERS.find((t) => !earned.has(t));
-    if (nmk) push(`${money(nmk)} kept`, opts.moneyTotal, nmk, 'money', `${money(Math.floor(opts.moneyTotal))} of ${money(nmk)}`);
-  }
+  const earnedStreaks = new Set(streakTierFirsts(d, today).map((e) => e.tierWeeks));
+  const ns = STREAK_TIERS_WEEKS.find((t) => !earnedStreaks.has(t));
+  if (ns) push(`${ns}-week streak`, currentWeekStreak(d, today), ns, 'streak');
   return out.sort((a, b) => b.progress - a.progress).slice(0, opts.limit ?? 3);
 }

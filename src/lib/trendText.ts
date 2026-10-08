@@ -7,7 +7,6 @@ import { monthPhrase } from './challengeText';
 /** The drinks trend for the Trends screen, shared with the savings card. */
 export interface DrinksTrend {
   points: MonthPoint[];
-  month: (Change & { month: number; vsMonth: number; soFar: boolean }) | null;
   three: Change | null;
   six: Change | null;
   notes: { three: string[]; six: string[] };
@@ -38,4 +37,14 @@ export function savingsChangeText(lead: string, drinksDiff: number, price: numbe
   const dollars = -drinksDiff * price;
   if (Math.abs(drinksDiff) < 0.5) return `${lead}: about the same as ${vs}`;
   return `${lead}: saving about ${money(dollars)} ${dollars > 0 ? 'more' : 'less'} a week than ${vs}`;
+}
+
+/**
+ * A month against the one before it, for the selected month on a chart:
+ * "September so far: about 1 fewer drink a week than August". Null when
+ * either month has too few logged days.
+ */
+export function monthVsPrevious(p: MonthPoint): { lead: string; diff: number; vs: string } | null {
+  if (p.perWeek === null || p.prev.perWeek === null) return null;
+  return { lead: `${ML[p.month - 1]}${p.soFar ? ' so far' : ''}`, diff: p.perWeek - p.prev.perWeek, vs: ML[p.prev.month - 1] };
 }

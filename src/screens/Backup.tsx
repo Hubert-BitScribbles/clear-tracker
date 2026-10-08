@@ -15,7 +15,7 @@ import './Flow.css';
 // email), or downloaded where sharing files isn't supported.
 // A successful save is recorded as the last backup.
 
-export function Export() {
+export function Backup() {
   const P = platform(useDevice());
   const navigate = useNavigate();
   const location = useLocation();
@@ -91,7 +91,7 @@ export function Export() {
     return (
       <main className="flow">
         <div className="fl-close-row"><button type="button" className="fl-close" onClick={close} aria-label="Close">✕</button></div>
-        <h1 className="fl-title">Export your data</h1>
+        <h1 className="fl-title">Back up your data</h1>
         <p className="fl-body">
           Backups use your browser's built-in encryption, which only works on the app's secure (https) address — not
           on a local network address like this one.
@@ -107,7 +107,7 @@ export function Export() {
         <section className="fl-step">
           <div>
             <div className="fl-close-row"><button type="button" className="fl-close" onClick={close} aria-label="Close">✕</button></div>
-            <h1 className="fl-title">Export your data</h1>
+            <h1 className="fl-title">Back up your data</h1>
             <p className="fl-body">
               This creates an encrypted backup file with your logged days, intentions and settings. It stays on your
               device until you choose where to save it.

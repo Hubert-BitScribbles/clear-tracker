@@ -72,9 +72,7 @@ export function buildReport(
   p: Period,
   today: Iso,
   savings: { baselinePerWeek: number; price: number } | null,
-  moneyEarned?: { tier: number; reachedIso: Iso }[],
   challenges?: ChallengeSettings,
-  showWeekStreaks?: boolean,
 ): Report {
   const { start, endFull } = periodBounds(p);
   const end = endFull < today ? endFull : today;
@@ -177,7 +175,7 @@ export function buildReport(
     previous: pLogged > 0 && d.earliest !== null && d.earliest <= pb.start ? { clear: pClear, logged: pLogged } : null,
     calendar: p.month ? calendar : {},
     months,
-    milestones: milestonesInPeriod(d, today, start, end, savings, moneyEarned, challenges, showWeekStreaks),
+    milestones: milestonesInPeriod(d, today, start, end, challenges),
   };
 }
 
@@ -187,12 +185,9 @@ export function milestonesInPeriod(
   today: Iso,
   start: Iso,
   end: Iso,
-  _savings: { baselinePerWeek: number; price: number } | null,
-  moneyEarned?: { tier: number; reachedIso: Iso }[],
   challenges?: ChallengeSettings,
-  showWeekStreaks?: boolean,
 ): { title: string; date: Iso }[] {
-  return earnedMilestones(d, today, { moneyEarned, challenges, showWeekStreaks })
+  return earnedMilestones(d, today, { challenges })
     .filter((m) => m.date >= start && m.date <= end)
     .map(({ title, date }) => ({ title, date }));
 }

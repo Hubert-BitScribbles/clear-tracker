@@ -4,7 +4,7 @@ import { getSavingsEstimate, getSavingsSettings, type FirstThreeMonths, type Sav
 import { describeSavings, priceText } from '../lib/savings';
 import { monthPhrase } from '../lib/challengeText';
 import { MonthlyChart } from './MonthlyChart';
-import { challengeNote, ML, savingsChangeText, type DrinksTrend } from '../lib/trendText';
+import { challengeNote, ML, monthVsPrevious, savingsChangeText, type DrinksTrend } from '../lib/trendText';
 import './SavingsCard.css';
 
 // Estimated savings against a baseline: one the user types, or measured
@@ -112,15 +112,16 @@ export function SavingsCard({ scope, scopeLabel, trend }: Props) {
                   <p className="mc-detail-line">
                     {weekly >= 0 ? `About ${d(weekly)} a week` : `About ${d(weekly)} a week over baseline`} · {p.logged} days logged
                   </p>
+                  {(() => {
+                    const c = monthVsPrevious(p);
+                    return c && <p className="mc-detail-line">{savingsChangeText(c.lead, c.diff, price, c.vs)}</p>;
+                  })()}
                 </>
               );
             }}
           />
-          {(trend.month || trend.three || trend.six) && (
+          {(trend.three || trend.six) && (
             <ul className="sv-trends">
-              {trend.month && (
-                <li>{savingsChangeText(`${ML[trend.month.month - 1]}${trend.month.soFar ? ' so far' : ''}`, trend.month.diff, price, ML[trend.month.vsMonth - 1])}</li>
-              )}
               {trend.three && <li>{savingsChangeText('Last 3 months', trend.three.diff, price, 'the 3 before')}{challengeNote(trend.notes.three)}</li>}
               {trend.six && <li>{savingsChangeText('Last 6 months', trend.six.diff, price, 'the 6 before')}{challengeNote(trend.notes.six)}</li>}
             </ul>

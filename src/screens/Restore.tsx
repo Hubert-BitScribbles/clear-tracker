@@ -9,7 +9,7 @@ import './Flow.css';
 // confirm, then everything on this device is replaced in one step (a
 // failure changes nothing). Reads web backups only; the app started fresh.
 
-export function Import() {
+export function Restore() {
   const navigate = useNavigate();
   const location = useLocation();
   const close = () => (location.key === 'default' ? navigate('/settings') : navigate(-1));
@@ -71,7 +71,7 @@ export function Import() {
     return (
       <main className="flow">
         <div className="fl-close-row"><button type="button" className="fl-close" onClick={close} aria-label="Close">✕</button></div>
-        <h1 className="fl-title">Import a backup</h1>
+        <h1 className="fl-title">Restore from a backup</h1>
         <p className="fl-body">
           Backups use your browser's built-in encryption, which only works on the app's secure (https) address — not
           on a local network address like this one.
@@ -87,9 +87,9 @@ export function Import() {
         <section className="fl-step">
           <div>
             <div className="fl-close-row"><button type="button" className="fl-close" onClick={close} aria-label="Close">✕</button></div>
-            <h1 className="fl-title">Import a backup</h1>
+            <h1 className="fl-title">Restore from a backup</h1>
             <p className="fl-danger">Restoring a backup replaces all data currently on this device. This can't be undone.</p>
-            <p className="fl-body">Choose an encrypted backup file exported from Clear Tracker.</p>
+            <p className="fl-body">Choose a Clear Tracker backup file.</p>
             <p className="fl-help"><HelpLink topic="backups">About backups</HelpLink></p>
           </div>
           <div>
@@ -119,7 +119,7 @@ export function Import() {
             <div className="card fl-card" style={{ marginBottom: 12 }}>
               <div className="fl-row"><span>Logged days in backup</span><strong>{parsed.dayEntries.length}</strong></div>
               <div className="fl-row"><span>Intentions</span><strong>{parsed.intentions.length}</strong></div>
-              <div className="fl-row"><span>Exported</span><strong>{exported}</strong></div>
+              <div className="fl-row"><span>Backed up</span><strong>{exported}</strong></div>
             </div>
             <p className="fl-danger">
               This will replace the {plural(current)} currently on this device with the {plural(parsed.dayEntries.length)} from

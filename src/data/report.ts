@@ -8,7 +8,8 @@
 import { Data } from './compute';
 import { addDays, daysInMonth, isoOf, yearOf, type Iso } from './dates';
 import type { DrinkAmount } from './db';
-import type { ChallengeSettings } from './challenges';
+import { monthChallenge, type ChallengeSettings } from './challenges';
+import { MIN_LOGGED_MONTH, rate } from './trend';
 import { earnedMilestones } from './timeline';
 import { backOnTrackWeeks } from './milestones';
 
@@ -29,7 +30,8 @@ export interface Report {
   logged: number;
   levels: Record<Level, number>;
   // before: completed weeks in the period from before the first intention (not measured)
-  weeks: { counted: number; met: number; exceeded: number; before: number };
+  /** unclear: neither met nor missed for certain (not enough logged to say). */
+  weeks: { counted: number; met: number; exceeded: number; before: number; unclear: number };
   targets: { target: number; from: Iso }[];
   backOnTrack: number;
   dayOfWeek: { weekday: number; clear: number; aFew: number; more: number }[];
@@ -38,6 +40,10 @@ export interface Report {
   /** Savings in dollars against the baseline; least is null when open-ended. */
   savings: { most: number; least: number | null } | null;
   previous: { clear: number; logged: number } | null;
+  /** Drinks a week against the previous period (one figure per level); null without 7+ logged days in each. */
+  drinksChange: { diff: number } | null;
+  /** Chosen challenges in the period: earned clear weekends/weeks, and chosen months with how they went. */
+  challenges: { title: string; date: Iso | null; note: string }[];
   calendar: Record<Iso, Level>; // month reports
   // year reports; available = days that could have been logged (from the first
   // logged day, up to today), so future months and pre-tracking days aren't "missed"
@@ -103,12 +109,14 @@ export function buildReport(
   const targets: { target: number; from: Iso }[] = [];
   let met = 0;
   let exceeded = 0;
+  let unclear = 0;
   for (const w of weeks) {
     const t = d.scaleTarget(w);
     if (!targets.length || targets[targets.length - 1].target !== t) targets.push({ target: t, from: w });
     const c = d.clearCountBetween(w, addDays(w, 6));
     if (c >= t) met++;
     if (c > t) exceeded++;
+    if (c < t && !d.weekMissed(w)) unclear++;
   }
   const backOnTrack = backOnTrackWeeks(d, today).filter((end6) => weekIn(addDays(end6, -6), p)).length;
 
@@ -164,7 +172,7 @@ export function buildReport(
     daysInPeriod: days.length,
     logged,
     levels,
-    weeks: { counted: weeks.length, met, exceeded, before: d.completedWeeks(today).filter((w) => weekIn(w, p)).length - weeks.length },
+    weeks: { counted: weeks.length, met, exceeded, unclear, before: d.completedWeeks(today).filter((w) => weekIn(w, p)).length - weeks.length },
     targets,
     backOnTrack,
     dayOfWeek: [1, 2, 3, 4, 5, 6, 0].map((wd) => dow[wd]),
@@ -175,7 +183,24 @@ export function buildReport(
     previous: pLogged > 0 && d.earliest !== null && d.earliest <= pb.start ? { clear: pClear, logged: pLogged } : null,
     calendar: p.month ? calendar : {},
     months,
-    milestones: milestonesInPeriod(d, today, start, end, challenges),
+    milestones: milestonesInPeriod(d, today, start, end, challenges).filter((m) => m.kind !== 'challenge').map(({ title, date }) => ({ title, date })),
+    drinksChange: (() => {
+      const now = rate(d, start, end);
+      const before = rate(d, pb.start, pb.endFull);
+      return now.logged >= MIN_LOGGED_MONTH && before.logged >= MIN_LOGGED_MONTH ? { diff: now.perWeek - before.perWeek } : null;
+    })(),
+    challenges: [
+      ...milestonesInPeriod(d, today, start, end, challenges).filter((m) => m.kind === 'challenge').map((m) => ({ title: m.title, date: m.date as Iso | null, note: 'earned' })),
+      ...(challenges?.months ?? [])
+        .filter((ym) => ym.startsWith(String(p.year)) && (!p.month || Number(ym.slice(5, 7)) === p.month))
+        .map((ym) => ({ ym, s: monthChallenge(d, today, ym) }))
+        .filter(({ s }) => s.state === 'under-way' || s.state === 'to-log' || s.state === 'ended')
+        .map(({ ym, s }) => ({
+          title: `Clear ${MONTH_NAMES[Number(ym.slice(5, 7)) - 1]} ${ym.slice(0, 4)}`,
+          date: null,
+          note: s.state === 'ended' ? 'chosen; not this time' : s.state === 'to-log' ? 'chosen; days still to log' : 'chosen; under way',
+        })),
+    ],
   };
 }
 
@@ -186,11 +211,13 @@ export function milestonesInPeriod(
   start: Iso,
   end: Iso,
   challenges?: ChallengeSettings,
-): { title: string; date: Iso }[] {
+): { title: string; date: Iso; kind: string }[] {
   return earnedMilestones(d, today, { challenges })
     .filter((m) => m.date >= start && m.date <= end)
-    .map(({ title, date }) => ({ title, date }));
+    .map(({ title, date, kind }) => ({ title, date, kind }));
 }
+
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 /** The default report: the last complete month (or this one, if there's no earlier data). */
 export function defaultPeriod(today: Iso): Period {

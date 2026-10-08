@@ -4,6 +4,24 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.0.0-rc.7 — 8 October 2026
+
+The month/year report, reviewed for sharing with a counsellor or doctor.
+
+- Estimated savings, Milestones and a new Challenges section are left out by
+  default — tick them in under "Choose what's included". Challenges lists
+  clear weekends and weeks earned in the period and any chosen clear month
+  (earned, under way, days still to log, or "not this time"); they're no
+  longer repeated under Milestones.
+- The summary card follows your choices: "weeks met intention" only appears
+  when the Intention section is included.
+- The Intention section names weeks with too few days logged to say, instead
+  of counting them as not met without comment.
+- Estimated drinks adds the direction against the previous period ("August
+  2026: about 1 more drink a week than July"), when both have 7+ logged days.
+- The footer says the report is from days the person logged themselves
+  (self-reported).
+
 ## 1.0.0-rc.6 — 8 October 2026
 
 - Partly logged weeks are judged fairly. Unlogged days assume nothing, so a

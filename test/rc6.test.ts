@@ -57,3 +57,19 @@ describe('back on track comes after a week missed for certain', () => {
   it('after a "not enough logged" week: no', () => expect(run('mm.....')).toEqual([]));
   it('after an unlogged week: no', () => expect(run('.......')).toEqual([]));
 });
+
+describe('report (rc.7)', () => {
+  it('names weeks with too few days logged, gives the drinks direction, and keeps challenges apart from milestones', async () => {
+    const { buildReport } = await import('../src/data/report');
+    const days = (start: string, n: number, lv: Lv) => Array.from({ length: n }, (_, i) => e(plus(start, i), lv));
+    // August: every day moderate; September: every day a few. A clear weekend challenge from Sep 4.
+    const entries = [...days('2026-08-01', 31, 'moderate'), ...days('2026-09-01', 30, 'a-few').map((x: never, i: number) =>
+      [3, 4, 5].includes(i) ? e(plus('2026-09-01', i), 'clear') : x)];
+    const d = new Data({ entries, intentions: [target(3, '2026-08-03')] });
+    const r = buildReport(d, { year: 2026, month: 9 }, '2026-10-08', null, { weekendRuns: [{ from: '2026-09-04' }], weekRuns: [], months: ['2026-09'] });
+    expect(r.drinksChange?.diff).toBeLessThan(0); // fewer drinks than August
+    expect(r.challenges.map((c) => c.title)).toEqual(['A clear weekend', 'Clear September 2026']);
+    expect(r.challenges[1].note).toBe('chosen; not this time');
+    expect(r.milestones.some((m) => m.title === 'A clear weekend')).toBe(false);
+  });
+});

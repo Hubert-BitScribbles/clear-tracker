@@ -25,7 +25,7 @@ describe('month in review', () => {
   });
   it('weeks by Thursday, met and targets', () => {
     // Weeks with Thursday in August: Jul 27 (Thu Jul 30 → July, no), Aug 3, 10, 17, 24, 31 (Thu Sep 3 → no) = 4
-    expect(r.weeks).toEqual({ counted: 4, met: 1, exceeded: 0, before: 0 });
+    expect(r.weeks).toEqual({ counted: 4, met: 1, exceeded: 0, unclear: 3, before: 0 });
     expect(r.targets).toEqual([{ target: 3, from: '2026-08-03' }]);
     // Week of Jul 27 (first of the record) had 1 clear day and blanks: not
     // enough logged to say, so Aug 3 met isn't "back on track" (rc.6).

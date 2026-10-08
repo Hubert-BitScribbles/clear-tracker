@@ -61,7 +61,7 @@ describe('weeks before the first intention', () => {
   });
   it('are reported as not measured', () => {
     const aug = buildReport(d, { year: 2026, month: 8 }, today, null);
-    expect(aug.weeks).toEqual({ counted: 0, met: 0, exceeded: 0, before: 1 }); // weeks by Thursday: only Aug 24 is August's
+    expect(aug.weeks).toEqual({ counted: 0, met: 0, exceeded: 0, unclear: 0, before: 1 }); // weeks by Thursday: only Aug 24 is August's
     const sep = buildReport(d, { year: 2026, month: 9 }, today, null);
     expect(sep.weeks).toMatchObject({ counted: 3, met: 1, before: 1 }); // Aug 31 belongs to September
   });

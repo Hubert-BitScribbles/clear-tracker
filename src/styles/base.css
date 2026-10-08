@@ -182,3 +182,8 @@ button {
 .help-link { font-size: 12px; font-weight: 600; color: var(--primary-text); text-decoration: none; }
 .help-link:hover { text-decoration: underline; }
 .help-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 18px; margin-top: 18px; }
+
+/* Device and browser line, with a way to correct it (onboarding, Settings) */
+.dv-line { font-size: 13px; line-height: 20px; }
+.dv-change { font: inherit; font-size: 13px; font-weight: 600; color: var(--primary-text); background: none; border: 0; padding: 4px 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.dv-fields { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; text-align: left; }

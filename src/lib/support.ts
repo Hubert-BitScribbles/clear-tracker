@@ -2,7 +2,7 @@
 // the user presses Send in their own mail app, and they see every line first.
 
 import { audioStatus } from './sounds';
-import { isInstalled } from './install';
+import { detectedDevice, device, deviceLabel, isInstalled } from './install';
 
 // CONFIRM BEFORE RELEASE: the address must exist (e.g. Cloudflare Email
 // Routing forwarding support@ to an inbox).
@@ -20,7 +20,8 @@ export async function diagnostics(): Promise<string> {
   return [
     `App: Clear Tracker ${__APP_VERSION__} (web)`,
     `Browser: ${navigator.userAgent}`,
-    `Installed to Home Screen: ${isInstalled() ? 'yes' : 'no'}`,
+    `Device: ${deviceLabel()}${JSON.stringify(device()) === JSON.stringify(detectedDevice()) ? ' (detected)' : ` (chosen; detected ${deviceLabel(detectedDevice())})`}`,
+    `Installed as an app: ${isInstalled() ? 'yes' : 'no'}`,
     `Persistent storage: ${persisted}`,
     `Screen: ${window.screen.width}×${window.screen.height}, theme ${document.documentElement.dataset.theme ?? '?'}${document.documentElement.dataset.contrast === 'high' ? ', high contrast' : ''}`,
     `Sound: ${audioStatus()}`,

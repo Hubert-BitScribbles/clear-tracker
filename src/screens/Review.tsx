@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useDevice } from '../components/DeviceFields';
 import { platform } from '../lib/install';
 import { HelpLinks } from '../components/HelpLink';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -22,7 +23,6 @@ const SHORT = MONTHS.map((m) => m.slice(0, 3));
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const fmt = (iso: string) => `${SHORT[Number(iso.slice(5, 7)) - 1]} ${Number(iso.slice(8, 10))}`;
 
-const P = platform();
 const SECTIONS = [
   ['days', 'The days'],
   ['intention', 'Intention'],
@@ -37,6 +37,7 @@ export const periodLabel = (p: Period) => (p.month ? `${MONTHS[p.month - 1]} ${p
 const plural = (n: number, unit: string) => `${n} ${unit}${n === 1 ? '' : 's'}`;
 
 export function Review() {
+  const P = platform(useDevice());
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const today = todayIso();

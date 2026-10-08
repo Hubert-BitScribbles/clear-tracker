@@ -33,7 +33,7 @@ with sync_playwright() as p:
     check('welcome: says what it is and isn\'t; no Back', "What it isn't" in pg.locator('main').inner_text()
           and 'medical service' in pg.locator('main').inner_text() and button(pg, '‹ Back').count() == 0)
     button(pg, 'Get started').click(); pg.wait_for_timeout(200)
-    check('install step next, with Back', h1(pg) == 'Add it to your Home Screen first' and button(pg, '‹ Back').count() == 1)
+    check('install step next, with Back', h1(pg) == 'Install it as an app' and button(pg, '‹ Back').count() == 1)
     button(pg, '‹ Back').click(); pg.wait_for_timeout(200)
     check('Back returns to welcome', h1(pg) == 'Welcome to Clear Tracker')
     button(pg, 'Get started').click(); pg.wait_for_timeout(150)

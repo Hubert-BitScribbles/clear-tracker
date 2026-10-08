@@ -22,6 +22,10 @@ export default defineConfig({
         start_url: './',
         scope: './',
         display: 'standalone',
+        // Lets Chrome and Edge on computers (134+) open links to the app —
+        // from Reminders, Calendar, email — in the installed app, reusing its
+        // window. Android Chrome does this anyway; iPhone never does.
+        launch_handler: { client_mode: ['navigate-existing', 'auto'] },
         background_color: '#FAFAF9',
         theme_color: '#FAFAF9',
         icons: [

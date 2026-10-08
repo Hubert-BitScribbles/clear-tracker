@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { isAndroid, isIos } from '../lib/install';
+import { DeviceFields, useDevice } from '../components/DeviceFields';
+import { installKeepsOwnRecord, isAndroid, isIos, linksOpenApp } from '../lib/install';
 import { Link, useLocation } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { baselineText, SavingsSetup } from '../components/SavingsCard';
@@ -178,6 +179,12 @@ export function Settings() {
       <h2 className="st-sec" id="region">Region</h2>
       <RegionCard key={version} />
 
+      <h2 className="st-sec" id="device">This device</h2>
+      <section className="card st-card st-block">
+        <DeviceFields intro="Clear Tracker's guidance here is for" />
+        <p className="st-sub">Installing, reminders and backups work differently on each device and browser. Each device keeps its own record.</p>
+      </section>
+
       <h2 className="st-sec">Reminder</h2>
       <ReminderCard />
 
@@ -250,8 +257,15 @@ export function Settings() {
   );
 }
 
-/** Reminders, the web way: in the phone's own Reminders app. */
+/**
+ * Reminders, the web way: in the device's own Reminders or Calendar app.
+ * A link back to the app only helps where links open the installed app
+ * (Android, and Chrome/Edge on computers). On iPhone/iPad, and Safari on a
+ * Mac, a link opens a browser tab with its own, separate record — so no link:
+ * the reminder is a nudge to open the app from the Home Screen or Dock.
+ */
 function ReminderCard() {
+  const dev = useDevice();
   const link = `${window.location.origin}${window.location.pathname}`;
   const [copied, setCopied] = useState('');
   async function copy() {
@@ -265,30 +279,47 @@ function ReminderCard() {
       setCopied('Selected — copy it from the menu.');
     }
   }
+  const withLink = linksOpenApp(dev);
   return (
     <section className="card st-card st-block">
       <p className="st-sub st-sub-first">
-        Clear Tracker doesn't send notifications. For a daily nudge, set a repeating reminder on your phone — it's
-        more reliable, and it's yours:
+        Clear Tracker doesn't send notifications. For a daily nudge, set a repeating reminder on your{' '}
+        {isIos(dev) || isAndroid(dev) ? 'phone' : 'computer'} — it's more reliable, and it's yours:
       </p>
-      {isAndroid() ? (
+      {isAndroid(dev) ? (
         <ol className="st-steps">
           <li>In Google Calendar, add an event “Log today in Clear Tracker” at a time that suits you.</li>
           <li>Set it to repeat <em>Every day</em>, with a notification at the time of the event.</li>
-          <li>Paste this link in the <em>description</em>, so tapping it opens the app.</li>
+          {withLink && <li>Paste this link in the <em>description</em>, so tapping it opens the app.</li>}
+        </ol>
+      ) : isIos(dev) ? (
+        <ol className="st-steps">
+          <li>In Reminders, add “Log today in Clear Tracker”.</li>
+          <li>Open its details: turn on <em>Date</em> and <em>Time</em>, pick a time, and set <em>Repeat</em> to Daily.</li>
+          <li>When it goes off, open Clear Tracker from your Home Screen.</li>
         </ol>
       ) : (
         <ol className="st-steps">
-          <li>In {isIos() ? 'Reminders' : 'your phone’s Reminders app (or a repeating calendar event)'}, add “Log today in Clear Tracker”.</li>
-          <li>Open its details: turn on <em>Date</em> and <em>Time</em>, pick a time, and set <em>Repeat</em> to Daily.</li>
-          <li>Paste this link in the <em>URL</em> field, so tapping the reminder opens the app.</li>
+          <li>In your {dev.os === 'mac' ? 'Reminders or Calendar app' : 'calendar'}, add “Log today in Clear Tracker”, repeating every day at a time that suits you.</li>
+          {withLink ? (
+            <li>Paste this link in its <em>URL</em> or notes, so clicking it opens the app (when {dev.browser === 'edge' ? 'Edge' : 'Chrome'} is your default browser).</li>
+          ) : (
+            <li>When it goes off, open Clear Tracker from your {installKeepsOwnRecord(dev) ? 'Dock' : 'bookmarks or app list'}.</li>
+          )}
         </ol>
       )}
-      <div className="st-link-row">
-        <code id="reminder-link" className="st-code">{link}</code>
-        <button type="button" className="st-copy" onClick={copy}>Copy link</button>
-      </div>
-      {copied && <p className="st-sub" role="status">{copied}</p>}
+      {withLink && (
+        <>
+          <div className="st-link-row">
+            <code id="reminder-link" className="st-code">{link}</code>
+            <button type="button" className="st-copy" onClick={copy}>Copy link</button>
+          </div>
+          {copied && <p className="st-sub" role="status">{copied}</p>}
+        </>
+      )}
+      {!withLink && isIos(dev) && (
+        <p className="st-sub">There's no link to add: on iPhone and iPad, links open the browser, which keeps a separate record from the Home Screen app.</p>
+      )}
     </section>
   );
 }

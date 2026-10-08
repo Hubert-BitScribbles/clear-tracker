@@ -21,7 +21,7 @@ with sync_playwright() as p:
         t=pg.locator('main').inner_text()
         if plat=='ios': check('ios onboarding: Share steps, data won\'t move', 'Add to Home Screen' in t and "won't move across" in t)
         if plat=='android': check('android onboarding: ⋮ → Install app, days come with you', 'Install app' in t and 'days come with you' in t and "won't move" not in t, t[-300:])
-        if plat=='other': check('computer onboarding: browser menu, days come with you', "browser's menu" in t and 'days come with you' in t)
+        if plat=='other': check('computer (Chrome) onboarding: install as an app, same record, days come with you', 'Install it as an app' in t and 'share one record' in t and 'days come with you' in t, t[-400:])
         for k in range(2): pg.get_by_role('button',name='Continue' if k else 'Continue in the browser',exact=True).click(); pg.wait_for_timeout(150)
         t=pg.locator('main').inner_text()
         check(f'{plat} onboarding sounds line', {'ios':'silent switch' in t,'android':'media volume' in t,'other':'silent switch' not in t and 'media volume' not in t}[plat])
@@ -29,16 +29,18 @@ with sync_playwright() as p:
           const s=h.scenario(42,'2026-09-30',{}); await db.restoreFromBackup(s.entries, s.intentions); await db.setSetting('onboarding_complete','true'); }""")
         pg.goto("http://localhost:5173/#/settings"); pg.reload(); pg.wait_for_timeout(900)
         t=pg.locator('main').inner_text()
-        check(f'{plat} reminder steps', {'ios':'In Reminders' in t,'android':'Google Calendar' in t and 'description' in t,'other':'Reminders app (or a repeating calendar event)' in t}[plat])
+        check(f'{plat} reminder steps', {'ios':'In Reminders' in t and 'open Clear Tracker from your Home Screen' in t and 'Copy link' not in t,
+                                         'android':'Google Calendar' in t and 'description' in t and 'Copy link' in t,
+                                         'other':'In your calendar' in t and 'Copy link' in t}[plat], t[t.find('Reminder'):][:500])
         pg.goto("http://localhost:5173/#/settings/about"); pg.wait_for_timeout(900)
         t=pg.locator('main').inner_text()
         check(f'{plat} About storage', ('seven days' in t) == (plat=='ios') and (('low on space' in t) == (plat!='ios')))
         pg.goto("http://localhost:5173/#/settings/help?topic=install"); pg.reload(); pg.wait_for_timeout(900)
         t=pg.locator('#help-install').inner_text()
-        check(f'{plat} Help install: both sets of steps; right storage note', 'Install app' in t and 'Add to Home Screen' in t
-              and (('separate' not in t and 'own storage' not in t) if plat=='android' else 'own storage' in t)
-              and (('shares Chrome' in t) == (plat!='ios'))
-              and (('search for it' in t) == (plat!='android')), t)
+        check(f'{plat} Help install: this device first, then others; right record note', 'Other devices' in t and {
+              'ios':'Add to Home Screen' in t and 'own record' in t and 'search for' in t,
+              'android':'Install app' in t and 'share one record' in t,
+              'other':'Install' in t and 'share one record' in t and 'own record' not in t.split('Other devices')[0]}[plat], t)
         pg.evaluate("document.querySelectorAll('details').forEach(d=>d.open=true)")
         t=pg.locator('.sp-articles').inner_text()
         check(f'{plat} Help backups/sounds/trouble/PDF', {

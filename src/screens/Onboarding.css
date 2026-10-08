@@ -54,3 +54,6 @@
 .ob-practice-level { font-family: var(--font-ui); font-weight: 700; font-size: 14px; min-height: 20px; color: var(--text-primary); }
 .ob-practice-cell .day-cell { width: 100%; }
 .ob-already { margin-top: 14px; font-size: 12px; line-height: 18px; color: var(--text-secondary); }
+.ob-device { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; text-align: center; color: var(--text-secondary); }
+.ob-device .ob-already { margin-top: 0; }
+.ob-install-note { margin-top: 10px; text-align: left; }

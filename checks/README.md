@@ -21,6 +21,10 @@ Both load test data from `test/helpers.ts`, so they never touch real data.
 - `python3 checks/platforms.py` — the wording that differs by device
   (installing, storage, backups, sounds, reminders, PDFs) as an iPhone, an
   Android phone and a computer.
+- `python3 checks/paths.py` — device and browser paths: what's detected
+  (iPhone Safari and Chrome, Mac Safari, Chrome and Firefox, Samsung
+  Internet), the "Not right? Change" override, and the install step,
+  reminder link, Help and problem-report wording each path gets.
 - `python3 checks/checkin.py` — the Intention card (wording, weeks before
   the first intention), month swipes, and Trends' Intention chart starting
   at the first intention.

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { isInstalled, isIos } from '../lib/install';
+import { useDevice } from '../components/DeviceFields';
+import { installKeepsOwnRecord, isInstalled, isIos } from '../lib/install';
 import { Link } from 'react-router-dom';
 import iconUrl from '../assets/clear-icon-96.png';
 import { SegmentNav } from '../components/SegmentNav';
@@ -24,6 +25,7 @@ export const SettingsNav = ({ active }: { active: 'settings' | 'about' }) => (
 export function About() {
   const [persisted, setPersisted] = useState<boolean | null>(null);
   const installed = isInstalled();
+  const dev = useDevice();
 
   useEffect(() => {
     navigator.storage?.persisted?.().then(setPersisted).catch(() => setPersisted(null));
@@ -69,14 +71,14 @@ export function About() {
         </p>
         <p className="ab-body ab-gap">
           <strong>Browser storage isn't a backup.</strong> Clearing your browser's website data erases it
-          {isIos()
-            ? ", and Safari can delete a site's data after seven days without a visit — unless the app is added to your Home Screen."
+          {installKeepsOwnRecord(dev)
+            ? `, and Safari can delete a site's data after seven days without a visit — unless the app is added to your ${isIos(dev) ? 'Home Screen' : 'Dock'}, which keeps its own record.`
             : ', and the browser may clear it if the device runs very low on space — less likely once installed.'}{' '}
           Export a backup from time to time.
         </p>
         <ul className="ab-status" aria-label="This device">
           <li>
-            <span aria-hidden="true">{installed ? '✓' : '–'}</span> {installed ? 'Added to your Home Screen' : 'Not added to your Home Screen'}
+            <span aria-hidden="true">{installed ? '✓' : '–'}</span> {installed ? 'Installed as an app' : 'Not installed — open in a browser tab'}
           </li>
           <li>
             <span aria-hidden="true">{persisted ? '✓' : '–'}</span>{' '}

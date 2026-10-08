@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useDevice } from '../components/DeviceFields';
 import { platform } from '../lib/install';
 import { HelpLink } from '../components/HelpLink';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -12,10 +13,10 @@ import './Flow.css';
 // (native allowed 4), settings included, and the file handed to the share
 // sheet on iPhone (Files, iCloud Drive, AirDrop) and Android (Drive, Files,
 // email), or downloaded where sharing files isn't supported.
-const P = platform();
 // A successful save is recorded as the last backup.
 
 export function Export() {
+  const P = platform(useDevice());
   const navigate = useNavigate();
   const location = useLocation();
   const close = () => (location.key === 'default' ? navigate('/settings') : navigate(-1));

@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { audioStatus, playLoggingSound, unlockAudio } from '../lib/sounds';
-import { platform } from '../lib/install';
+import { useDevice } from '../components/DeviceFields';
+import { installGuide } from '../components/InstallSteps';
+import { BROWSER_NAMES, canPromptInstall, installKeepsOwnRecord, isIos, OS_NAMES, platform, type Device } from '../lib/install';
 import { diagnostics, mailto, SUPPORT_EMAIL } from '../lib/support';
 import { HelpNav } from './Resources';
 import './Support.css';
@@ -12,7 +14,6 @@ import './Support.css';
 // Where iPhone and Android differ (installing, storage, where backups go,
 // sounds, PDFs), each reader sees their own device's wording.
 
-const P = platform();
 
 interface Article {
   id: string;
@@ -69,7 +70,9 @@ function Contact() {
   );
 }
 
-const ARTICLES: Article[] = [
+function articles(d: Device): Article[] {
+  const P = platform(d);
+  return [
   {
     id: 'start', title: 'Logging your days', keywords: 'tap calendar clear a few moderate a lot level unlogged past change edit',
     body: (
@@ -139,20 +142,27 @@ const ARTICLES: Article[] = [
     ),
   },
   {
-    id: 'install', title: 'Installing and working offline', keywords: 'home screen add install offline safari chrome android iphone storage seven days update',
+    id: 'install', title: 'Installing and working offline', keywords: 'home screen dock add install offline safari chrome edge firefox android iphone mac storage seven days update',
     body: (
       <>
-        <p>
-          <strong>iPhone:</strong> in Safari, tap Share, then <strong>Add to Home Screen</strong>.{' '}
-          <strong>Android:</strong> in Chrome, tap ⋮, then <strong>Install app</strong> (or Add to Home screen).
-          Installed, Clear Tracker opens like an app and works offline.
-        </p>
-        {P !== 'android' && (
-          <p>On iPhone it also keeps your record safer: Safari can clear a website's data after seven days without a visit, but not a Home Screen app's. The installed app has its own storage, though — days logged in Safari don't move across by themselves, so export a backup in one and import it in the other. Opening the website in Safari or Chrome again starts it fresh too: open Clear Tracker from your Home Screen instead, or swipe down from the middle of the Home Screen and search for it.</p>
+        {(() => {
+          const g = installGuide(d, canPromptInstall());
+          return (
+            <>
+              <p><strong>On {OS_NAMES[d.os] === 'another device' ? 'this device' : `your ${OS_NAMES[d.os]}`}, in {BROWSER_NAMES[d.browser] === 'another browser' ? 'this browser' : BROWSER_NAMES[d.browser]}:</strong> {g.why}</p>
+              {g.steps.length > 0 ? (
+                <ul>{g.steps.map((st, k) => <li key={k}>{st}</li>)}</ul>
+              ) : (
+                <p>Use the <strong>Install</strong> button your browser offers (in onboarding, or the install icon in the address bar).</p>
+              )}
+              {g.note && <p>{g.note}</p>}
+            </>
+          );
+        })()}
+        {installKeepsOwnRecord(d) && (
+          <p>Because the installed app has its own record, days logged in the browser don't move across by themselves: export a backup in one and import it in the other.{isIos(d) ? ' Can’t find the app? Swipe down from the middle of the Home Screen and search for “Clear Tracker”.' : ' Can’t find it? Search for “Clear Tracker” with Spotlight.'}</p>
         )}
-        {P !== 'ios' && (
-          <p>On Android and computers, the installed app shares Chrome's storage, so your days come with you. Chrome doesn't clear it on a timer; installing makes it less likely to be cleared when space runs low.</p>
-        )}
+        <p><strong>Other devices:</strong> iPhone and iPad — Share, then Add to Home Screen (in any browser; the Home Screen app keeps its own record). Android — Chrome's ⋮ menu, Install app. Mac with Safari — File → Add to Dock (its own record). Chrome or Edge on a computer — Install, from the address bar or menu (same record as the browser). Each device keeps its own record.</p>
         <p>Updates arrive automatically; you may see the new version the next time you open the app.</p>
       </>
     ),
@@ -193,7 +203,7 @@ const ARTICLES: Article[] = [
     id: 'troubleshooting', title: 'Troubleshooting', keywords: 'problem missing gone lost data wrong date time zone bug',
     body: (
       <>
-        <p><strong>My days are missing.</strong> {P === 'ios' ? "Safari and the Home Screen app keep separate records — check you're in the same one. " : 'Check you’re using the same browser as before. '}Clearing your browser's website data{P === 'android' ? ' (or Chrome’s storage in Android settings)' : ''} erases the record; restore it from a backup.</p>
+        <p><strong>My days are missing.</strong> {installKeepsOwnRecord(d) ? `${isIos(d) ? 'The Home Screen app' : 'The Dock app'} and the browser keep separate records — check you're in the same one as before. ` : 'Check you’re using the same browser, on the same device, as before. '}Clearing your browser's website data{P === 'android' ? ' (or Chrome’s storage in Android settings)' : ''} erases the record; restore it from a backup.</p>
         <p><strong>Dates look wrong.</strong> Clear Tracker uses your device's date and time zone.</p>
         <p><strong>Something else.</strong> Please report it below.</p>
       </>
@@ -201,8 +211,11 @@ const ARTICLES: Article[] = [
   },
   { id: 'contact', title: 'Contact and feedback', keywords: 'email feedback report problem bug support suggestion', body: <Contact /> },
 ];
+}
 
 export function Help() {
+  const dev = useDevice();
+  const ARTICLES = articles(dev);
   const [params] = useSearchParams();
   const topic = params.get('topic');
   const [query, setQuery] = useState('');

@@ -5,8 +5,10 @@ import { DayCell } from '../components/DayCell';
 import { RegionFields } from '../components/RegionFields';
 import { getSetting, nextLevel, saveIntention, setSetting, type DayLevel } from '../data/database';
 import { mondayOf, todayIso } from '../data/dates';
+import { DeviceFields, useDevice } from '../components/DeviceFields';
+import { installGuide } from '../components/InstallSteps';
 import {
-  canPromptInstall, isAndroid, isInstalled, isIos, onInstallAvailability, promptInstall, requestPersistentStorage,
+  canPromptInstall, installKeepsOwnRecord, isAndroid, isInstalled, isIos, onInstallAvailability, promptInstall, requestPersistentStorage,
 } from '../lib/install';
 import { deviceTimeZone, parseRegion, regionLabel, type Region } from '../lib/regions';
 import { playLoggingSound, unlockAudio } from '../lib/sounds';
@@ -37,6 +39,7 @@ const LEVEL_SHOWN: Record<DayLevel, string> = {
 export function Onboarding() {
   const navigate = useNavigate();
   const installed = isInstalled();
+  const dev = useDevice();
   const steps: Step[] = ['welcome', ...(installed ? [] : (['install'] as Step[])), 'privacy', 'how', 'intention', 'region', 'ready'];
   const [i, setI] = useState(0);
   const [target, setTarget] = useState(3);
@@ -122,67 +125,67 @@ export function Onboarding() {
                 your drinking, a healthcare professional can help.
               </p>
             </div>
-            {isIos() && !installed && (
-              // On iPhone a browser tab can't see a Home Screen copy (separate
-              // storage, and no way to ask), so it always looks like a first visit.
-              <p className="ob-note ob-already">
-                Already added Clear Tracker to your Home Screen? Open it from there — this browser tab keeps its own,
-                separate record. Can't spot the icon? Swipe down from the middle of the Home Screen and search for
-                “Clear Tracker”.
-              </p>
-            )}
+            <div className="ob-device">
+              <DeviceFields />
+              <p className="ob-note">Each phone or computer keeps its own record, so use Clear Tracker on one device.</p>
+              {installKeepsOwnRecord(dev) && !installed && (
+                // A browser tab can't see a Home Screen (or Dock) copy — separate
+                // storage, and no way to ask — so it always looks like a first visit.
+                <p className="ob-note ob-already">
+                  {isIos(dev) ? (
+                    <>Already added Clear Tracker to your Home Screen? Open it from there — this browser tab keeps its own,
+                    separate record. Can't spot the icon? Swipe down from the middle of the Home Screen and search for
+                    “Clear Tracker”.</>
+                  ) : (
+                    <>Already added Clear Tracker to your Dock? Open it from there — Safari keeps its own, separate
+                    record. Can't spot it? Search for “Clear Tracker” with Spotlight (⌘ Space).</>
+                  )}
+                </p>
+              )}
+            </div>
           </div>
           <button type="button" className="btn btn-primary ob-button" onClick={next}>Get started</button>
         </section>
       )}
 
-      {step === 'install' && (
-        <section className="ob-step">
-          <div>
-            <h1 className="ob-step-title">Add it to your Home Screen first</h1>
-            <p className="ob-body">
-              Clear Tracker keeps everything on this device. Added to your Home Screen, it opens like an app, works
-              offline, and your record is much safer: a browser can clear a website's data, but not an installed
-              app's.
-            </p>
-            {isIos() ? (
+      {step === 'install' && (() => {
+        const g = installGuide(dev, canInstall);
+        return (
+          <section className="ob-step">
+            <div>
+              <h1 className="ob-step-title">{g.heading}</h1>
+              <p className="ob-body">{g.why}</p>
               <div className="card ob-card">
-                <ol className="ob-steps">
-                  <li>Tap the <strong>Share</strong> button <span aria-hidden="true">(□↑)</span> in Safari.</li>
-                  <li>Choose <strong>Add to Home Screen</strong>, then <strong>Add</strong>.</li>
-                  <li>Open Clear Tracker from your Home Screen and set it up there.</li>
-                </ol>
-                <p className="ob-note">The installed app starts fresh — anything set up here in Safari stays in Safari.</p>
+                {g.steps.length === 0 ? (
+                  <>
+                    <button type="button" className="btn btn-primary ob-button" onClick={() => promptInstall()}>
+                      Install Clear Tracker
+                    </button>
+                    <p className="ob-note">Then open it from your {g.place} and carry on there.</p>
+                  </>
+                ) : (
+                  <ol className="ob-steps">
+                    {g.steps.map((st, k) => <li key={k}>{st}</li>)}
+                  </ol>
+                )}
+                {g.note && <p className="ob-note ob-install-note">{g.note}</p>}
               </div>
-            ) : canInstall ? (
-              <div className="card ob-card">
-                <button type="button" className="btn btn-primary ob-button" onClick={() => promptInstall()}>
-                  Install Clear Tracker
-                </button>
-                <p className="ob-note">Then open it from your Home Screen or app list and carry on there.</p>
-              </div>
-            ) : (
-              <div className="card ob-card">
-                <p className="ob-note ob-note-first">
-                  {isAndroid() ? (
-                    <>In Chrome, tap <strong>⋮</strong>, then <strong>Install app</strong> (or Add to Home screen).</>
-                  ) : (
-                    <>Look in your browser's menu for <strong>Install</strong> or <strong>Add to Home Screen</strong>.</>
-                  )}
+            </div>
+            <div className="ob-actions">
+              <button type="button" className="ob-secondary" onClick={next}>
+                {g.canInstall ? 'Continue in the browser' : 'Continue'}
+              </button>
+              {g.canInstall && (
+                <p className="ob-note">
+                  {installKeepsOwnRecord(dev)
+                    ? "You can still install later, but your days won't move across by themselves — you'd export a backup here and import it there."
+                    : `You can install later from the browser menu; your days come with you.`}
                 </p>
-              </div>
-            )}
-          </div>
-          <div className="ob-actions">
-            <button type="button" className="ob-secondary" onClick={next}>Continue in the browser</button>
-            <p className="ob-note">
-              {isIos()
-                ? "You can still install later, but your data won't move across — export it first."
-                : 'You can install later from the browser menu; your days come with you.'}
-            </p>
-          </div>
-        </section>
-      )}
+              )}
+            </div>
+          </section>
+        );
+      })()}
 
       {step === 'privacy' && (
         <section className="ob-step">
@@ -233,7 +236,7 @@ export function Onboarding() {
               <div className="ob-toggle-row">
                 <div>
                   <span id="ob-audio" className="ob-row-label">Sounds</span>
-                  <p className="ob-row-sub">A tone for each level when you log a day.{isIos() ? ' On iPhone, they follow the silent switch.' : isAndroid() ? ' They play at your media volume.' : ''}</p>
+                  <p className="ob-row-sub">A tone for each level when you log a day.{isIos(dev) ? ' On iPhone, they follow the silent switch.' : isAndroid(dev) ? ' They play at your media volume.' : ''}</p>
                 </div>
                 <button type="button" role="switch" aria-checked={audioCues} aria-labelledby="ob-audio" className="switch" onClick={() => setAudioCues((v) => !v)}>
                   <span className="switch-thumb" />

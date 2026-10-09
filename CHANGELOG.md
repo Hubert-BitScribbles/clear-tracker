@@ -4,6 +4,16 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.0.0-rc.8 — 8 October 2026
+
+- A new app icon: the clear-day mark — a light day cell with a teal dot — on
+  the app's own teal, filling the tile. It replaces the small steel-blue cell
+  with a "Clear" label too small to read. Home Screen, Dock, install,
+  favicon, and the icon on the welcome screen, Check-in and About all use it.
+  The source drawing and the script that makes every size are in `design/`.
+- An iPhone or Mac Safari Home Screen/Dock app keeps the old icon until it's
+  removed and added again; Chrome and Android pick it up on their own, in time.
+
 ## 1.0.0-rc.7 — 8 October 2026
 
 The month/year report, reviewed for sharing with a counsellor or doctor.

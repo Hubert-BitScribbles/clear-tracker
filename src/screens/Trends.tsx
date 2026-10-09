@@ -21,7 +21,7 @@ import { TrendsNav } from '../components/SegmentNav';
 import { LevelLegend } from '../components/LevelLegend';
 import { buildReport, sameStretchLastYear, summarizeRange, weekdaySummary } from '../data/report';
 import { ALIGNMENT_NAMES, alignmentOf, IntentionChart, type MeasuredWeek } from '../components/IntentionChart';
-import { comparisonText, drinksText, typicalDayText, wholeDrinks } from '../lib/reportText';
+import { comparisonText, drinksText, wholeDrinks } from '../lib/reportText';
 import { momentumIncludes } from '../data/baseline';
 import { chartMonths, monthlyRates, SIX_MONTHS, THREE_MONTHS, windowChange, type DrinksEstimate } from '../data/trend';
 import { MonthlyChart } from '../components/MonthlyChart';
@@ -270,20 +270,26 @@ export function Trends() {
             />
           </div>
 
-          <section className="card tr-glance" aria-label={`At a glance, ${scopeLabel}`}>
+          <h2 className="tr-section">{scopeLabel} at a glance</h2>
+          <section className="card tr-glance" aria-label={`${scopeLabel} at a glance`}>
             <div className="tr-glance-row">
               <div><p className="tr-stat-value">{data.total}</p><p className="tr-stat-label">clear days</p></div>
               <div><p className="tr-stat-value">{data.trackedDays}<span className="tr-of"> / {data.availableDays}</span></p><p className="tr-stat-label">days logged</p></div>
               <div><p className="tr-stat-value">{data.weeksMet}<span className="tr-of"> / {data.weeksCounted}</span></p><p className="tr-stat-label">weeks met intention</p></div>
             </div>
             {data.compare && <p className="tr-compare">{comparisonText(data.total, data.compare.before, data.compare.label)}</p>}
-          </section>
-
-          <h2 className="tr-section">Estimated drinks · {scopeLabel}</h2>
-          <div className="card tr-card">
-            <p className="tr-big">
+            <div className="tr-glance-levels"><LevelLegend levels={data.levels} /></div>
+            <p className="tr-glance-drinks">
               {data.drinksPerWeek ? drinksText(data.drinksPerWeek) : 'Not enough logged days for a weekly estimate.'}
             </p>
+            <p className="tr-foot tr-glance-foot">
+              From logged days, counting A few as 1.5 drinks, Moderate as 3.5 and A lot as 5 — its minimum, so a period with an A lot day could be higher. Unlogged days aren't included.{' '}
+              <Link className="tr-help" to="/settings/help?topic=estimates">How is this calculated?</Link>
+            </p>
+          </section>
+
+          <h2 className="tr-section">Drinks by month · {scopeLabel}</h2>
+          <div className="card tr-card">
             <MonthlyChart
               kind="line"
               name={`Months of ${scopeLabel}: estimated drinks a week`}
@@ -319,14 +325,14 @@ export function Trends() {
               </ul>
             )}
             <p className="tr-foot">
-              From logged days, counting A few as 1.5 drinks, Moderate as 3.5 and A lot as 5 — its minimum, so a period with an A lot day could be higher. Unlogged days aren't included.{' '}
+              Estimated drinks a week, from logged days.{' '}
               <Link className="tr-help" to="/settings/help?topic=estimates">How is this calculated?</Link>
             </p>
           </div>
 
           <h2 className="tr-section">By day of week · {scopeLabel}</h2>
           <div className="card tr-card">
-          <LevelLegend levels={data.levels} />
+          <LevelLegend />
           <ul className="tr-dow">
             {[1, 2, 3, 4, 5, 6, 0].map((wd) => {
               const stat = data.dowStats.find((d) => d.weekday === wd) ?? { clear: 0, aFew: 0, more: 0 };
@@ -375,7 +381,6 @@ export function Trends() {
                       {w.logged} logged: {w.levels.clear} clear · {w.levels['a-few']} a few · {w.levels.moderate} moderate · {w.levels['a-lot']} a lot.{' '}
                       {Math.round((w.levels.clear / w.logged) * 100)}% clear.
                     </p>
-                    <p className="tr-detail-line">{typicalDayText(w.perDay!.least, w.perDay!.most, day)}</p>
                   </>
                 )}
               </div>
@@ -385,7 +390,7 @@ export function Trends() {
 
           <h2 className="tr-section">{scope === 'all' ? 'Year by year' : 'Month by month'} · {scopeLabel}</h2>
           <div className="card tr-card">
-            <LevelLegend levels={data.levels} />
+            <LevelLegend />
             <ul className="tr-rows">
               {data.rows.map((r) => {
                 const unlogged = Math.max(0, r.available - r.clear - r.aFew - r.more);

@@ -1,7 +1,7 @@
 // Estimated drinks a week, for Trends, Month by month and the reports — one
 // method everywhere: each logged day counts at its level's middle value
-// (Clear 0, A few 1.5, Moderate 3.5) and A lot at 5, its minimum, so a
-// period with any A lot day reads "or more". Every figure is a weekly rate
+// (Clear 0, A few 1.5, Moderate 3.5) and A lot at 5, its minimum (the
+// footnotes say a period with an A lot day could be higher). Every figure is a weekly rate
 // over logged days, so periods with more or fewer logged days compare fairly.
 
 import { MIDPOINT } from './baseline';

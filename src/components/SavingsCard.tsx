@@ -115,7 +115,7 @@ export function SavingsCard({ scope, scopeLabel, trend }: Props) {
                   </p>
                   {(() => {
                     const c = monthVsPrevious(p);
-                    return c && <p className="mc-detail-line">{savingsChangeText(c.lead, c.diff, price, c.vs)}</p>;
+                    return c && <p className="mc-detail-line">{savingsChangeText(null, c.diff, price, c.vs)}</p>;
                   })()}
                 </>
               );

@@ -73,8 +73,9 @@ with sync_playwright() as p:
     t1 = pg.locator('.mc-detail').first.inner_text()
     chart.focus(); pg.keyboard.press('ArrowLeft'); pg.wait_for_timeout(200)
     t2 = pg.locator('.mc-detail').first.inner_text()
-    check('selected month (latest) compares with the month before', 'September so far' in t1 and 'than August' in t1, t1)
-    check('picking August compares August with July', 'August:' in t2 and 'than July' in t2, t2)
+    # The month heading names the period; the lines under it don't repeat it (rc.11).
+    check('selected month (latest) compares with the month before', 'September 2026' in t1 and 'About ' in t1 and 'than August' in t1 and 'September so far:' not in t1, t1)
+    check('picking August compares August with July', 'August 2026' in t2 and 'than July' in t2 and 'August:' not in t2, t2)
     top = pg.locator('.tr-trends').first.inner_text() if pg.locator('.tr-trends').count() else ''
     check('no fixed "this month vs last month" line below the chart', 'so far' not in top, top)
     ctx.close()

@@ -20,7 +20,7 @@ STATES=[
  ('Onboarding: region','/onboarding',ob(5)),
  ('Onboarding: ready','/onboarding',ob(6)),
  ('Check-in','/',None),
- ('Trends','/trends',"document.querySelectorAll('.tr-row-btn')[7].click(); document.querySelectorAll('.tr-dow-row')[4].click(); document.querySelectorAll('.wg-tile')[10].click();"),
+ ('Trends','/trends',"document.querySelectorAll('.tr-dow-row')[4].click(); document.querySelectorAll('.wg-tile')[10].click();"),
  ('Month in review','/trends/review?year=2026&month=8',"document.querySelector('.rv-include summary').click()"),
  ('Year in review','/trends/review?year=2026',None),
  ('Milestones','/milestones',None),

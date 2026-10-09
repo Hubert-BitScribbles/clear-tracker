@@ -104,7 +104,7 @@ function articles(d: Device): Article[] {
     id: 'trends', title: 'Trends and reports', keywords: 'chart month year review report pdf share print compare unlogged not logged first month missing days',
     body: (
       <>
-        <p><strong>Trends</strong> shows how things change over a year, or all time: estimated drinks, the day of the week, month by month, your intention week by week, and savings. Tap a month, a day or a week to see its details below.</p>
+        <p><strong>Trends</strong> shows a year, or all time: the year at a glance (clear days, days logged, weeks met, each level's total and estimated drinks a week), month by month, the day of the week, weeks by intention, and savings. Tap a month, a day or a week to see its details below.</p>
         <p><strong>Reports</strong> are a month or a year in review, to keep or to share — with a counsellor or doctor, if you like. Choose what's included, then "Share or save as PDF"{P === 'ios' ? ' and tap Share in the print preview' : P === 'android' ? ', and choose Save as PDF as the printer' : ''}.</p>
         <p>Comparisons with an earlier period only appear when that period was tracked from its start, so a partly-tracked month never makes another look better or worse.</p>
         <p><strong>Why does my first month show no unlogged days?</strong> Tracking counts from the first day you've logged. Days before it are before you started, not days you missed, so they aren't shown as not logged. If you fill in earlier days later, the start moves back with them.</p>
@@ -116,7 +116,7 @@ function articles(d: Device): Article[] {
     body: (
       <>
         <p>Each level is a range of drinks — A few is 1–2, Moderate 3–4, A lot 5 or more. To estimate drinks a week, each logged day counts at the middle of its range: A few as 1.5, Moderate as 3.5. A lot has no top, so it counts as 5, its minimum — a period with an A lot day could be higher than the estimate shows.</p>
-        <p>The same figure is used everywhere — the chart, Month by month, comparisons and reports — so a month always reads the same. Only logged days count.</p>
+        <p>The same figure is used everywhere — at a glance, Month by month, comparisons and reports — so a month always reads the same. Only logged days count.</p>
         <p><strong>Savings</strong> compare your drinking with a baseline — drinks a week before tracking — at your price per drink. Type the baseline yourself, or measure it from your first 3 months of tracking (a chosen challenge month is left out). Periods over the baseline are shown honestly.</p>
       </>
     ),

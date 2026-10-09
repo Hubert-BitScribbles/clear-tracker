@@ -3,8 +3,9 @@ import './LevelLegend.css';
 type Levels = { clear: number; 'a-few': number; moderate: number; 'a-lot': number };
 
 /**
- * The four levels with their counts for the period, as a legend for the
- * stacked bars (Month by month, Day of week) in Trends and the report.
+ * The four levels: with counts (the period's totals, shown once, in "at a
+ * glance" on Trends and the report's summary), or as a plain key for the
+ * stacked bars (By day of week, The days).
  * Moderate and A lot share the clay swatch, as they share a segment.
  */
 export function LevelLegend({ levels }: { levels?: Levels }) {

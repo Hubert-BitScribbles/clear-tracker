@@ -4,6 +4,25 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.0.0-rc.12 — 9 October 2026
+
+Trends and reports, reorganised so each thing is said once.
+
+- Trends opens with "2026 at a glance" (or "All time at a glance"): clear
+  days, days logged, weeks met, each level's total and estimated drinks a
+  week, with how it's counted. The level totals are no longer repeated
+  above By day of week.
+- Month by month is now the drinks chart, with each month's levels, days
+  logged, the change from the month before, and links to its review and to
+  Check-in. The separate month bars are gone (under All time: the last 12
+  months).
+- By day of week: a day's details are its counts and % clear; the "typical
+  Friday" line is gone.
+- Intention is now "Weeks by intention".
+- Reports match: the summary card carries the level totals and, when
+  Estimated drinks is included, the drinks figure and change; sections read
+  The days, Weeks by intention, By day of week.
+
 ## 1.0.0-rc.11 — 9 October 2026
 
 Estimates, said once and plainly.

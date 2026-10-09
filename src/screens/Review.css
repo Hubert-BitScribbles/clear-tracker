@@ -26,6 +26,10 @@
 .rv-of { font-size: 14px; color: var(--on-card-muted); }
 .rv-stat-label { font-size: 11px; color: var(--on-card-muted); }
 .rv-compare { text-align: center; margin-top: 10px; }
+.rv-glance-levels { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; justify-content: center; }
+.rv-glance-levels .lvl-legend { margin: 0; justify-content: center; }
+.rv-glance-drinks { text-align: center; margin-top: 10px; }
+.rv-glance-drinks .rv-big { margin: 0 0 4px; }
 .rv-muted { font-size: 12px; color: var(--on-card-muted); }
 .rv-big { font-family: var(--font-ui); font-weight: 700; font-size: 17px; color: var(--on-card-primary); }
 .rv-foot { font-size: 11px; line-height: 16px; margin-top: 6px; color: var(--on-card-muted); }

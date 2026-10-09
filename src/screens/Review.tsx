@@ -26,8 +26,8 @@ const fmt = (iso: string) => `${SHORT[Number(iso.slice(5, 7)) - 1]} ${Number(iso
 
 const SECTIONS = [
   ['days', 'The days'],
-  ['intention', 'Intention'],
-  ['patterns', 'Day of week'],
+  ['intention', 'Weeks by intention'],
+  ['patterns', 'By day of week'],
   ['drinks', 'Estimated drinks'],
   ['savings', 'Estimated savings'],
   ['milestones', 'Milestones'],
@@ -140,13 +140,22 @@ export function Review() {
               )}
             </div>
             {r.previous && <p className="rv-muted rv-compare">{comparisonText(r.levels.clear, r.previous.clear, prevLabel)}</p>}
+            {/* The period at a glance: the level totals once, and (if Estimated drinks is included) the drinks figure. */}
+            <div className="rv-glance-levels"><LevelLegend levels={r.levels} /></div>
+            {show('drinks') && (
+              <div className="rv-glance-drinks">
+                <p className="rv-big">{r.drinksPerWeek ? drinksText(r.drinksPerWeek) : 'Not enough logged days for a weekly estimate.'}</p>
+                {r.drinksChange && <p className="rv-muted">{drinksChangeText(null, r.drinksChange.diff, prevLabel)}</p>}
+                <p className="rv-foot">From logged days, counting A few as 1.5 drinks, Moderate as 3.5 and A lot as 5 — its minimum, so a period with an A lot day could be higher. Unlogged days aren't included.</p>
+              </div>
+            )}
           </section>
 
           {show('days') && (
             <section className="rv-section">
               <h2 className="rv-sec">The days</h2>
               <div className="card rv-card">
-                <LevelLegend levels={r.levels} />
+                <LevelLegend />
                 {period.month ? (
                   <div className="rv-cal" aria-label={`Calendar for ${label}`}>
                     {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => <span key={i} className="rv-wd" aria-hidden="true">{d}</span>)}
@@ -175,7 +184,7 @@ export function Review() {
 
           {show('intention') && (
             <section className="rv-section">
-              <h2 className="rv-sec">Intention</h2>
+              <h2 className="rv-sec">Weeks by intention</h2>
               <div className="card rv-card rv-text">
                 <p>
                   {r.targets.length === 0
@@ -199,9 +208,9 @@ export function Review() {
 
           {show('patterns') && (
             <section className="rv-section">
-              <h2 className="rv-sec">Day of week</h2>
+              <h2 className="rv-sec">By day of week</h2>
               <div className="card rv-card">
-                <LevelLegend levels={r.levels} />
+                <LevelLegend />
                 <ul className="rv-dow">
                   {r.dayOfWeek.map((w) => {
                     const n = w.clear + w.aFew + w.more;
@@ -218,19 +227,6 @@ export function Review() {
                     );
                   })}
                 </ul>
-              </div>
-            </section>
-          )}
-
-          {show('drinks') && (
-            <section className="rv-section">
-              <h2 className="rv-sec">Estimated drinks</h2>
-              <div className="card rv-card rv-text">
-                <p className="rv-big">{r.drinksPerWeek ? drinksText(r.drinksPerWeek) : 'Not enough logged days for a weekly estimate.'}</p>
-                {r.drinksChange && <p>{drinksChangeText(null, r.drinksChange.diff, prevLabel)}</p>}
-                <p className="rv-foot">
-                  From logged days, counting A few as 1.5 drinks, Moderate as 3.5 and A lot as 5 — its minimum, so a period with an A lot day could be higher. Unlogged days aren't included.
-                </p>
               </div>
             </section>
           )}

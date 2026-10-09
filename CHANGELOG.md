@@ -21,6 +21,8 @@ The month/year report, reviewed for sharing with a counsellor or doctor.
   2026: about 1 more drink a week than July"), when both have 7+ logged days.
 - The footer says the report is from days the person logged themselves
   (self-reported).
+- About: an optional "buy me a coffee ☕" link to support bitScribbles — a
+  plain link (no embedded script), and nowhere else in the app.
 
 ## 1.0.0-rc.6 — 8 October 2026
 

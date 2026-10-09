@@ -11,6 +11,7 @@ import { getBackupData, getChallenges, getSavingsSettings, getSetting, setSettin
 import { addDays, daysInMonth, isoOf, todayIso, weekdayOf } from '../data/dates';
 import { buildReport, defaultPeriod, periodBounds, previousPeriod, type Period, type Report } from '../data/report';
 import { comparisonText, drinksText } from '../lib/reportText';
+import { drinksChangeText } from '../lib/trendText';
 import { describeSavings } from '../lib/savings';
 import './Review.css';
 
@@ -30,8 +31,11 @@ const SECTIONS = [
   ['drinks', 'Estimated drinks'],
   ['savings', 'Estimated savings'],
   ['milestones', 'Milestones'],
+  ['challenges', 'Challenges'],
 ] as const;
 type Section = (typeof SECTIONS)[number][0];
+// For you more than for a reader: left out until ticked (rc.7).
+const OFF_BY_DEFAULT: Section[] = ['savings', 'milestones', 'challenges'];
 
 export const periodLabel = (p: Period) => (p.month ? `${MONTHS[p.month - 1]} ${p.year}` : String(p.year));
 const plural = (n: number, unit: string) => `${n} ${unit}${n === 1 ? '' : 's'}`;
@@ -55,7 +59,8 @@ export function Review() {
       if (cancelled) return;
       const savings = sv.effective;
       setSavingsSet(!!savings);
-      setHidden(new Set(h ? (h.split(',') as Section[]) : []));
+      // '' = never chosen (use the defaults); 'none' = everything included.
+      setHidden(new Set(h === '' ? OFF_BY_DEFAULT : h === 'none' ? [] : (h.split(',') as Section[])));
       setReport(buildReport(new Data({ entries: all.dayEntries, intentions: all.intentions }), period, today, savings, ch));
       // Opening a month's review counts as seeing it (for the Check-in note).
       if (period.month) setSetting(`report_seen_${period.year}-${String(period.month).padStart(2, '0')}`, 'true');
@@ -77,7 +82,7 @@ export function Review() {
     if (h.has(s)) h.delete(s);
     else h.add(s);
     setHidden(h);
-    setSetting('report_hidden_sections', [...h].join(','));
+    setSetting('report_hidden_sections', h.size ? [...h].join(',') : 'none');
   };
   const show = (s: Section) => !hidden.has(s);
 
@@ -129,7 +134,10 @@ export function Review() {
             <div className="rv-stats">
               <div><p className="rv-stat-value">{r.levels.clear}</p><p className="rv-stat-label">clear days</p></div>
               <div><p className="rv-stat-value">{r.logged}<span className="rv-of"> / {r.daysInPeriod}</span></p><p className="rv-stat-label">days logged</p></div>
-              <div><p className="rv-stat-value">{r.weeks.met}<span className="rv-of"> / {r.weeks.counted}</span></p><p className="rv-stat-label">weeks met intention</p></div>
+              {/* Follows the sections chosen: no intention figures if Intention is left out. */}
+              {show('intention') && (
+                <div><p className="rv-stat-value">{r.weeks.met}<span className="rv-of"> / {r.weeks.counted}</span></p><p className="rv-stat-label">weeks met intention</p></div>
+              )}
             </div>
             {r.previous && <p className="rv-muted rv-compare">{comparisonText(r.levels.clear, r.previous.clear, prevLabel)}</p>}
           </section>
@@ -180,7 +188,8 @@ export function Review() {
                 {r.weeks.counted > 0 && (
                   <p>
                     Met in {r.weeks.met} of {plural(r.weeks.counted, 'week')}
-                    {r.weeks.exceeded ? `, beyond it in ${r.weeks.exceeded}` : ''}.
+                    {r.weeks.exceeded ? `, beyond it in ${r.weeks.exceeded}` : ''}
+                    {r.weeks.unclear ? `; ${r.weeks.unclear} with too few days logged to say` : ''}.
                     {r.backOnTrack ? ` Back on track after a missed week ${r.backOnTrack === 1 ? 'once' : r.backOnTrack === 2 ? 'twice' : `${r.backOnTrack} times`}.` : ''}
                   </p>
                 )}
@@ -218,6 +227,7 @@ export function Review() {
               <h2 className="rv-sec">Estimated drinks</h2>
               <div className="card rv-card rv-text">
                 <p className="rv-big">{r.drinksPerWeek ? drinksText(r.drinksPerWeek.least, r.drinksPerWeek.most) : 'Not enough logged days for a weekly estimate.'}</p>
+                {r.drinksChange && <p>{drinksChangeText(label, r.drinksChange.diff, prevLabel)}</p>}
                 <p className="rv-foot">
                   From logged days: A few = 1–2 drinks, Moderate = 3–4, A lot = 5 or more. Unlogged days aren't included.
                 </p>
@@ -231,6 +241,19 @@ export function Review() {
               <div className="card rv-card rv-text">
                 <p className="rv-big">{describeSavings(r.savings.most, r.savings.least)}</p>
                 <p className="rv-foot">Against the baseline set in Settings, over logged days.</p>
+              </div>
+            </section>
+          )}
+
+          {show('challenges') && r.challenges.length > 0 && (
+            <section className="rv-section">
+              <h2 className="rv-sec">Challenges</h2>
+              <div className="card rv-card">
+                <ul className="rv-ms">
+                  {r.challenges.map((c) => (
+                    <li key={c.title + (c.date ?? '')}><span>{c.title}</span><span className="rv-muted">{c.date ? fmt(c.date) : c.note}</span></li>
+                  ))}
+                </ul>
               </div>
             </section>
           )}
@@ -253,8 +276,8 @@ export function Review() {
       )}
 
       <p className="rv-generated">
-        Made with Clear Tracker on {fmt(today)}, {today.slice(0, 4)}, from days logged by the user. Amounts are estimates
-        from ranges.
+        Made with Clear Tracker on {fmt(today)}, {today.slice(0, 4)}, from days the person logged themselves
+        (self-reported). Amounts are estimates from ranges.
       </p>
 
       <div className="rv-noprint rv-share">
@@ -267,7 +290,7 @@ export function Review() {
         <details className="rv-include">
           <summary>Choose what's included</summary>
           <div className="rv-checks">
-            {SECTIONS.filter(([k]) => k !== 'savings' || savingsSet).map(([k, l]) => (
+            {SECTIONS.filter(([k]) => (k !== 'savings' || savingsSet) && (k !== 'challenges' || !!report?.challenges.length)).map(([k, l]) => (
               <label key={k}><input type="checkbox" checked={show(k)} onChange={() => toggle(k)} /> {l}</label>
             ))}
           </div>

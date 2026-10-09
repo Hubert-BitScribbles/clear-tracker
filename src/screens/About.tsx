@@ -49,6 +49,15 @@ export function About() {
           Clear Tracker is made by bitScribbles: small apps, carefully made. Every app starts as a scribble — an idea
           sketched for a real need — and is refined until it's simple, private and pleasant to use.
         </p>
+        {/* A plain link, no embedded button script: nothing loads from elsewhere unless it's tapped. */}
+        <p className="ab-body ab-gap">
+          Clear Tracker is free, with no ads and no paid version. If it's useful to you and you'd like to support
+          bitScribbles, you can{' '}
+          <a className="ab-coffee" href="https://buymeacoffee.com/bitscribbles" target="_blank" rel="noopener noreferrer">
+            buy me a coffee ☕
+          </a>
+          .
+        </p>
       </div>
 
       <h2 className="ab-sec">How it's designed</h2>

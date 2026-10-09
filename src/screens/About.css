@@ -39,3 +39,4 @@
 .ab-principles li { font-size: 12px; line-height: 18px; color: var(--on-card-secondary); }
 .ab-principles strong { color: var(--on-card-primary); }
 .ab-brand { text-transform: none; }
+.ab-coffee { color: var(--primary-text); font-weight: 600; }

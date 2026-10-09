@@ -26,3 +26,4 @@
 .mc-step:disabled { opacity: 0.3; cursor: default; }
 .mc-detail-line { font-size: 12px; line-height: 18px; margin-top: 4px; text-align: center; color: var(--on-card-secondary); }
 .mc-detail-link { display: block; text-align: center; margin-top: 6px; font-size: 13px; font-weight: 600; color: var(--primary-text); text-decoration: none; }
+.mc-detail-links { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; }

@@ -105,6 +105,10 @@
 .tr-glance-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
 .tr-glance .tr-stat-label { margin: 2px 0 0; }
 .tr-of { font-size: 14px; color: var(--on-card-muted); }
+.tr-glance-levels { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; justify-content: center; }
+.tr-glance-levels .lvl-legend { margin: 0; justify-content: center; }
+.tr-glance-drinks { font-family: var(--font-ui); font-weight: 700; font-size: 17px; text-align: center; margin: 10px 0 0; }
+.tr-glance-foot { text-align: center; }
 .tr-compare { font-size: 12px; text-align: center; margin-top: 10px; color: var(--on-card-muted); }
 .tr-card { padding: 14px; }
 .tr-big { font-family: var(--font-ui); font-weight: 700; font-size: 17px; }

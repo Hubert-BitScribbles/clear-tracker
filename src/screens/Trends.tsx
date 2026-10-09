@@ -21,7 +21,7 @@ import { TrendsNav } from '../components/SegmentNav';
 import { LevelLegend } from '../components/LevelLegend';
 import { buildReport, sameStretchLastYear, summarizeRange, weekdaySummary } from '../data/report';
 import { ALIGNMENT_NAMES, alignmentOf, IntentionChart, type MeasuredWeek } from '../components/IntentionChart';
-import { comparisonText, drinksText, typicalDayText, wholeDrinks } from '../lib/reportText';
+import { comparisonText, drinksText, wholeDrinks } from '../lib/reportText';
 import { momentumIncludes } from '../data/baseline';
 import { chartMonths, monthlyRates, SIX_MONTHS, THREE_MONTHS, windowChange, type DrinksEstimate } from '../data/trend';
 import { MonthlyChart } from '../components/MonthlyChart';
@@ -40,16 +40,16 @@ import './Trends.css';
 //   the day-of-week section.
 // - Streak cards follow the selected year: a past year shows its best; the
 //   current year shows now, and its best beneath.
-// - From the month/year in review: an "At a glance" card (clear days with a
-//   comparison, days logged, weeks met), estimated drinks per week, and
-//   month-by-month bars (year-by-year under All time).
-// - Intention: weekly bars against the target (IntentionChart), replacing
-//   the chip grid; per-month clear counts now live in Month by month.
+// - "2026 at a glance" (rc.12): clear days with a comparison, days logged,
+//   weeks met, each level's total (shown only here) and estimated drinks a
+//   week. Then Month by month: the drinks chart, each month's details (levels,
+//   days logged, the change from the month before, links to its review and
+//   Check-in); the last 12 months under All time.
+// - Weeks by intention: weekly bars against the target (IntentionChart).
 
 const MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const WEEKDAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const WEEKDAY_LONG = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const MONTH_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 type Scope = number | 'all';
 
@@ -89,7 +89,6 @@ export function Trends() {
   const [scope, setScope] = useState<Scope>(thisYear);
   const [data, setData] = useState<Data | null>(null);
   const [expandedWeek, setExpandedWeek] = useState<string | null>(null);
-  const [rowSel, setRowSel] = useState<string | null>(null);
   const [dowSel, setDowSel] = useState<number | null>(null);
 
   // The intention grid always needs a concrete year: under "All time" it
@@ -241,7 +240,6 @@ export function Trends() {
                   onClick={() => {
                     setScope(opt);
                     setExpandedWeek(null);
-                    setRowSel(null);
                     setDowSel(null);
                   }}
                 >
@@ -270,20 +268,26 @@ export function Trends() {
             />
           </div>
 
-          <section className="card tr-glance" aria-label={`At a glance, ${scopeLabel}`}>
+          <h2 className="tr-section">{scopeLabel} at a glance</h2>
+          <section className="card tr-glance" aria-label={`${scopeLabel} at a glance`}>
             <div className="tr-glance-row">
               <div><p className="tr-stat-value">{data.total}</p><p className="tr-stat-label">clear days</p></div>
               <div><p className="tr-stat-value">{data.trackedDays}<span className="tr-of"> / {data.availableDays}</span></p><p className="tr-stat-label">days logged</p></div>
               <div><p className="tr-stat-value">{data.weeksMet}<span className="tr-of"> / {data.weeksCounted}</span></p><p className="tr-stat-label">weeks met intention</p></div>
             </div>
             {data.compare && <p className="tr-compare">{comparisonText(data.total, data.compare.before, data.compare.label)}</p>}
-          </section>
-
-          <h2 className="tr-section">Estimated drinks · {scopeLabel}</h2>
-          <div className="card tr-card">
-            <p className="tr-big">
+            <div className="tr-glance-levels"><LevelLegend levels={data.levels} /></div>
+            <p className="tr-glance-drinks">
               {data.drinksPerWeek ? drinksText(data.drinksPerWeek) : 'Not enough logged days for a weekly estimate.'}
             </p>
+            <p className="tr-foot tr-glance-foot">
+              From logged days, counting A few as 1.5 drinks, Moderate as 3.5 and A lot as 5 — its minimum, so a period with an A lot day could be higher. Unlogged days aren't included.{' '}
+              <Link className="tr-help" to="/settings/help?topic=estimates">How is this calculated?</Link>
+            </p>
+          </section>
+
+          <h2 className="tr-section">Month by month · {scope === 'all' ? 'last 12 months' : scopeLabel}</h2>
+          <div className="card tr-card">
             <MonthlyChart
               kind="line"
               name={`Months of ${scopeLabel}: estimated drinks a week`}
@@ -307,7 +311,10 @@ export function Trends() {
                     <p className="mc-detail-line">
                       {r.levels.clear} clear · {r.levels['a-few']} a few · {r.levels.moderate} moderate · {r.levels['a-lot']} a lot · {p.logged} days logged
                     </p>
-                    <Link className="mc-detail-link" to={`/trends/review?year=${p.year}&month=${p.month}`}>{ML[p.month - 1]} {p.year} in review →</Link>
+                    <div className="mc-detail-links">
+                      <Link className="mc-detail-link" to={`/trends/review?year=${p.year}&month=${p.month}`}>{ML[p.month - 1]} {p.year} in review →</Link>
+                      <Link className="mc-detail-link" to={`/?year=${p.year}&month=${p.month}`}>View on Check-in →</Link>
+                    </div>
                   </>
                 );
               }}
@@ -319,14 +326,14 @@ export function Trends() {
               </ul>
             )}
             <p className="tr-foot">
-              From logged days, counting A few as 1.5 drinks, Moderate as 3.5 and A lot as 5 — its minimum, so a period with an A lot day could be higher. Unlogged days aren't included.{' '}
+              Estimated drinks a week, from logged days.{' '}
               <Link className="tr-help" to="/settings/help?topic=estimates">How is this calculated?</Link>
             </p>
           </div>
 
           <h2 className="tr-section">By day of week · {scopeLabel}</h2>
           <div className="card tr-card">
-          <LevelLegend levels={data.levels} />
+          <LevelLegend />
           <ul className="tr-dow">
             {[1, 2, 3, 4, 5, 6, 0].map((wd) => {
               const stat = data.dowStats.find((d) => d.weekday === wd) ?? { clear: 0, aFew: 0, more: 0 };
@@ -375,7 +382,6 @@ export function Trends() {
                       {w.logged} logged: {w.levels.clear} clear · {w.levels['a-few']} a few · {w.levels.moderate} moderate · {w.levels['a-lot']} a lot.{' '}
                       {Math.round((w.levels.clear / w.logged) * 100)}% clear.
                     </p>
-                    <p className="tr-detail-line">{typicalDayText(w.perDay!.least, w.perDay!.most, day)}</p>
                   </>
                 )}
               </div>
@@ -383,61 +389,8 @@ export function Trends() {
           })()}
           </div>
 
-          <h2 className="tr-section">{scope === 'all' ? 'Year by year' : 'Month by month'} · {scopeLabel}</h2>
-          <div className="card tr-card">
-            <LevelLegend levels={data.levels} />
-            <ul className="tr-rows">
-              {data.rows.map((r) => {
-                const unlogged = Math.max(0, r.available - r.clear - r.aFew - r.more);
-                return (
-                  <li key={r.label}>
-                    <button
-                      type="button"
-                      className="tr-row-btn"
-                      aria-pressed={rowSel === r.label}
-                      aria-label={`${r.label}: ${r.clear} clear, ${r.aFew} a few, ${r.more} moderate or a lot, ${unlogged} not logged`}
-                      onClick={() => setRowSel((x) => (x === r.label ? null : r.label))}
-                    >
-                      <span className="tr-row-label" aria-hidden="true">{r.label}</span>
-                      <span className="tr-row-bar" aria-hidden="true">
-                        {r.clear > 0 && <span className="tr-dow-seg tr-seg-clear" style={{ flex: r.clear }} />}
-                        {r.aFew > 0 && <span className="tr-dow-seg tr-seg-a-few" style={{ flex: r.aFew }} />}
-                        {r.more > 0 && <span className="tr-dow-seg tr-seg-drinking" style={{ flex: r.more }} />}
-                        {unlogged > 0 && <span className="tr-dow-seg tr-seg-none" style={{ flex: unlogged }} />}
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-            {(() => {
-              const r = data.rows.find((x) => x.label === rowSel);
-              if (!r) return <p className="tr-foot">Tap a {scope === 'all' ? 'year' : 'month'} for details.</p>;
-              const sum = summarizeRange(data.snap, r.start, r.end);
-              const unlogged = Math.max(0, r.available - sum.logged);
-              const name = r.month ? `${MONTH_LONG[r.month - 1]} ${r.year}` : String(r.year);
-              const review = `/trends/review?year=${r.year}${r.month ? `&month=${r.month}` : ''}`;
-              return (
-                <div className="tr-detail" role="region" aria-label={`${name} details`}>
-                  <p className="tr-detail-week">{name}</p>
-                  <p className="tr-detail-line">
-                    {sum.levels.clear} clear · {sum.levels['a-few']} a few · {sum.levels.moderate} moderate · {sum.levels['a-lot']} a lot · {unlogged} not logged
-                  </p>
-                  <p className="tr-detail-line">
-                    {sum.drinksPerWeek ? drinksText(sum.drinksPerWeek) : 'Not enough logged days for a weekly estimate.'}
-                  </p>
-                  <div className="tr-detail-links">
-                    <Link className="tr-view-week" to={review}>{name} in review →</Link>
-                    {r.month && <Link className="tr-view-week" to={`/?year=${r.year}&month=${r.month}`}>View on Check-in →</Link>}
-                  </div>
-                </div>
-              );
-            })()}
-            <p className="tr-foot">Grey = days not logged.</p>
-          </div>
-
           <h2 className="tr-section">
-            Intention · {alignmentYear}
+            Weeks by intention · {alignmentYear}
             {scope === 'all' ? ' (most recent year)' : ''}
           </h2>
           <div className="tr-legend">

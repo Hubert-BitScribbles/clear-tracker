@@ -1,6 +1,6 @@
 // Support resources by region, for the Resources page.
 //
-// CHECKED 5 October 2026 against official sources (re-check before each release):
+// CHECKED 5 October 2026 against official sources (national lines re-checked 9 October 2026) (re-check before each release):
 // - Canada, crisis: 988.ca; canada.ca "Mental health support: get help" (modified 2026-01-14).
 // - Canada, provincial/territorial addiction lines: Canadian Centre on Substance Use and
 //   Addiction, "Addictions Treatment Helplines in Canada" (ccsa.ca); confirmed

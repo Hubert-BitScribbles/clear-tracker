@@ -1,11 +1,11 @@
-# Icon A "The clear day": teal tile, Paper cell, teal dot. Drawn on 100x100.
+# Icon A "The clear day": brand Teal (#16B3A3) tile, Paper cell, Teal dot. Drawn on 100x100.
 # Run from the repo root: python3 design/make-icons.py (needs Playwright).
 import sys
 from playwright.sync_api import sync_playwright
-MARK = '<rect x="{x}" y="{x}" width="{w}" height="{w}" rx="{r}" fill="#FAFAF9"/><circle cx="50" cy="50" r="{d}" fill="#0E8175"/>'
+MARK = '<rect x="{x}" y="{x}" width="{w}" height="{w}" rx="{r}" fill="#FAFAF9"/><circle cx="50" cy="50" r="{d}" fill="#16B3A3"/>'
 def svg(scale=1.0, rounded=False):
     w=60*scale; x=50-w/2
-    bg = '<rect width="100" height="100" rx="22.5" fill="#0E8175"/>' if rounded else '<rect width="100" height="100" fill="#0E8175"/>'
+    bg = '<rect width="100" height="100" rx="22.5" fill="#16B3A3"/>' if rounded else '<rect width="100" height="100" fill="#16B3A3"/>'
     return f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">{bg}{MARK.format(x=x,w=w,r=14*scale,d=11*scale)}</svg>'
 out = {  # path: (size, scale, rounded)
  'public/icons/icon-512.png':(512,1,True), 'public/icons/icon-192.png':(192,1,True),

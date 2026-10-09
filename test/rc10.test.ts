@@ -27,13 +27,15 @@ describe('one estimate of drinks a week, wherever it shows', () => {
     expect(report).toEqual(row);
   });
   it('and read the same', () => {
-    const t = drinksText(row, 'September');
-    expect(t).toBe('September: about 14 or more drinks a week');
-    expect(drinksText({ perWeek: chart.perWeek!, orMore: chart.orMore }, 'September')).toBe(t);
+    const t = drinksText(row);
+    expect(t).toBe('About 14 drinks a week');
+    expect(drinksText({ perWeek: chart.perWeek! })).toBe(t);
   });
-  it('no A lot day: no "or more"', () => {
-    // 1.5 + 9 × 3.5 = 33 drinks over 25 days → 9.24 a week
-    const d2 = new Data({ entries: sept.slice(0, 25), intentions: [] });
-    expect(drinksText(summarizeRange(d2, '2026-09-01', '2026-09-30').drinksPerWeek!, 'September')).toBe('September: about 9 drinks a week');
+  it('comparisons under a heading drop the period name; separate periods keep theirs', async () => {
+    const { drinksChangeText, savingsChangeText } = await import('../src/lib/trendText');
+    expect(drinksChangeText(null, 5.2, 'September')).toBe('About 5 more drinks a week than September');
+    expect(drinksChangeText(null, 0.2, 'August')).toBe('About the same as August');
+    expect(savingsChangeText(null, -1, 10, 'August')).toBe('Saving about $10 more a week than August');
+    expect(drinksChangeText('Last 3 months', -2.4, 'the 3 before')).toBe('Last 3 months: about 2 fewer drinks a week than the 3 before');
   });
 });

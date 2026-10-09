@@ -9,16 +9,14 @@ export function wholeDrinks(n: number): number {
   return n - f > 0.5 + 1e-9 ? f + 1 : f;
 }
 
-/** "About 9–12 drinks a week", "About 9 or more…" when open-ended. */
 /**
- * "September: about 14 drinks a week", "2026: about 19 or more drinks a week"
- * (or more: an A lot day was logged — A lot counts at 5, its minimum).
- * Without a lead: "About 14 drinks a week".
+ * "About 14 drinks a week". A lot counts at 5, its minimum; the footnote under
+ * each estimate says a period with an A lot day could be higher — the figure
+ * itself stays plain (no judgement). The heading above names the period.
  */
-export function drinksText(e: { perWeek: number; orMore: boolean }, lead?: string): string {
+export function drinksText(e: { perWeek: number }): string {
   const n = wholeDrinks(e.perWeek);
-  const text = `about ${n}${e.orMore ? ' or more' : ''} drink${n === 1 && !e.orMore ? '' : 's'} a week`;
-  return lead ? `${lead}: ${text}` : text.charAt(0).toUpperCase() + text.slice(1);
+  return `About ${n} drink${n === 1 ? '' : 's'} a week`;
 }
 
 /** "4 more clear days than July", "2 fewer…", "The same number of…". No judgement either way. */

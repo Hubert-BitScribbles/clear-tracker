@@ -20,11 +20,14 @@ export const challengeNote = (yms: string[]) => (yms.length ? ` (the comparison 
 const n1 = (x: number) => Math.max(1, Math.round(Math.abs(x)));
 const money = (x: number) => `$${Math.round(Math.abs(x)).toLocaleString('en-CA')}`;
 
-/** "September so far: about 1 fewer drink a week than August" (within ½ a drink: "about the same as August"). */
-export function drinksChangeText(lead: string, diff: number, vs: string): string {
-  if (Math.abs(diff) < 0.5) return `${lead}: about the same as ${vs}`;
+/** "Last 3 months: …" — or, with no lead (under a heading that already names the period), "About …". */
+const led = (lead: string | null, text: string) => (lead ? `${lead}: ${text}` : text.charAt(0).toUpperCase() + text.slice(1));
+
+/** "Last 3 months: about 1 fewer drink a week than the 3 before" (within ½ a drink: "about the same as …"). */
+export function drinksChangeText(lead: string | null, diff: number, vs: string): string {
+  if (Math.abs(diff) < 0.5) return led(lead, `about the same as ${vs}`);
   const k = n1(diff);
-  return `${lead}: about ${k} ${diff < 0 ? 'fewer' : 'more'} drink${k === 1 ? '' : 's'} a week than ${vs}`;
+  return led(lead, `about ${k} ${diff < 0 ? 'fewer' : 'more'} drink${k === 1 ? '' : 's'} a week than ${vs}`);
 }
 
 /**
@@ -33,15 +36,15 @@ export function drinksChangeText(lead: string, diff: number, vs: string): string
  * "About the same" uses the drinks rule (within ½ a drink a week), so the
  * drinks and savings cards never seem to disagree.
  */
-export function savingsChangeText(lead: string, drinksDiff: number, price: number, vs: string): string {
+export function savingsChangeText(lead: string | null, drinksDiff: number, price: number, vs: string): string {
   const dollars = -drinksDiff * price;
-  if (Math.abs(drinksDiff) < 0.5) return `${lead}: about the same as ${vs}`;
-  return `${lead}: saving about ${money(dollars)} ${dollars > 0 ? 'more' : 'less'} a week than ${vs}`;
+  if (Math.abs(drinksDiff) < 0.5) return led(lead, `about the same as ${vs}`);
+  return led(lead, `saving about ${money(dollars)} ${dollars > 0 ? 'more' : 'less'} a week than ${vs}`);
 }
 
 /**
  * A month against the one before it, for the selected month on a chart:
- * "September so far: about 1 fewer drink a week than August". Null when
+ * "About 1 fewer drink a week than August" (under the month heading). Null when
  * either month has too few logged days.
  */
 export function monthVsPrevious(p: MonthPoint): { lead: string; diff: number; vs: string } | null {

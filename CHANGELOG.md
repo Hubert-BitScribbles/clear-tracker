@@ -4,6 +4,19 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.0.0-rc.11 — 9 October 2026
+
+Estimates, said once and plainly.
+
+- No repeated period names: under a heading that already says "October 2026
+  (so far)" or "September 2026", the estimate reads "About 19 drinks a week"
+  and the comparison "About 5 more drinks a week than September" — on the
+  Estimated drinks chart, Month by month, Estimated savings and the reports.
+  "Last 3 months" and "Last 6 months" keep their names, being periods of
+  their own.
+- No "or more" on the figure. A lot still counts as 5, its minimum; the
+  footnote says a period with an A lot day could be higher.
+
 ## 1.0.0-rc.10 — 9 October 2026
 
 One estimate of drinks a week, wherever it shows.

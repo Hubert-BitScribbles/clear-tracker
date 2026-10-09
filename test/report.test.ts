@@ -106,11 +106,10 @@ describe('periods', () => {
 describe('report wording', async () => {
   const { comparisonText, drinksText } = await import('../src/lib/reportText');
   it('drinks', () => {
-    expect(drinksText({ perWeek: 13.5, orMore: false })).toBe('About 13 drinks a week');
-    expect(drinksText({ perWeek: 13.53, orMore: true }, 'September')).toBe('September: about 14 or more drinks a week');
-    expect(drinksText({ perWeek: 1.2, orMore: false }, '2026')).toBe('2026: about 1 drink a week');
-    expect(drinksText({ perWeek: 0.7, orMore: true })).toBe('About 1 or more drinks a week');
-    expect(drinksText({ perWeek: 0, orMore: false })).toBe('About 0 drinks a week');
+    expect(drinksText({ perWeek: 13.5 })).toBe('About 13 drinks a week');
+    expect(drinksText({ perWeek: 13.53 })).toBe('About 14 drinks a week');
+    expect(drinksText({ perWeek: 1.2 })).toBe('About 1 drink a week');
+    expect(drinksText({ perWeek: 0 })).toBe('About 0 drinks a week');
   });
   it('comparison', () => {
     expect(comparisonText(14, 10, 'July')).toBe('4 more clear days than July');

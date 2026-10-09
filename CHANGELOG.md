@@ -4,6 +4,22 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.0.0-rc.10 — 9 October 2026
+
+One estimate of drinks a week, wherever it shows.
+
+- The same month could read differently in different places: September at
+  "about 14" on the Estimated drinks chart but "about 12 or more" in Month
+  by month (low ends of each level's range). Now every estimate — the year
+  or All time line, the chart and its month details, Month by month, and
+  the reports — counts each logged day at its level's middle value (A few
+  1.5, Moderate 3.5) and A lot at 5, its minimum, adding "or more" whenever
+  the period has an A lot day.
+- Each estimate names its period: "2026: about 19 or more drinks a week",
+  "September: about 14 or more drinks a week", "October so far: …".
+- The footnotes and Help → How the estimates work say how it's counted.
+  Savings estimates are unchanged.
+
 ## 1.0.0-rc.9 — 9 October 2026
 
 Getting ready for 1.0.

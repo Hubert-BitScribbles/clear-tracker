@@ -10,11 +10,15 @@ export function wholeDrinks(n: number): number {
 }
 
 /** "About 9–12 drinks a week", "About 9 or more…" when open-ended. */
-export function drinksText(least: number, most: number | null): string {
-  const a = wholeDrinks(least);
-  if (most === null) return `About ${a} or more drinks a week`;
-  const b = wholeDrinks(most);
-  return a === b ? `About ${a} drink${a === 1 ? '' : 's'} a week` : `About ${a}–${b} drinks a week`;
+/**
+ * "September: about 14 drinks a week", "2026: about 19 or more drinks a week"
+ * (or more: an A lot day was logged — A lot counts at 5, its minimum).
+ * Without a lead: "About 14 drinks a week".
+ */
+export function drinksText(e: { perWeek: number; orMore: boolean }, lead?: string): string {
+  const n = wholeDrinks(e.perWeek);
+  const text = `about ${n}${e.orMore ? ' or more' : ''} drink${n === 1 && !e.orMore ? '' : 's'} a week`;
+  return lead ? `${lead}: ${text}` : text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 /** "4 more clear days than July", "2 fewer…", "The same number of…". No judgement either way. */

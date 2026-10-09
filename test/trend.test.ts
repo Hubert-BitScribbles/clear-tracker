@@ -14,7 +14,7 @@ describe('rates', () => {
   it('drinks a week over logged days, at single figures per level', () => {
     // 2 days: moderate (3.5) + clear → 3.5 drinks over 2 logged days = 12.25 a week
     const d = new Data({ entries: [e('2026-09-01', 'moderate'), e('2026-09-02', 'clear')], intentions: [] });
-    expect(rate(d, '2026-09-01', '2026-09-30')).toEqual({ perWeek: 12.25, logged: 2 });
+    expect(rate(d, '2026-09-01', '2026-09-30')).toEqual({ perWeek: 12.25, logged: 2, orMore: false });
   });
   it('monthly: a month with fewer than 7 logged days has no figure', () => {
     const d = new Data({ entries: [...run('2026-08-01', 10, 'a-few'), ...run('2026-09-01', 3, 'a-few')], intentions: [] });

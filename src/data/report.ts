@@ -9,7 +9,7 @@ import { Data } from './compute';
 import { addDays, daysInMonth, isoOf, yearOf, type Iso } from './dates';
 import type { DrinkAmount } from './db';
 import { monthChallenge, type ChallengeSettings } from './challenges';
-import { MIN_LOGGED_MONTH, rate } from './trend';
+import { estimate, MIN_LOGGED_MONTH, rate, type DrinksEstimate } from './trend';
 import { earnedMilestones } from './timeline';
 import { backOnTrackWeeks } from './milestones';
 
@@ -35,8 +35,8 @@ export interface Report {
   targets: { target: number; from: Iso }[];
   backOnTrack: number;
   dayOfWeek: { weekday: number; clear: number; aFew: number; more: number }[];
-  /** Drinks per week as a range; most is null when an "A lot" day makes it open-ended. */
-  drinksPerWeek: { least: number; most: number | null } | null;
+  /** Estimated drinks a week (see trend.ts); null without 7+ logged days. */
+  drinksPerWeek: DrinksEstimate | null;
   /** Savings in dollars against the baseline; least is null when open-ended. */
   savings: { most: number; least: number | null } | null;
   previous: { clear: number; logged: number } | null;
@@ -121,8 +121,7 @@ export function buildReport(
   const backOnTrack = backOnTrackWeeks(d, today).filter((end6) => weekIn(addDays(end6, -6), p)).length;
 
   // Estimates need at least a week of logged days to say anything per week.
-  const perWeek = logged >= 7 ? 7 / logged : null;
-  const drinksPerWeek = perWeek ? { least: least * perWeek, most: most === null ? null : most * perWeek } : null;
+  const drinksPerWeek = estimate(d, start, end);
   let savingsOut: Report['savings'] = null;
   if (savings && logged > 0) {
     const perDay = savings.baselinePerWeek / 7;
@@ -230,24 +229,18 @@ export function defaultPeriod(today: Iso): Period {
 export interface RangeSummary {
   logged: number;
   levels: Record<'clear' | DrinkAmount, number>;
-  drinksPerWeek: { least: number; most: number | null } | null;
+  drinksPerWeek: DrinksEstimate | null;
 }
 
 /** Levels and the drinks-per-week range for any span of days (e.g. All time). */
 export function summarizeRange(d: Data, start: Iso, end: Iso): RangeSummary {
   const levels: Record<Level, number> = { clear: 0, 'a-few': 0, moderate: 0, 'a-lot': 0 };
-  let least = 0;
-  let most: number | null = 0;
   for (const iso of d.datesAsc) {
     if (iso < start || iso > end) continue;
-    const lv = levelOf(d, iso)!;
-    levels[lv]++;
-    least += DRINKS[lv][0];
-    most = most === null || DRINKS[lv][1] === null ? null : most + (DRINKS[lv][1] as number);
+    levels[levelOf(d, iso)!]++;
   }
   const logged = levels.clear + levels['a-few'] + levels.moderate + levels['a-lot'];
-  const k = logged >= 7 ? 7 / logged : null;
-  return { logged, levels, drinksPerWeek: k ? { least: least * k, most: most === null ? null : most * k } : null };
+  return { logged, levels, drinksPerWeek: estimate(d, start, end) };
 }
 
 /** The same calendar stretch a year earlier: 2026-01-01..2026-09-30 → 2025-01-01..2025-09-30. */

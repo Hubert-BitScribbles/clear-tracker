@@ -31,10 +31,10 @@ describe('month in review', () => {
     // enough logged to say, so Aug 3 met isn't "back on track" (rc.6).
     expect(r.backOnTrack).toBe(0);
   });
-  it('drinks per week: a range, open-ended with an "A lot" day', () => {
-    // least = 1+3+1+5 = 10 drinks over 8 logged days → 10 × 7/8 = 8.75 a week; most open-ended
-    expect(r.drinksPerWeek?.least).toBeCloseTo(8.75);
-    expect(r.drinksPerWeek?.most).toBeNull();
+  it('drinks per week: middle values, "or more" with an "A lot" day', () => {
+    // 1.5+3.5+1.5+5 = 11.5 drinks over 8 logged days → 11.5 × 7/8 ≈ 10.06 a week; an A lot day → or more
+    expect(r.drinksPerWeek?.perWeek).toBeCloseTo(10.0625);
+    expect(r.drinksPerWeek?.orMore).toBe(true);
   });
   it('savings against the baseline over logged days', () => {
     // baseline 2 a day × 8 days = 16; least drinks 10 → most saved 6 drinks × $10 = $60; least saved open-ended
@@ -106,10 +106,11 @@ describe('periods', () => {
 describe('report wording', async () => {
   const { comparisonText, drinksText } = await import('../src/lib/reportText');
   it('drinks', () => {
-    expect(drinksText(8.75, 12.2)).toBe('About 9–12 drinks a week');
-    expect(drinksText(8.75, null)).toBe('About 9 or more drinks a week');
-    expect(drinksText(1.2, 1.4)).toBe('About 1 drink a week');
-    expect(drinksText(0, 0)).toBe('About 0 drinks a week');
+    expect(drinksText({ perWeek: 13.5, orMore: false })).toBe('About 13 drinks a week');
+    expect(drinksText({ perWeek: 13.53, orMore: true }, 'September')).toBe('September: about 14 or more drinks a week');
+    expect(drinksText({ perWeek: 1.2, orMore: false }, '2026')).toBe('2026: about 1 drink a week');
+    expect(drinksText({ perWeek: 0.7, orMore: true })).toBe('About 1 or more drinks a week');
+    expect(drinksText({ perWeek: 0, orMore: false })).toBe('About 0 drinks a week');
   });
   it('comparison', () => {
     expect(comparisonText(14, 10, 'July')).toBe('4 more clear days than July');

@@ -226,10 +226,10 @@ export function Review() {
             <section className="rv-section">
               <h2 className="rv-sec">Estimated drinks</h2>
               <div className="card rv-card rv-text">
-                <p className="rv-big">{r.drinksPerWeek ? drinksText(r.drinksPerWeek.least, r.drinksPerWeek.most) : 'Not enough logged days for a weekly estimate.'}</p>
+                <p className="rv-big">{r.drinksPerWeek ? drinksText(r.drinksPerWeek, `${label}${r.complete ? '' : ' so far'}`) : 'Not enough logged days for a weekly estimate.'}</p>
                 {r.drinksChange && <p>{drinksChangeText(label, r.drinksChange.diff, prevLabel)}</p>}
                 <p className="rv-foot">
-                  From logged days: A few = 1–2 drinks, Moderate = 3–4, A lot = 5 or more. Unlogged days aren't included.
+                  From logged days, counting A few as 1.5 drinks, Moderate as 3.5 and A lot as 5 — its minimum, so a period with an A lot day reads “or more”. Unlogged days aren't included.
                 </p>
               </div>
             </section>

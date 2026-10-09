@@ -1,7 +1,8 @@
-// How drinking (and so savings) is moving over time, for the Trends cards.
-// Single figures per level, as for the momentum line: Clear 0, A few 1.5,
-// Moderate 3.5, A lot 5 (its minimum). Every figure is a weekly rate over
-// logged days, so periods with more or fewer logged days compare fairly.
+// Estimated drinks a week, for Trends, Month by month and the reports — one
+// method everywhere: each logged day counts at its level's middle value
+// (Clear 0, A few 1.5, Moderate 3.5) and A lot at 5, its minimum, so a
+// period with any A lot day reads "or more". Every figure is a weekly rate
+// over logged days, so periods with more or fewer logged days compare fairly.
 
 import { MIDPOINT } from './baseline';
 import { Data } from './compute';
@@ -9,23 +10,37 @@ import { addDays, daysInMonth, isoOf, type Iso } from './dates';
 
 export const MIN_LOGGED_MONTH = 7;
 
-/** Drinks a week over the logged days in [start, end], with how many were logged. */
-export function rate(d: Data, start: Iso, end: Iso): { perWeek: number; logged: number } {
+/** Drinks a week over the logged days in [start, end], with how many were logged. orMore: an A lot day was logged. */
+export function rate(d: Data, start: Iso, end: Iso): { perWeek: number; logged: number; orMore: boolean } {
   let drinks = 0;
   let logged = 0;
+  let orMore = false;
   for (const iso of d.datesAsc) {
     if (iso < start || iso > end) continue;
     const e = d.byDate.get(iso)!;
-    drinks += e.status === 'clear' ? 0 : MIDPOINT[e.amount ?? 'a-lot'];
+    const lv = e.status === 'clear' ? 'clear' : (e.amount ?? 'a-lot');
+    drinks += MIDPOINT[lv];
+    if (lv === 'a-lot') orMore = true;
     logged++;
   }
-  return { perWeek: logged ? (drinks / logged) * 7 : 0, logged };
+  return { perWeek: logged ? (drinks / logged) * 7 : 0, logged, orMore };
+}
+
+/** The weekly estimate shown for a period: null with fewer than 7 logged days. */
+export interface DrinksEstimate {
+  perWeek: number;
+  orMore: boolean;
+}
+export function estimate(d: Data, start: Iso, end: Iso): DrinksEstimate | null {
+  const r = rate(d, start, end);
+  return r.logged >= MIN_LOGGED_MONTH ? { perWeek: r.perWeek, orMore: r.orMore } : null;
 }
 
 export interface MonthPoint {
   year: number;
   month: number;
   perWeek: number | null; // null with fewer than 7 logged days
+  orMore: boolean; // an A lot day was logged that month
   logged: number;
   soFar: boolean; // the current month, still running
   /** The month before, for "about 2 fewer drinks a week than August". perWeek null with fewer than 7 logged days. */
@@ -45,7 +60,7 @@ export function monthlyRates(d: Data, today: Iso, months: { year: number; month:
       const pm = month === 1 ? 12 : month - 1;
       const pr = rate(d, isoOf(py, pm, 1), isoOf(py, pm, daysInMonth(py, pm)));
       return {
-        year, month, perWeek: r.logged >= MIN_LOGGED_MONTH ? r.perWeek : null, logged: r.logged, soFar: endFull >= today,
+        year, month, perWeek: r.logged >= MIN_LOGGED_MONTH ? r.perWeek : null, orMore: r.orMore, logged: r.logged, soFar: endFull >= today,
         prev: { year: py, month: pm, perWeek: pr.logged >= MIN_LOGGED_MONTH ? pr.perWeek : null },
       };
     });

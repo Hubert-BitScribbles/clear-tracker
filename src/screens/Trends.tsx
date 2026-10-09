@@ -14,7 +14,7 @@ import {
   getYearsWithEntries,
   type DayOfWeekLevels,
 } from '../data/database';
-import { daysBetween, isoOf, mondayOf, todayIso, yearOf } from '../data/dates';
+import { daysBetween, daysInMonth, isoOf, mondayOf, todayIso, yearOf } from '../data/dates';
 import { Data as Snapshot, weeksMetCount } from '../data/compute';
 import { SavingsCard } from '../components/SavingsCard';
 import { TrendsNav } from '../components/SegmentNav';
@@ -23,7 +23,7 @@ import { buildReport, sameStretchLastYear, summarizeRange, weekdaySummary } from
 import { ALIGNMENT_NAMES, alignmentOf, IntentionChart, type MeasuredWeek } from '../components/IntentionChart';
 import { comparisonText, drinksText, typicalDayText, wholeDrinks } from '../lib/reportText';
 import { momentumIncludes } from '../data/baseline';
-import { chartMonths, monthlyRates, SIX_MONTHS, THREE_MONTHS, windowChange } from '../data/trend';
+import { chartMonths, monthlyRates, SIX_MONTHS, THREE_MONTHS, windowChange, type DrinksEstimate } from '../data/trend';
 import { MonthlyChart } from '../components/MonthlyChart';
 import { challengeNote, drinksChangeText, ML, monthVsPrevious, type DrinksTrend } from '../lib/trendText';
 import { chosenMonthRanges, getChallenges } from '../data/database';
@@ -73,7 +73,7 @@ interface Data {
   weeksCounted: number;
   compare: { before: number; label: string } | null;
   levels: Record<'clear' | 'a-few' | 'moderate' | 'a-lot', number>;
-  drinksPerWeek: { least: number; most: number | null } | null;
+  drinksPerWeek: DrinksEstimate | null;
   rows: { label: string; clear: number; aFew: number; more: number; available: number; start: string; end: string; year: number; month: number | null }[];
   snap: Snapshot;
   trend: DrinksTrend;
@@ -282,7 +282,7 @@ export function Trends() {
           <h2 className="tr-section">Estimated drinks · {scopeLabel}</h2>
           <div className="card tr-card">
             <p className="tr-big">
-              {data.drinksPerWeek ? drinksText(data.drinksPerWeek.least, data.drinksPerWeek.most) : 'Not enough logged days for a weekly estimate.'}
+              {data.drinksPerWeek ? drinksText(data.drinksPerWeek, scopeLabel) : 'Not enough logged days for a weekly estimate.'}
             </p>
             <MonthlyChart
               kind="line"
@@ -299,7 +299,7 @@ export function Trends() {
                 const r = summarizeRange(data.snap, start, end);
                 return (
                   <>
-                    <p className="mc-detail-line">About {wholeDrinks(p.perWeek)} drink{wholeDrinks(p.perWeek) === 1 ? '' : 's'} a week</p>
+                    <p className="mc-detail-line">{drinksText({ perWeek: p.perWeek, orMore: p.orMore }, `${ML[p.month - 1]}${p.soFar ? ' so far' : ''}`)}</p>
                     {(() => {
                       const c = monthVsPrevious(p);
                       return c && <p className="mc-detail-line">{drinksChangeText(c.lead, c.diff, c.vs)}</p>;
@@ -319,7 +319,7 @@ export function Trends() {
               </ul>
             )}
             <p className="tr-foot">
-              From logged days: A few = 1–2 drinks, Moderate = 3–4, A lot = 5 or more. Unlogged days aren't included.{' '}
+              From logged days, counting A few as 1.5 drinks, Moderate as 3.5 and A lot as 5 — its minimum, so a period with an A lot day reads “or more”. Unlogged days aren't included.{' '}
               <Link className="tr-help" to="/settings/help?topic=estimates">How is this calculated?</Link>
             </p>
           </div>
@@ -424,7 +424,7 @@ export function Trends() {
                     {sum.levels.clear} clear · {sum.levels['a-few']} a few · {sum.levels.moderate} moderate · {sum.levels['a-lot']} a lot · {unlogged} not logged
                   </p>
                   <p className="tr-detail-line">
-                    {sum.drinksPerWeek ? drinksText(sum.drinksPerWeek.least, sum.drinksPerWeek.most) : 'Not enough logged days for a weekly estimate.'}
+                    {sum.drinksPerWeek ? drinksText(sum.drinksPerWeek, `${r.month ? MONTH_LONG[r.month - 1] : r.year}${r.end < (r.month ? isoOf(r.year, r.month, daysInMonth(r.year, r.month)) : `${r.year}-12-31`) ? ' so far' : ''}`) : 'Not enough logged days for a weekly estimate.'}
                   </p>
                   <div className="tr-detail-links">
                     <Link className="tr-view-week" to={review}>{name} in review →</Link>

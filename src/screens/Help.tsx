@@ -115,8 +115,8 @@ function articles(d: Device): Article[] {
     id: 'estimates', title: 'How the estimates work', keywords: 'drinks savings money baseline price range calculated estimate first 3 months',
     body: (
       <>
-        <p>Each level is a range of drinks — A few is 1–2, Moderate 3–4, A lot 5 or more — so estimates are ranges too: "About 9–12 drinks a week". When a period includes an A lot day, the top is open: "About 9 or more". Only logged days count.</p>
-        <p>Trend charts and statements need one number per level to compare periods, so they use 1.5, 3.5 and 5.</p>
+        <p>Each level is a range of drinks — A few is 1–2, Moderate 3–4, A lot 5 or more. To estimate drinks a week, each logged day counts at the middle of its range: A few as 1.5, Moderate as 3.5. A lot has no top, so it counts as 5, its minimum, and any period with an A lot day reads "or more": "September: about 14 or more drinks a week".</p>
+        <p>The same figure is used everywhere — the chart, Month by month, comparisons and reports — so a month always reads the same. Only logged days count.</p>
         <p><strong>Savings</strong> compare your drinking with a baseline — drinks a week before tracking — at your price per drink. Type the baseline yourself, or measure it from your first 3 months of tracking (a chosen challenge month is left out). Periods over the baseline are shown honestly.</p>
       </>
     ),

@@ -19,7 +19,7 @@ describe('whole drinks', () => {
     expect([8.5, 8.4, 8.51, 8.6, 9, 0.5, 0.6].map(wholeDrinks)).toEqual([8, 8, 9, 9, 9, 0, 1]);
   });
   it('wording uses whole drinks', () => {
-    expect(drinksText(8.5, 11.6)).toBe('About 8–12 drinks a week');
+    expect(drinksText({ perWeek: 8.5, orMore: false })).toBe('About 8 drinks a week');
     expect(typicalDayText(1.2, 1.8, 'Friday')).toBe('About 1–2 drinks on a typical Friday');
     expect(typicalDayText(0.3, 0.9, 'Monday')).toBe('Up to 1 drink on a typical Monday');
     expect(typicalDayText(0.2, 0.4, 'Tuesday')).toBe('No drinks on a typical Tuesday');

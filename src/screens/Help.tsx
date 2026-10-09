@@ -172,6 +172,7 @@ function articles(d: Device): Article[] {
       <>
         <p>Everything you log stays on this device. There's no account and no cloud, and nothing is sent to bitScribbles or anyone else. There are no ads.</p>
         <p>Backups are encrypted, and you decide where they go. If you email feedback, bitScribbles receives only what you write — and, for a problem report, the technical details you can see before sending, which never include your record.</p>
+        <p>The full <a href="./privacy.html" target="_blank" rel="noopener">privacy statement</a> says the same, in a little more detail.</p>
       </>
     ),
   },

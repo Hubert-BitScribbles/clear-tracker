@@ -76,7 +76,7 @@ export function About() {
         <p className="ab-body">
           Everything you log — clear days, drinking days, and your intention history — is stored only in this
           browser, on this device. There's no account, no cloud sync, and nothing is ever sent anywhere unless you
-          export a backup yourself from Settings.
+          back up yourself from Settings.
         </p>
         <p className="ab-body ab-gap">
           <strong>Browser storage isn't a backup.</strong> Clearing your browser's website data erases it
@@ -84,6 +84,9 @@ export function About() {
             ? `, and Safari can delete a site's data after seven days without a visit — unless the app is added to your ${isIos(dev) ? 'Home Screen' : 'Dock'}, which keeps its own record.`
             : ', and the browser may clear it if the device runs very low on space — less likely once installed.'}{' '}
           Back up from time to time.
+        </p>
+        <p className="ab-body ab-gap">
+          <a href="./privacy.html" target="_blank" rel="noopener">Privacy statement</a>
         </p>
         <ul className="ab-status" aria-label="This device">
           <li>

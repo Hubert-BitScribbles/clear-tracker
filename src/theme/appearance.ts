@@ -1,9 +1,9 @@
 // Theme and high-contrast preference.
 //
-// Stored in localStorage so index.html can apply it before first paint.
+// Stored in localStorage so public/theme-init.js can apply it before first paint.
 // When the Dexie settings store arrives (step 2) this stays as a fast
 // mirror of the saved setting; it is not the source of truth for anything
-// else. Keep the storage key and logic in step with the script in index.html.
+// else. Keep the storage key and logic in step with public/theme-init.js.
 
 export type ThemePref = 'system' | 'light' | 'dark';
 export type Appearance = { theme: ThemePref; highContrast: boolean };

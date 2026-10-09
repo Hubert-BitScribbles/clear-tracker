@@ -4,6 +4,22 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.0.0-rc.9 — 9 October 2026
+
+Getting ready for 1.0.
+
+- A privacy statement, at `/privacy.html`: a plain page that works without
+  the app (and offline), for linking from bitscribbles.com. About and Help →
+  Privacy link to it.
+- Security headers (`public/_headers`, applied by Cloudflare Pages): the app
+  may load only its own files, can't be framed by another site, sends no
+  referrer, and the service worker is never cached, so updates arrive.
+  The pre-paint theme script moved from `index.html` to
+  `public/theme-init.js` so no inline script is needed.
+- About: "export a backup" now reads "back up".
+- National help lines re-checked against official sources (988.ca,
+  samhsa.gov, nhs.uk, health.gov.au, Lifeline).
+
 ## 1.0.0-rc.8 — 8 October 2026
 
 - A new app icon: the clear-day mark — a light day cell with a teal dot — on

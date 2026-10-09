@@ -22,7 +22,7 @@ changes.
 
 ## Layout
 
-    index.html                 pre-paint script: applies theme before first paint
+    index.html                 page shell; public/theme-init.js applies the theme before first paint
     src/
       main.tsx                 entry; brand fonts (Latin subsets, bundled for offline)
       App.tsx                  routes + tab bar (HashRouter: #/trends etc.)

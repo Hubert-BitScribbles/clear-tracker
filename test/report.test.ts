@@ -47,8 +47,8 @@ describe('month in review', () => {
     expect(Object.keys(r.calendar)).toHaveLength(8);
   });
   it('day of week, Monday first', () => {
-    expect(r.dayOfWeek[0]).toEqual({ weekday: 1, clear: 2, aFew: 0, more: 0 }); // Mondays Aug 3, 10
-    expect(r.dayOfWeek[2]).toEqual({ weekday: 3, clear: 1, aFew: 0, more: 1 }); // Wed Aug 5 clear, Aug 12 a lot
+    expect(r.dayOfWeek[0]).toEqual({ weekday: 1, clear: 2, aFew: 0, more: 0, aLot: 0 }); // Mondays Aug 3, 10
+    expect(r.dayOfWeek[2]).toEqual({ weekday: 3, clear: 1, aFew: 0, more: 1, aLot: 1 }); // Wed Aug 5 clear, Aug 12 a lot (a lot split out, rc.13)
   });
 });
 

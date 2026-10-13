@@ -370,7 +370,7 @@ export function Trends() {
           <LevelLegend />
           <ul className="tr-dow">
             {[1, 2, 3, 4, 5, 6, 0].map((wd) => {
-              const stat = data.dowStats.find((d) => d.weekday === wd) ?? { clear: 0, aFew: 0, more: 0 };
+              const stat = data.dowStats.find((d) => d.weekday === wd) ?? { clear: 0, aFew: 0, more: 0, aLot: 0 };
               const rowTotal = stat.clear + stat.aFew + stat.more;
               const pct = rowTotal > 0 ? Math.round((stat.clear / rowTotal) * 100) : null;
               // Each row is scaled to its own total: weekdays occur about
@@ -386,7 +386,7 @@ export function Trends() {
                   onClick={() => setDowSel((x) => (x === wd ? null : wd))}
                   aria-label={
                     rowTotal > 0
-                      ? `${name}: ${pct}% clear; ${stat.clear} clear, ${stat.aFew} a few, ${stat.more} moderate or a lot; ${plural(rowTotal, 'day')} logged`
+                      ? `${name}: ${pct}% clear; ${stat.clear} clear, ${stat.aFew} a few, ${stat.more - stat.aLot} moderate, ${stat.aLot} a lot; ${plural(rowTotal, 'day')} logged`
                       : `${name}: no days logged`
                   }
                 >
@@ -394,7 +394,8 @@ export function Trends() {
                   <span className="tr-dow-track" aria-hidden="true">
                     {stat.clear > 0 && <span className="tr-dow-seg tr-seg-clear" style={{ width: `${share(stat.clear)}%` }} />}
                     {stat.aFew > 0 && <span className="tr-dow-seg tr-seg-a-few" style={{ width: `${share(stat.aFew)}%` }} />}
-                    {stat.more > 0 && <span className="tr-dow-seg tr-seg-drinking" style={{ width: `${share(stat.more)}%` }} />}
+                    {stat.more - stat.aLot > 0 && <span className="tr-dow-seg tr-seg-drinking" style={{ width: `${share(stat.more - stat.aLot)}%` }} />}
+                    {stat.aLot > 0 && <span className="tr-dow-seg tr-seg-a-lot" style={{ width: `${share(stat.aLot)}%` }} />}
                   </span>
                   </button>
                 </li>

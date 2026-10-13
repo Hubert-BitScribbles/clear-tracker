@@ -39,6 +39,7 @@
 .rv-sw-clear, .rv-seg-clear { background: var(--clear-fill); border: 1px solid var(--clear-edge); }
 .rv-sw-few, .rv-seg-few { background: var(--few-fill); border: 1px solid var(--few-edge); }
 .rv-sw-more, .rv-seg-more { background: var(--drinking-fill); border: 1px solid var(--drinking-edge); }
+.rv-seg-lot { background: var(--lot-fill); border: 1px solid var(--lot-edge); }
 .rv-seg-none { background: var(--track); }
 .rv-cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
 .rv-wd { text-align: center; font-size: 11px; color: var(--on-card-muted); padding-bottom: 2px; }

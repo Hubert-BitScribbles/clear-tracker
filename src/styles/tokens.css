@@ -52,7 +52,8 @@
      deeper than each fill. High contrast uses the full marks instead. */
   --clear-edge: #9BD6CC;
   --drinking-edge: #D8BCA8;
-  /* Each drinking level its own fill (rc.13): sand, clay, terracotta. */
+  /* Each drinking level its own fill (rc.13): sand, clay, terracotta, the
+     same in light and dark. Ticks on fills: A few 4.4:1, A lot 4.8:1. */
   --few-fill: #F4E8CC; --few-mark: #8A6420; --few-edge: #E5D2A6;
   --lot-fill: #D9B5A0; --lot-mark: #6E3B2A; --lot-edge: #C49A82;
 
@@ -125,6 +126,8 @@
   --clear-mark: #0A5A52;
   --drinking-fill: #D8BCA8;
   --drinking-mark: #5E3A2D;
+  --few-fill: #EAD39C; --few-mark: #5C410A; --few-edge: var(--few-mark); /* tick 6.5:1 */
+  --lot-fill: #C4977E; --lot-mark: #4A2215; --lot-edge: var(--lot-mark); /* tick 5.3:1 */
   --on-fill-text: #000000;
   --align-partial: #9BD6CC;
   --align-met: #0E8175;
@@ -220,5 +223,7 @@
     --clear-fill: #C6E7E1; --clear-mark: #0E8175; --clear-edge: #9BD6CC;
     --drinking-fill: #E9D7CB; --drinking-mark: #8C5643; --drinking-edge: #D8BCA8;
     --a-few-line: #9BD6CC; --a-few-tick: #8C5643; --on-fill-text: #14171C;
+    --few-fill: #F4E8CC; --few-mark: #8A6420; --few-edge: #E5D2A6;
+    --lot-fill: #D9B5A0; --lot-mark: #6E3B2A; --lot-edge: #C49A82;
   }
 }

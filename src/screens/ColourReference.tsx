@@ -13,7 +13,7 @@ export const TOKENS = [
   'on-card-primary', 'on-card-secondary', 'on-card-muted',
   'primary', 'primary-text', 'primary-light', 'track',
   'clear-fill', 'clear-mark', 'drinking-fill', 'drinking-mark', 'on-fill-text',
-  'a-few-line', 'a-few-tick',
+  'few-fill', 'few-mark', 'lot-fill', 'lot-mark',
   'align-unlogged', 'align-unlogged-edge', 'align-partial', 'align-met', 'align-exceeded',
   'locked-fill', 'locked-glyph', 'danger', 'danger-bg',
 ];

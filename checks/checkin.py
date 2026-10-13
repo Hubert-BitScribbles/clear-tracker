@@ -90,7 +90,7 @@ with sync_playwright() as p:
     check('Trends grid starts at the first logged week', weeks and weeks[0] == '2026-08-24', weeks[:3])
     before = sorted(pg.locator('.wg-before').evaluate_all("els => els.map(e => e.dataset.week)"))
     check('weeks before the first intention are neutral "before" tiles', before == ['2026-08-24', '2026-08-31'], before)
-    stat = pg.locator('div', has=pg.locator('.tr-stat-label', has_text='weeks met intention')).last.locator('.tr-stat-value').inner_text()
+    stat = pg.locator('div', has=pg.locator('.tr-stat-label', has_text='weeks met intention')).last.locator('.tr-hero-value').inner_text()
     check('At a glance: weeks met counted from the first intention (1 / 4)', stat.replace(' ', '') == '1/4', stat)
     rows = pg.locator('.wg-row').evaluate_all("els => els.map(e => e.querySelector('.wg-month').textContent + ':' + e.querySelector('.wg-sum').textContent)")
     check('week grid: a row per month, newest first; week in progress not counted until met; before-weeks not counted', rows == ['Oct:0 of 1', 'Sep:1 of 3', 'Aug:'], rows)

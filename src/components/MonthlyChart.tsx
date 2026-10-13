@@ -1,4 +1,4 @@
-import { useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
+import { useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react';
 import './MonthlyChart.css';
 
 export interface Point {
@@ -48,7 +48,8 @@ export function MonthlyChart({ points, kind, format, name, detail }: Props) {
   const step = (W - PAD_L) / points.length;
   const x = (i: number) => PAD_L + step * i + step / 2;
 
-  function pick(e: PointerEvent<HTMLDivElement>) {
+  // A click, not pointerdown: the tap event every browser (iPhone Safari included) delivers reliably.
+  function pick(e: MouseEvent<HTMLDivElement>) {
     const r = box.current!.getBoundingClientRect();
     const sx = ((e.clientX - r.left) / r.width) * W; // into chart units
     go(Math.floor((sx - PAD_L) / step));
@@ -81,7 +82,7 @@ export function MonthlyChart({ points, kind, format, name, detail }: Props) {
         aria-valuemax={points.length}
         aria-valuenow={idx + 1}
         aria-valuetext={spoken(cur)}
-        onPointerDown={pick}
+        onClick={pick}
         onKeyDown={key}
       >
         <svg viewBox={`0 0 ${W} ${H}`} className="mc-svg" aria-hidden="true">
@@ -129,6 +130,7 @@ export function MonthlyChart({ points, kind, format, name, detail }: Props) {
           </tbody>
         </table>
       </div>
+      <p className="mc-hint" aria-hidden="true">Tap a month for its details.</p>
       <div className="mc-detail" aria-live="polite">
         <div className="mc-detail-nav">
           <button type="button" className="mc-step" aria-label="Previous month" disabled={idx === 0} onClick={() => go(idx - 1)}>‹</button>

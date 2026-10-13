@@ -280,6 +280,39 @@ export function Trends() {
             <div className="tr-glance-levels"><LevelLegend levels={data.levels} /></div>
           </section>
 
+          <h2 className="tr-section">Month by month · {scope === 'all' ? 'last 12 months' : scopeLabel}</h2>
+          <div className="card tr-card">
+            <MonthlyChart
+              kind="bars"
+              name={`Months of ${scopeLabel}: clear days`}
+              format={(v) => String(Math.round(v))}
+              points={data.trend.points.map((p) => {
+                const r = summarizeRange(data.snap, isoOf(p.year, p.month, 1), new Date(Date.UTC(p.year, p.month, 0)).toISOString().slice(0, 10));
+                return { label: ML[p.month - 1].slice(0, 3), full: `${ML[p.month - 1]} ${p.year}`, value: r.logged ? r.levels.clear : null, soFar: p.soFar };
+              })}
+              detail={(_, i) => {
+                const p = data.trend.points[i];
+                const start = isoOf(p.year, p.month, 1);
+                const end = new Date(Date.UTC(p.year, p.month, 0)).toISOString().slice(0, 10);
+                const r = summarizeRange(data.snap, start, end);
+                if (!r.logged) return <p className="mc-detail-line">No days logged.</p>;
+                return (
+                  <>
+                    <p className="mc-detail-line mc-detail-strong">{r.levels.clear} clear day{r.levels.clear === 1 ? '' : 's'} · {r.logged} days logged</p>
+                    <p className="mc-detail-line">
+                      {r.levels['a-few']} a few · {r.levels.moderate} moderate · {r.levels['a-lot']} a lot
+                    </p>
+                    {p.perWeek !== null && <p className="mc-detail-line mc-detail-quiet">Estimated {drinksText({ perWeek: p.perWeek }).toLowerCase()}</p>}
+                    <div className="mc-detail-links">
+                      <Link className="mc-detail-link" to={`/trends/review?year=${p.year}&month=${p.month}`}>{ML[p.month - 1]} {p.year} in review →</Link>
+                      <Link className="mc-detail-link" to={`/?year=${p.year}&month=${p.month}`}>View on Check-in →</Link>
+                    </div>
+                  </>
+                );
+              }}
+            />
+          </div>
+
           <h2 className="tr-section">
             Weeks by intention · {alignmentYear}
             {scope === 'all' ? ' (most recent year)' : ''}
@@ -331,39 +364,6 @@ export function Trends() {
               })()}
             </div>
           )}
-
-          <h2 className="tr-section">Month by month · {scope === 'all' ? 'last 12 months' : scopeLabel}</h2>
-          <div className="card tr-card">
-            <MonthlyChart
-              kind="bars"
-              name={`Months of ${scopeLabel}: clear days`}
-              format={(v) => String(Math.round(v))}
-              points={data.trend.points.map((p) => {
-                const r = summarizeRange(data.snap, isoOf(p.year, p.month, 1), new Date(Date.UTC(p.year, p.month, 0)).toISOString().slice(0, 10));
-                return { label: ML[p.month - 1].slice(0, 3), full: `${ML[p.month - 1]} ${p.year}`, value: r.logged ? r.levels.clear : null, soFar: p.soFar };
-              })}
-              detail={(_, i) => {
-                const p = data.trend.points[i];
-                const start = isoOf(p.year, p.month, 1);
-                const end = new Date(Date.UTC(p.year, p.month, 0)).toISOString().slice(0, 10);
-                const r = summarizeRange(data.snap, start, end);
-                if (!r.logged) return <p className="mc-detail-line">No days logged.</p>;
-                return (
-                  <>
-                    <p className="mc-detail-line mc-detail-strong">{r.levels.clear} clear day{r.levels.clear === 1 ? '' : 's'} · {r.logged} days logged</p>
-                    <p className="mc-detail-line">
-                      {r.levels['a-few']} a few · {r.levels.moderate} moderate · {r.levels['a-lot']} a lot
-                    </p>
-                    {p.perWeek !== null && <p className="mc-detail-line mc-detail-quiet">Estimated {drinksText({ perWeek: p.perWeek }).toLowerCase()}</p>}
-                    <div className="mc-detail-links">
-                      <Link className="mc-detail-link" to={`/trends/review?year=${p.year}&month=${p.month}`}>{ML[p.month - 1]} {p.year} in review →</Link>
-                      <Link className="mc-detail-link" to={`/?year=${p.year}&month=${p.month}`}>View on Check-in →</Link>
-                    </div>
-                  </>
-                );
-              }}
-            />
-          </div>
 
           <h2 className="tr-section">By day of week · {scopeLabel}</h2>
           <div className="card tr-card">

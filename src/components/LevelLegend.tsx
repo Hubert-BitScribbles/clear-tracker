@@ -16,7 +16,7 @@ export function LevelLegend({ levels }: { levels?: Levels }) {
       <span><span className="lvl-sw lvl-clear" />Clear{n('clear')}</span>
       <span><span className="lvl-sw lvl-few" />A few{n('a-few')}</span>
       <span><span className="lvl-sw lvl-more" />Moderate{n('moderate')}</span>
-      <span><span className="lvl-sw lvl-more" />A lot{n('a-lot')}</span>
+      <span><span className="lvl-sw lvl-lot" />A lot{n('a-lot')}</span>
     </p>
   );
 }

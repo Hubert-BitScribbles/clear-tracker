@@ -52,6 +52,9 @@
      deeper than each fill. High contrast uses the full marks instead. */
   --clear-edge: #9BD6CC;
   --drinking-edge: #D8BCA8;
+  /* Each drinking level its own fill (rc.13): sand, clay, terracotta. */
+  --few-fill: #F4E8CC; --few-mark: #8A6420; --few-edge: #E5D2A6;
+  --lot-fill: #D9B5A0; --lot-mark: #6E3B2A; --lot-edge: #C49A82;
 
   /* alignment scale */
   --align-unlogged: #E6E8EB;

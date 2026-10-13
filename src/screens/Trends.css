@@ -50,7 +50,6 @@
 .tr-swatch-clear { background: var(--clear-fill); border: 1px solid var(--clear-edge); }
 .tr-swatch-drinking { background: var(--drinking-fill); border: 1px solid var(--drinking-edge); }
 /* A few: as in the calendar, an outline with no fill. */
-.tr-swatch-a-few { box-shadow: inset 0 0 0 1px var(--a-few-line); }
 
 /* Day of week */
 .tr-dow-header { display: flex; justify-content: flex-end; margin-bottom: 5px; }
@@ -64,7 +63,8 @@
 .tr-dow-seg { height: 100%; box-sizing: border-box; }
 .tr-seg-clear { background: var(--clear-fill); border: 1px solid var(--clear-edge); }
 .tr-seg-drinking { background: var(--drinking-fill); border: 1px solid var(--drinking-edge); }
-.tr-seg-a-few { background: var(--background); box-shadow: inset 0 0 0 1.5px var(--a-few-line); }
+.tr-seg-a-lot { background: var(--lot-fill); border: 1px solid var(--lot-edge); }
+.tr-seg-a-few { background: var(--few-fill); border: 1px solid var(--few-edge); }
 .tr-dow-stat { width: 74px; display: flex; align-items: baseline; justify-content: flex-end; gap: 5px; }
 .tr-dow-pct { font-size: 11px; color: var(--text-secondary); }
 .tr-dow-n { font-size: 10px; color: var(--text-muted); }
@@ -156,3 +156,13 @@
 .tr-help { color: var(--primary-text); font-weight: 600; text-decoration: none; white-space: nowrap; }
 .tr-align-unclear { background: var(--align-unlogged); border: 1.5px dashed var(--align-unlogged-edge); box-sizing: border-box; }
 .tr-align-before { background: transparent; box-shadow: inset 0 0 0 1px var(--align-unlogged-edge); }
+
+/* rc.13: clear days and intentions lead; estimates come last. */
+.tr-hero-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: center; }
+.tr-hero-value { font-family: var(--font-ui); font-weight: 700; font-size: 34px; line-height: 1.1; color: var(--primary-text); margin: 0; }
+.tr-hero-value .tr-of { font-size: 18px; color: var(--on-card-muted); font-weight: 600; }
+.tr-glance-logged { text-align: center; font-size: 13px; color: var(--on-card-secondary); margin: 10px 0 0; }
+.tr-est-head { margin-top: 28px; }
+.tr-est-intro { font-size: 12px; line-height: 17px; color: var(--text-muted); margin: -2px 0 10px; }
+.tr-sub { font-family: var(--font-ui); font-size: 13px; font-weight: 600; color: var(--text-secondary); margin: 12px 0 6px; }
+.tr-est-figure { font-family: var(--font-ui); font-weight: 600; font-size: 15px; margin: 0 0 6px; }

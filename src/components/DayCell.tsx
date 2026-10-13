@@ -19,10 +19,10 @@ type Props = {
 /**
  * One calendar cell. Layout from the native index.tsx: numeral centred,
  * mark pinned near the top; the selected day gets a bar under the numeral.
- *   clear     teal fill, dot
- *   a few     teal outline, 1 clay tick (still a drinking day)
+ *   clear     teal fill, round dot
+ *   a few     sand fill, 1 square tick
  *   moderate  clay fill, 2 ticks
- *   a lot     clay fill, 3 ticks
+ *   a lot     terracotta fill, 3 ticks   (rc.13: each level its own colour)
  */
 export function DayCell({ day, level, selected = false, future = false, onClick, label, isToday }: Props) {
   const ticks = level ? TICKS[level] : 0;

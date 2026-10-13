@@ -4,6 +4,24 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.0.0-rc.13 — 12 October 2026
+
+Clear days first, and each level its own look.
+
+- Every check-in level has its own colour and mark: Clear teal with a round
+  dot; A few sand, Moderate clay and A lot terracotta, with 1, 2 and 3 square
+  ticks. A few was an outline, and Moderate and A lot shared a colour. The
+  calendar legend, Trends and report bars (now four parts) and legends
+  follow; high contrast and print have their own stronger versions.
+- Trends leads with clear days and intentions: "2026 at a glance" shows
+  clear days and weeks met large, days logged and each level's total
+  below; then Weeks by intention; Month by month is clear days per month
+  (each month's details add a quiet drinks estimate); By day of week. The
+  drinks estimate, its chart and comparisons, and savings move to an
+  "Estimates" section at the end — still all there, for context.
+- Reports follow: the summary card has clear days, weeks met and level
+  totals; Estimated drinks is its own section again, after By day of week.
+
 ## 1.0.0-rc.12 — 9 October 2026
 
 Trends and reports, reorganised so each thing is said once.

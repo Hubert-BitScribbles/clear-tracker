@@ -270,124 +270,15 @@ export function Trends() {
 
           <h2 className="tr-section">{scopeLabel} at a glance</h2>
           <section className="card tr-glance" aria-label={`${scopeLabel} at a glance`}>
-            <div className="tr-glance-row">
-              <div><p className="tr-stat-value">{data.total}</p><p className="tr-stat-label">clear days</p></div>
-              <div><p className="tr-stat-value">{data.trackedDays}<span className="tr-of"> / {data.availableDays}</span></p><p className="tr-stat-label">days logged</p></div>
-              <div><p className="tr-stat-value">{data.weeksMet}<span className="tr-of"> / {data.weeksCounted}</span></p><p className="tr-stat-label">weeks met intention</p></div>
+            {/* Clear days and weeks met lead; days logged is context (rc.13). */}
+            <div className="tr-hero-row">
+              <div><p className="tr-hero-value">{data.total}</p><p className="tr-stat-label">clear days</p></div>
+              <div><p className="tr-hero-value">{data.weeksMet}<span className="tr-of"> / {data.weeksCounted}</span></p><p className="tr-stat-label">weeks met intention</p></div>
             </div>
             {data.compare && <p className="tr-compare">{comparisonText(data.total, data.compare.before, data.compare.label)}</p>}
+            <p className="tr-glance-logged">{data.trackedDays} of {data.availableDays} days logged</p>
             <div className="tr-glance-levels"><LevelLegend levels={data.levels} /></div>
-            <p className="tr-glance-drinks">
-              {data.drinksPerWeek ? drinksText(data.drinksPerWeek) : 'Not enough logged days for a weekly estimate.'}
-            </p>
-            <p className="tr-foot tr-glance-foot">
-              From logged days, counting A few as 1.5 drinks, Moderate as 3.5 and A lot as 5 — its minimum, so a period with an A lot day could be higher. Unlogged days aren't included.{' '}
-              <Link className="tr-help" to="/settings/help?topic=estimates">How is this calculated?</Link>
-            </p>
           </section>
-
-          <h2 className="tr-section">Month by month · {scope === 'all' ? 'last 12 months' : scopeLabel}</h2>
-          <div className="card tr-card">
-            <MonthlyChart
-              kind="line"
-              name={`Months of ${scopeLabel}: estimated drinks a week`}
-              format={(v) => String(wholeDrinks(v))}
-              points={data.trend.points.map((p) => ({ label: ML[p.month - 1].slice(0, 3), full: `${ML[p.month - 1]} ${p.year}`, value: p.perWeek, soFar: p.soFar }))}
-              detail={(_, i) => {
-                const p = data.trend.points[i];
-                if (p.perWeek === null) {
-                  return <p className="mc-detail-line">Not enough logged days for an estimate ({p.logged} logged; 7 needed).</p>;
-                }
-                const start = isoOf(p.year, p.month, 1);
-                const end = new Date(Date.UTC(p.year, p.month, 0)).toISOString().slice(0, 10);
-                const r = summarizeRange(data.snap, start, end);
-                return (
-                  <>
-                    <p className="mc-detail-line">{drinksText({ perWeek: p.perWeek })}</p>
-                    {(() => {
-                      const c = monthVsPrevious(p);
-                      return c && <p className="mc-detail-line">{drinksChangeText(null, c.diff, c.vs)}</p>;
-                    })()}
-                    <p className="mc-detail-line">
-                      {r.levels.clear} clear · {r.levels['a-few']} a few · {r.levels.moderate} moderate · {r.levels['a-lot']} a lot · {p.logged} days logged
-                    </p>
-                    <div className="mc-detail-links">
-                      <Link className="mc-detail-link" to={`/trends/review?year=${p.year}&month=${p.month}`}>{ML[p.month - 1]} {p.year} in review →</Link>
-                      <Link className="mc-detail-link" to={`/?year=${p.year}&month=${p.month}`}>View on Check-in →</Link>
-                    </div>
-                  </>
-                );
-              }}
-            />
-            {(data.trend.three || data.trend.six) && (
-              <ul className="tr-trends">
-                {data.trend.three && <li>{drinksChangeText('Last 3 months', data.trend.three.diff, 'the 3 before')}{challengeNote(data.trend.notes.three)}</li>}
-                {data.trend.six && <li>{drinksChangeText('Last 6 months', data.trend.six.diff, 'the 6 before')}{challengeNote(data.trend.notes.six)}</li>}
-              </ul>
-            )}
-            <p className="tr-foot">
-              Estimated drinks a week, from logged days.{' '}
-              <Link className="tr-help" to="/settings/help?topic=estimates">How is this calculated?</Link>
-            </p>
-          </div>
-
-          <h2 className="tr-section">By day of week · {scopeLabel}</h2>
-          <div className="card tr-card">
-          <LevelLegend />
-          <ul className="tr-dow">
-            {[1, 2, 3, 4, 5, 6, 0].map((wd) => {
-              const stat = data.dowStats.find((d) => d.weekday === wd) ?? { clear: 0, aFew: 0, more: 0 };
-              const rowTotal = stat.clear + stat.aFew + stat.more;
-              const pct = rowTotal > 0 ? Math.round((stat.clear / rowTotal) * 100) : null;
-              // Each row is scaled to its own total: weekdays occur about
-              // equally often, so only the split is compared.
-              const share = (n: number) => (rowTotal > 0 ? (n / rowTotal) * 100 : 0);
-              const name = WEEKDAY_SHORT[wd];
-              return (
-                <li key={wd} className="tr-dow-li">
-                  <button
-                  type="button"
-                  className="tr-dow-row"
-                  aria-pressed={dowSel === wd}
-                  onClick={() => setDowSel((x) => (x === wd ? null : wd))}
-                  aria-label={
-                    rowTotal > 0
-                      ? `${name}: ${pct}% clear; ${stat.clear} clear, ${stat.aFew} a few, ${stat.more} moderate or a lot; ${plural(rowTotal, 'day')} logged`
-                      : `${name}: no days logged`
-                  }
-                >
-                  <span className="tr-dow-label" aria-hidden="true">{name}</span>
-                  <span className="tr-dow-track" aria-hidden="true">
-                    {stat.clear > 0 && <span className="tr-dow-seg tr-seg-clear" style={{ width: `${share(stat.clear)}%` }} />}
-                    {stat.aFew > 0 && <span className="tr-dow-seg tr-seg-a-few" style={{ width: `${share(stat.aFew)}%` }} />}
-                    {stat.more > 0 && <span className="tr-dow-seg tr-seg-drinking" style={{ width: `${share(stat.more)}%` }} />}
-                  </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-          {(() => {
-            if (dowSel === null) return <p className="tr-foot">Tap a day for details.</p>;
-            const w = weekdaySummary(data.snap, data.rangeStart, data.rangeEnd, dowSel);
-            const day = WEEKDAY_LONG[dowSel];
-            return (
-              <div className="tr-detail tr-dow-detail" role="region" aria-label={`${day}s details`}>
-                <p className="tr-detail-week">{day}s · {scopeLabel}</p>
-                {w.logged === 0 ? (
-                  <p className="tr-detail-line">No {day}s logged.</p>
-                ) : (
-                  <>
-                    <p className="tr-detail-line">
-                      {w.logged} logged: {w.levels.clear} clear · {w.levels['a-few']} a few · {w.levels.moderate} moderate · {w.levels['a-lot']} a lot.{' '}
-                      {Math.round((w.levels.clear / w.logged) * 100)}% clear.
-                    </p>
-                  </>
-                )}
-              </div>
-            );
-          })()}
-          </div>
 
           <h2 className="tr-section">
             Weeks by intention · {alignmentYear}
@@ -441,7 +332,147 @@ export function Trends() {
             </div>
           )}
 
-          <h2 className="tr-section">Estimated savings · {scopeLabel}</h2>
+          <h2 className="tr-section">Month by month · {scope === 'all' ? 'last 12 months' : scopeLabel}</h2>
+          <div className="card tr-card">
+            <MonthlyChart
+              kind="bars"
+              name={`Months of ${scopeLabel}: clear days`}
+              format={(v) => String(Math.round(v))}
+              points={data.trend.points.map((p) => {
+                const r = summarizeRange(data.snap, isoOf(p.year, p.month, 1), new Date(Date.UTC(p.year, p.month, 0)).toISOString().slice(0, 10));
+                return { label: ML[p.month - 1].slice(0, 3), full: `${ML[p.month - 1]} ${p.year}`, value: r.logged ? r.levels.clear : null, soFar: p.soFar };
+              })}
+              detail={(_, i) => {
+                const p = data.trend.points[i];
+                const start = isoOf(p.year, p.month, 1);
+                const end = new Date(Date.UTC(p.year, p.month, 0)).toISOString().slice(0, 10);
+                const r = summarizeRange(data.snap, start, end);
+                if (!r.logged) return <p className="mc-detail-line">No days logged.</p>;
+                return (
+                  <>
+                    <p className="mc-detail-line mc-detail-strong">{r.levels.clear} clear day{r.levels.clear === 1 ? '' : 's'} · {r.logged} days logged</p>
+                    <p className="mc-detail-line">
+                      {r.levels['a-few']} a few · {r.levels.moderate} moderate · {r.levels['a-lot']} a lot
+                    </p>
+                    {p.perWeek !== null && <p className="mc-detail-line mc-detail-quiet">Estimated {drinksText({ perWeek: p.perWeek }).toLowerCase()}</p>}
+                    <div className="mc-detail-links">
+                      <Link className="mc-detail-link" to={`/trends/review?year=${p.year}&month=${p.month}`}>{ML[p.month - 1]} {p.year} in review →</Link>
+                      <Link className="mc-detail-link" to={`/?year=${p.year}&month=${p.month}`}>View on Check-in →</Link>
+                    </div>
+                  </>
+                );
+              }}
+            />
+          </div>
+
+          <h2 className="tr-section">By day of week · {scopeLabel}</h2>
+          <div className="card tr-card">
+          <LevelLegend />
+          <ul className="tr-dow">
+            {[1, 2, 3, 4, 5, 6, 0].map((wd) => {
+              const stat = data.dowStats.find((d) => d.weekday === wd) ?? { clear: 0, aFew: 0, more: 0, aLot: 0 };
+              const rowTotal = stat.clear + stat.aFew + stat.more;
+              const pct = rowTotal > 0 ? Math.round((stat.clear / rowTotal) * 100) : null;
+              // Each row is scaled to its own total: weekdays occur about
+              // equally often, so only the split is compared.
+              const share = (n: number) => (rowTotal > 0 ? (n / rowTotal) * 100 : 0);
+              const name = WEEKDAY_SHORT[wd];
+              return (
+                <li key={wd} className="tr-dow-li">
+                  <button
+                  type="button"
+                  className="tr-dow-row"
+                  aria-pressed={dowSel === wd}
+                  onClick={() => setDowSel((x) => (x === wd ? null : wd))}
+                  aria-label={
+                    rowTotal > 0
+                      ? `${name}: ${pct}% clear; ${stat.clear} clear, ${stat.aFew} a few, ${stat.more - stat.aLot} moderate, ${stat.aLot} a lot; ${plural(rowTotal, 'day')} logged`
+                      : `${name}: no days logged`
+                  }
+                >
+                  <span className="tr-dow-label" aria-hidden="true">{name}</span>
+                  <span className="tr-dow-track" aria-hidden="true">
+                    {stat.clear > 0 && <span className="tr-dow-seg tr-seg-clear" style={{ width: `${share(stat.clear)}%` }} />}
+                    {stat.aFew > 0 && <span className="tr-dow-seg tr-seg-a-few" style={{ width: `${share(stat.aFew)}%` }} />}
+                    {stat.more - stat.aLot > 0 && <span className="tr-dow-seg tr-seg-drinking" style={{ width: `${share(stat.more - stat.aLot)}%` }} />}
+                    {stat.aLot > 0 && <span className="tr-dow-seg tr-seg-a-lot" style={{ width: `${share(stat.aLot)}%` }} />}
+                  </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+          {(() => {
+            if (dowSel === null) return <p className="tr-foot">Tap a day for details.</p>;
+            const w = weekdaySummary(data.snap, data.rangeStart, data.rangeEnd, dowSel);
+            const day = WEEKDAY_LONG[dowSel];
+            return (
+              <div className="tr-detail tr-dow-detail" role="region" aria-label={`${day}s details`}>
+                <p className="tr-detail-week">{day}s · {scopeLabel}</p>
+                {w.logged === 0 ? (
+                  <p className="tr-detail-line">No {day}s logged.</p>
+                ) : (
+                  <>
+                    <p className="tr-detail-line">
+                      {w.logged} logged: {w.levels.clear} clear · {w.levels['a-few']} a few · {w.levels.moderate} moderate · {w.levels['a-lot']} a lot.{' '}
+                      {Math.round((w.levels.clear / w.logged) * 100)}% clear.
+                    </p>
+                  </>
+                )}
+              </div>
+            );
+          })()}
+          </div>
+
+          <h2 className="tr-section tr-est-head">Estimates · {scopeLabel}</h2>
+          <p className="tr-est-intro">Rough figures from the levels you logged — for context, alongside your clear days.</p>
+          <h3 className="tr-sub">Drinks a week</h3>
+          <div className="card tr-card">
+            <p className="tr-est-figure">{data.drinksPerWeek ? drinksText(data.drinksPerWeek) : 'Not enough logged days for a weekly estimate.'}</p>
+            <MonthlyChart
+              kind="line"
+              name={`Months of ${scopeLabel}: estimated drinks a week`}
+              format={(v) => String(wholeDrinks(v))}
+              points={data.trend.points.map((p) => ({ label: ML[p.month - 1].slice(0, 3), full: `${ML[p.month - 1]} ${p.year}`, value: p.perWeek, soFar: p.soFar }))}
+              detail={(_, i) => {
+                const p = data.trend.points[i];
+                if (p.perWeek === null) {
+                  return <p className="mc-detail-line">Not enough logged days for an estimate ({p.logged} logged; 7 needed).</p>;
+                }
+                const start = isoOf(p.year, p.month, 1);
+                const end = new Date(Date.UTC(p.year, p.month, 0)).toISOString().slice(0, 10);
+                const r = summarizeRange(data.snap, start, end);
+                return (
+                  <>
+                    <p className="mc-detail-line">{drinksText({ perWeek: p.perWeek })}</p>
+                    {(() => {
+                      const c = monthVsPrevious(p);
+                      return c && <p className="mc-detail-line">{drinksChangeText(null, c.diff, c.vs)}</p>;
+                    })()}
+                    <p className="mc-detail-line">
+                      {r.levels.clear} clear · {r.levels['a-few']} a few · {r.levels.moderate} moderate · {r.levels['a-lot']} a lot · {p.logged} days logged
+                    </p>
+                    <div className="mc-detail-links">
+                      <Link className="mc-detail-link" to={`/trends/review?year=${p.year}&month=${p.month}`}>{ML[p.month - 1]} {p.year} in review →</Link>
+                      <Link className="mc-detail-link" to={`/?year=${p.year}&month=${p.month}`}>View on Check-in →</Link>
+                    </div>
+                  </>
+                );
+              }}
+            />
+            {(data.trend.three || data.trend.six) && (
+              <ul className="tr-trends">
+                {data.trend.three && <li>{drinksChangeText('Last 3 months', data.trend.three.diff, 'the 3 before')}{challengeNote(data.trend.notes.three)}</li>}
+                {data.trend.six && <li>{drinksChangeText('Last 6 months', data.trend.six.diff, 'the 6 before')}{challengeNote(data.trend.notes.six)}</li>}
+              </ul>
+            )}
+            <p className="tr-foot">
+              From logged days, counting A few as 1.5 drinks, Moderate as 3.5 and A lot as 5 — its minimum, so a period with an A lot day could be higher.{' '}
+              <Link className="tr-help" to="/settings/help?topic=estimates">How is this calculated?</Link>
+            </p>
+          </div>
+
+          <h3 className="tr-sub">Savings</h3>
           <SavingsCard scope={scope} scopeLabel={scopeLabel} trend={data.trend} />
         </>
       )}

@@ -34,7 +34,7 @@ export interface Report {
   weeks: { counted: number; met: number; exceeded: number; before: number; unclear: number };
   targets: { target: number; from: Iso }[];
   backOnTrack: number;
-  dayOfWeek: { weekday: number; clear: number; aFew: number; more: number }[];
+  dayOfWeek: { weekday: number; clear: number; aFew: number; more: number; aLot: number }[];
   /** Estimated drinks a week (see trend.ts); null without 7+ logged days. */
   drinksPerWeek: DrinksEstimate | null;
   /** Savings in dollars against the baseline; least is null when open-ended. */
@@ -47,7 +47,7 @@ export interface Report {
   calendar: Record<Iso, Level>; // month reports
   // year reports; available = days that could have been logged (from the first
   // logged day, up to today), so future months and pre-tracking days aren't "missed"
-  months: { month: number; clear: number; logged: number; aFew: number; more: number; available: number }[];
+  months: { month: number; clear: number; logged: number; aFew: number; more: number; aLot: number; available: number }[];
   milestones: { title: string; date: Iso }[];
 }
 
@@ -87,7 +87,7 @@ export function buildReport(
 
   const levels: Record<Level, number> = { clear: 0, 'a-few': 0, moderate: 0, 'a-lot': 0 };
   const calendar: Record<Iso, Level> = {};
-  const dow = [0, 1, 2, 3, 4, 5, 6].map((weekday) => ({ weekday, clear: 0, aFew: 0, more: 0 }));
+  const dow = [0, 1, 2, 3, 4, 5, 6].map((weekday) => ({ weekday, clear: 0, aFew: 0, more: 0, aLot: 0 }));
   let least = 0;
   let most: number | null = 0;
   for (const iso of days) {
@@ -98,7 +98,10 @@ export function buildReport(
     const w = dow[new Date(`${iso}T00:00:00Z`).getUTCDay()];
     if (lv === 'clear') w.clear++;
     else if (lv === 'a-few') w.aFew++;
-    else w.more++;
+    else {
+      w.more++;
+      if (lv === 'a-lot') w.aLot++;
+    }
     least += DRINKS[lv][0];
     most = most === null || DRINKS[lv][1] === null ? null : most + (DRINKS[lv][1] as number);
   }
@@ -151,14 +154,17 @@ export function buildReport(
         const from = d.earliest && d.earliest > ms ? d.earliest : ms;
         const to = me < today ? me : today;
         const available = from > to ? 0 : Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000) + 1;
-        const m = { month: i + 1, clear: 0, logged: 0, aFew: 0, more: 0, available };
+        const m = { month: i + 1, clear: 0, logged: 0, aFew: 0, more: 0, aLot: 0, available };
         const prefix = `${p.year}-${String(i + 1).padStart(2, '0')}-`;
         for (const [iso, lv] of Object.entries(calendar)) {
           if (!iso.startsWith(prefix)) continue;
           m.logged++;
           if (lv === 'clear') m.clear++;
           else if (lv === 'a-few') m.aFew++;
-          else m.more++;
+          else {
+            m.more++;
+            if (lv === 'a-lot') m.aLot++;
+          }
         }
         return m;
       });

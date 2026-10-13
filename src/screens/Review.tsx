@@ -140,15 +140,8 @@ export function Review() {
               )}
             </div>
             {r.previous && <p className="rv-muted rv-compare">{comparisonText(r.levels.clear, r.previous.clear, prevLabel)}</p>}
-            {/* The period at a glance: the level totals once, and (if Estimated drinks is included) the drinks figure. */}
+            {/* The period at a glance: clear days and intention first, the level totals once (rc.13: drinks moved to its own closing section). */}
             <div className="rv-glance-levels"><LevelLegend levels={r.levels} /></div>
-            {show('drinks') && (
-              <div className="rv-glance-drinks">
-                <p className="rv-big">{r.drinksPerWeek ? drinksText(r.drinksPerWeek) : 'Not enough logged days for a weekly estimate.'}</p>
-                {r.drinksChange && <p className="rv-muted">{drinksChangeText(null, r.drinksChange.diff, prevLabel)}</p>}
-                <p className="rv-foot">From logged days, counting A few as 1.5 drinks, Moderate as 3.5 and A lot as 5 — its minimum, so a period with an A lot day could be higher. Unlogged days aren't included.</p>
-              </div>
-            )}
           </section>
 
           {show('days') && (
@@ -166,12 +159,13 @@ export function Review() {
                 ) : (
                   <ul className="rv-months">
                     {r.months.map((m) => (
-                      <li key={m.month} aria-label={`${MONTHS[m.month - 1]}: ${m.clear} clear, ${m.aFew} a few, ${m.more} moderate or a lot`}>
+                      <li key={m.month} aria-label={`${MONTHS[m.month - 1]}: ${m.clear} clear, ${m.aFew} a few, ${m.more - m.aLot} moderate, ${m.aLot} a lot`}>
                         <span className="rv-m-name" aria-hidden="true">{SHORT[m.month - 1]}</span>
                         <span className="rv-m-bar" aria-hidden="true">
                           {m.clear > 0 && <span className="rv-seg rv-seg-clear" style={{ flex: m.clear }} />}
                           {m.aFew > 0 && <span className="rv-seg rv-seg-few" style={{ flex: m.aFew }} />}
-                          {m.more > 0 && <span className="rv-seg rv-seg-more" style={{ flex: m.more }} />}
+                          {m.more - m.aLot > 0 && <span className="rv-seg rv-seg-more" style={{ flex: m.more - m.aLot }} />}
+                          {m.aLot > 0 && <span className="rv-seg rv-seg-lot" style={{ flex: m.aLot }} />}
                           {m.available > m.logged && <span className="rv-seg rv-seg-none" style={{ flex: m.available - m.logged }} />}
                         </span>
                       </li>
@@ -215,18 +209,30 @@ export function Review() {
                   {r.dayOfWeek.map((w) => {
                     const n = w.clear + w.aFew + w.more;
                     return (
-                      <li key={w.weekday} aria-label={`${WEEKDAYS[w.weekday]}: ${w.clear} clear, ${w.aFew} a few, ${w.more} moderate or a lot${n ? `, ${Math.round((w.clear / n) * 100)}% clear` : ''}`}>
+                      <li key={w.weekday} aria-label={`${WEEKDAYS[w.weekday]}: ${w.clear} clear, ${w.aFew} a few, ${w.more - w.aLot} moderate, ${w.aLot} a lot${n ? `, ${Math.round((w.clear / n) * 100)}% clear` : ''}`}>
                         <span className="rv-m-name" aria-hidden="true">{WEEKDAYS[w.weekday]}</span>
                         <span className="rv-m-bar" aria-hidden="true">
                           {w.clear > 0 && <span className="rv-seg rv-seg-clear" style={{ flex: w.clear }} />}
                           {w.aFew > 0 && <span className="rv-seg rv-seg-few" style={{ flex: w.aFew }} />}
-                          {w.more > 0 && <span className="rv-seg rv-seg-more" style={{ flex: w.more }} />}
+                          {w.more - w.aLot > 0 && <span className="rv-seg rv-seg-more" style={{ flex: w.more - w.aLot }} />}
+                          {w.aLot > 0 && <span className="rv-seg rv-seg-lot" style={{ flex: w.aLot }} />}
                           {n === 0 && <span className="rv-seg rv-seg-none" style={{ flex: 1 }} />}
                         </span>
                       </li>
                     );
                   })}
                 </ul>
+              </div>
+            </section>
+          )}
+
+          {show('drinks') && (
+            <section className="rv-section">
+              <h2 className="rv-sec">Estimated drinks</h2>
+              <div className="card rv-card rv-text">
+                <p className="rv-big">{r.drinksPerWeek ? drinksText(r.drinksPerWeek) : 'Not enough logged days for a weekly estimate.'}</p>
+                {r.drinksChange && <p className="rv-muted">{drinksChangeText(null, r.drinksChange.diff, prevLabel)}</p>}
+                <p className="rv-foot">From logged days, counting A few as 1.5 drinks, Moderate as 3.5 and A lot as 5 — its minimum, so a period with an A lot day could be higher. Unlogged days aren't included.</p>
               </div>
             </section>
           )}

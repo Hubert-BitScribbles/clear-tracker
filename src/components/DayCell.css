@@ -41,11 +41,12 @@ button.day-cell:focus-visible .day-inner {
   border-radius: var(--cell-radius);
 }
 .day-clear { background: var(--clear-fill); }
-/* A few: no fill, a solid teal line (inset, so nothing shifts). */
-.day-a-few { box-shadow: inset 0 0 0 var(--mark-stroke) var(--a-few-line); }
-.day-a-few .mark-tick { background: var(--a-few-tick); }
-.day-moderate,
-.day-a-lot { background: var(--drinking-fill); }
+/* Each level its own fill (rc.13); ticks stay square, the clear dot round. */
+.day-a-few { background: var(--few-fill); }
+.day-a-few .mark-tick { background: var(--few-mark); }
+.day-moderate { background: var(--drinking-fill); }
+.day-a-lot { background: var(--lot-fill); }
+.day-a-lot .mark-tick { background: var(--lot-mark); }
 
 .day-numeral {
   position: relative;
@@ -55,6 +56,7 @@ button.day-cell:focus-visible .day-inner {
   color: var(--text-primary);
 }
 .day-clear .day-numeral,
+.day-a-few .day-numeral,
 .day-moderate .day-numeral,
 .day-a-lot .day-numeral {
   color: var(--on-fill-text);

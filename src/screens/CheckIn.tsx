@@ -530,7 +530,11 @@ export function CheckIn() {
         </span>
         <span className="ci-legend-item">
           <span className="ci-swatch" style={{ background: 'var(--drinking-fill)' }} />
-          Moderate · A lot
+          Moderate
+        </span>
+        <span className="ci-legend-item">
+          <span className="ci-swatch" style={{ background: 'var(--lot-fill)' }} />
+          A lot
         </span>
         <span className="ci-legend-item">
           <span className="ci-swatch ci-swatch-unlogged" />

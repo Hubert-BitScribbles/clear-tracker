@@ -69,10 +69,12 @@ with sync_playwright() as p:
     pg.goto(BASE + "/settings"); pg.wait_for_timeout(500)
     seed(pg)
     pg.goto(BASE + "/trends"); pg.reload(); pg.wait_for_timeout(1200)
-    chart = pg.locator('[role="slider"]').first
-    t1 = pg.locator('.mc-detail').first.inner_text()
+    # The drinks chart now sits under Estimates (rc.13); it's the slider named for drinks.
+    chart = pg.locator('[role="slider"][aria-label*="estimated drinks"]')
+    card = pg.locator('.tr-card', has=chart)
+    t1 = card.locator('.mc-detail').inner_text()
     chart.focus(); pg.keyboard.press('ArrowLeft'); pg.wait_for_timeout(200)
-    t2 = pg.locator('.mc-detail').first.inner_text()
+    t2 = card.locator('.mc-detail').inner_text()
     # The month heading names the period; the lines under it don't repeat it (rc.11).
     check('selected month (latest) compares with the month before', 'September 2026' in t1 and 'About ' in t1 and 'than August' in t1 and 'September so far:' not in t1, t1)
     check('picking August compares August with July', 'August 2026' in t2 and 'than July' in t2 and 'August:' not in t2, t2)

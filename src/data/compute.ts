@@ -526,16 +526,20 @@ export interface DayOfWeekLevels {
   clear: number;
   aFew: number;
   more: number; // moderate + a lot
+  aLot: number; // of which a lot (rc.13: each level has its own colour)
 }
 
-/** Day-of-week counts split three ways, matching the calendar's look. */
+/** Day-of-week counts by level, matching the calendar's look. */
 export function dayOfWeekLevels(d: Data, year?: number): DayOfWeekLevels[] {
-  const stats = [0, 1, 2, 3, 4, 5, 6].map((weekday) => ({ weekday, clear: 0, aFew: 0, more: 0 }));
+  const stats = [0, 1, 2, 3, 4, 5, 6].map((weekday) => ({ weekday, clear: 0, aFew: 0, more: 0, aLot: 0 }));
   for (const e of d.snap.entries.filter(inYear(year))) {
     const s = stats[weekdayOf(e.entry_date)];
     if (e.status === 'clear') s.clear++;
     else if (e.amount === 'a-few') s.aFew++;
-    else s.more++;
+    else {
+      s.more++;
+      if (e.amount !== 'moderate') s.aLot++;
+    }
   }
   return stats;
 }

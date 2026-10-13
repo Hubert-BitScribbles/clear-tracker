@@ -29,3 +29,4 @@
 .mc-detail-links { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; }
 .mc-detail-strong { font-weight: 600; color: var(--on-card-primary); font-size: 13px; }
 .mc-detail-quiet { color: var(--on-card-muted); }
+.mc-hint { font-size: 11px; color: var(--on-card-muted); text-align: center; margin: 6px 0 0; }

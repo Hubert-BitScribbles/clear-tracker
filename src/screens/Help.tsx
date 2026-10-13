@@ -104,7 +104,7 @@ function articles(d: Device): Article[] {
     id: 'trends', title: 'Trends and reports', keywords: 'chart month year review report pdf share print compare unlogged not logged first month missing days',
     body: (
       <>
-        <p><strong>Trends</strong> shows a year, or all time, clear days first: the year at a glance (clear days, weeks met, days logged and each level's total), weeks by intention, clear days month by month, the day of the week — then estimates of drinks a week and savings, for context. Tap a month, a day or a week to see its details below.</p>
+        <p><strong>Trends</strong> shows a year, or all time, clear days first: the year at a glance (clear days, weeks met, days logged and each level's total), clear days month by month, weeks by intention, the day of the week — then estimates of drinks a week and savings, for context. Tap a month, a day or a week to see its details below.</p>
         <p><strong>Reports</strong> are a month or a year in review, to keep or to share — with a counsellor or doctor, if you like. Choose what's included, then "Share or save as PDF"{P === 'ios' ? ' and tap Share in the print preview' : P === 'android' ? ', and choose Save as PDF as the printer' : ''}.</p>
         <p>Comparisons with an earlier period only appear when that period was tracked from its start, so a partly-tracked month never makes another look better or worse.</p>
         <p><strong>Why does my first month show no unlogged days?</strong> Tracking counts from the first day you've logged. Days before it are before you started, not days you missed, so they aren't shown as not logged. If you fill in earlier days later, the start moves back with them.</p>

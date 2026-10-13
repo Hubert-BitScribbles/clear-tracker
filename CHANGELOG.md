@@ -4,6 +4,18 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.0.0 — 12 October 2026
+
+The first release. Tested on iPhone, Mac and other platforms by several
+testers through thirteen release candidates.
+
+- Trends reads months, weeks, days: at a glance, then Month by month,
+  Weeks by intention and By day of week, with Estimates last.
+- Tap a month on either monthly chart (clear days, drinks a week) to see
+  its details, as with weeks and days — a plain tap, which iPhone Safari
+  handles reliably, with a "Tap a month for its details." hint. The arrows
+  and the keyboard still work.
+
 ## 1.0.0-rc.13 — 12 October 2026
 
 Clear days first, and each level its own look.

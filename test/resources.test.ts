@@ -11,7 +11,7 @@ describe('resources', () => {
     const r = resourcesFor(country, province);
     expect(r.emergency).toMatch(/^\d{3}$/);
     expect(r.talk.length).toBeGreaterThan(0);
-    expect(r.drinking.length).toBe(1);
+    expect(r.drinking.length).toBeGreaterThanOrEqual(1);
     expect(r.programmes.length).toBeGreaterThan(0);
     for (const l of [...r.talk, ...r.drinking]) {
       expect(l.call && dialable(l.call).length).toBeGreaterThanOrEqual(3);
@@ -24,6 +24,11 @@ describe('resources', () => {
   });
   it('Canada includes 9-8-8, by call and text', () => {
     expect(resourcesFor('ca', 'ca_bc').talk[0]).toMatchObject({ call: '9-8-8', text: { to: '988' } });
+  });
+  it('Germany and Austria: 112, TelefonSeelsorge, and help with drinking', () => {
+    expect(resourcesFor('de', 'ca_ab')).toMatchObject({ emergency: '112', talk: [{ call: '0800 111 0 111' }] });
+    expect(resourcesFor('at', 'ca_ab')).toMatchObject({ emergency: '112', talk: [{ call: '142' }] });
+    expect(dialable('01806 313031')).toBe('01806313031');
   });
   it('dialable keeps digits only', () => {
     expect(dialable('1-866-531-2600')).toBe('18665312600');

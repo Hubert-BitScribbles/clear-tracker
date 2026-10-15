@@ -3,6 +3,7 @@ import { HelpLink } from '../components/HelpLink';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { BackupError, backupsAvailable, decryptBackup, type BackupPayload } from '../data/backup';
 import { getEntryCount, restoreBackup } from '../data/database';
+import { loadMoneyCountry } from '../lib/moneyRegion';
 import './Flow.css';
 
 // Port of the native app/import.tsx: choose a file, enter its passphrase,
@@ -51,6 +52,7 @@ export function Restore() {
     setBusy(true);
     try {
       await restoreBackup(parsed);
+      await loadMoneyCountry(); // the backup's region decides the currency
       setStep(3);
     } catch {
       setError('Something went wrong restoring this backup. Nothing was changed. Please try again.');

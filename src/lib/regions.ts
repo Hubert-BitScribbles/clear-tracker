@@ -1,4 +1,5 @@
-// Regions: which help lines and programmes Resources shows (and later, currency).
+// Regions: which help lines and programmes Resources shows, and the currency
+// savings are shown in (lib/savings.ts).
 // Region is separate from language: a French speaker in Ontario needs
 // Ontario's resources. Stored in settings as 'region'; until the user picks
 // one, it's guessed from the device's time zone.
@@ -8,6 +9,8 @@ export const COUNTRIES = [
   { key: 'uk', label: 'United Kingdom' },
   { key: 'au', label: 'Australia' },
   { key: 'ca', label: 'Canada' },
+  { key: 'de', label: 'Germany' },
+  { key: 'at', label: 'Austria' },
 ];
 export const PROVINCES = [
   { key: 'ca_ab', label: 'Alberta' }, { key: 'ca_bc', label: 'British Columbia' }, { key: 'ca_mb', label: 'Manitoba' },
@@ -29,12 +32,14 @@ export function regionFromTimeZone(tz: string): { country: string; province: str
   if (ca[tz]) return { country: 'ca', province: ca[tz] };
   if (tz === 'Europe/London') return { country: 'uk', province: 'ca_ab' };
   if (tz.startsWith('Australia/')) return { country: 'au', province: 'ca_ab' };
+  if (tz === 'Europe/Berlin' || tz === 'Europe/Busingen') return { country: 'de', province: 'ca_ab' };
+  if (tz === 'Europe/Vienna') return { country: 'at', province: 'ca_ab' };
   return { country: 'us', province: 'ca_ab' };
 }
 
 
 export interface Region {
-  country: string; // 'us' | 'uk' | 'au' | 'ca'
+  country: string; // 'us' | 'uk' | 'au' | 'ca' | 'de' | 'at'
   province: string; // used when country is 'ca'
 }
 

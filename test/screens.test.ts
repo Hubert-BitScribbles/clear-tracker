@@ -25,7 +25,7 @@ describe('About: region from time zone', () => {
   it.each([
     ['America/Vancouver', 'ca', 'ca_bc'], ['America/Toronto', 'ca', 'ca_on'], ['America/St_Johns', 'ca', 'ca_nl'],
     ['Europe/London', 'uk', undefined], ['Australia/Sydney', 'au', undefined], ['America/New_York', 'us', undefined],
-    ['Asia/Tokyo', 'us', undefined],
+    ['Europe/Berlin', 'de', undefined], ['Europe/Vienna', 'at', undefined], ['Asia/Tokyo', 'us', undefined],
   ])('%s → %s', (tz, country, province) => {
     const r = regionFromTimeZone(tz);
     expect(r.country).toBe(country);

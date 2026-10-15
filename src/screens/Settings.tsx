@@ -6,7 +6,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { baselineText, SavingsSetup } from '../components/SavingsCard';
 import { getEntryCount, getSavingsSettings, getSetting, resetDatabase, setSetting, type SavingsSettings } from '../data/database';
-import { BASELINE_KEY, PRICE_KEY, priceText } from '../lib/savings';
+import { BASELINE_KEY, PRICE_KEY, priceText, setMoneyCountry } from '../lib/savings';
 import { daysAgoText } from '../lib/backupNudge';
 import { daysBetween, localDateOf, todayIso } from '../data/dates';
 import { useAppearance } from '../theme/AppearanceContext';
@@ -325,7 +325,7 @@ function ReminderCard() {
   );
 }
 
-/** Region: where help lines (and later, currency and resources) come from. Guessed from the time zone until set. */
+/** Region: where help lines and the savings currency come from. Guessed from the time zone until set. */
 function RegionCard() {
   const [region, setRegion] = useState<Region | null>(null);
   const [isSet, setIsSet] = useState(false);
@@ -340,11 +340,12 @@ function RegionCard() {
     setRegion(r);
     setIsSet(true);
     await setSetting('region', JSON.stringify(r));
+    setMoneyCountry(r.country);
   };
   return (
     <section className="card st-card st-block">
       <p className="st-sub st-sub-first">
-        Decides which help lines and programmes <Link to="/settings/resources">Resources</Link> shows.{' '}
+        Decides which help lines and programmes <Link to="/settings/resources">Resources</Link> shows, and the currency for savings.{' '}
         {isSet ? '' : `Guessed from this device's time zone: ${regionLabel(region)}.`}
       </p>
       <RegionFields region={region} onChange={save} />

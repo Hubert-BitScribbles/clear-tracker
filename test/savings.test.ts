@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { Data, savingsEstimate } from '../src/data/compute';
-import { describeSavings, priceText } from '../src/lib/savings';
+import { currencySymbol, describeSavings, money, priceText, setMoneyCountry } from '../src/lib/savings';
 
 const day = (d: string, level: 'clear' | 'a-few' | 'moderate' | 'a-lot') => ({
   id: d, entry_date: d, status: level === 'clear' ? 'clear' : 'drinking', amount: level === 'clear' ? null : level,
@@ -61,5 +61,29 @@ describe('savings wording', () => {
     expect(priceText(9)).toBe('$9');
     expect(priceText(8.5)).toBe('$8.50');
     expect(priceText(12.25)).toBe('$12.25');
+  });
+});
+
+describe('currency follows the region', () => {
+  afterEach(() => setMoneyCountry('ca'));
+  it.each([
+    ['ca', '$1,234', '$'],
+    ['us', '$1,234', '$'],
+    ['au', '$1,234', '$'],
+    ['uk', '£1,234', '£'],
+    ['de', '€1,234', '€'],
+    ['at', '€1,234', '€'],
+  ])('%s: %s', (country, amount, symbol) => {
+    setMoneyCountry(country);
+    expect(money(1234)).toBe(amount);
+    expect(currencySymbol()).toBe(symbol);
+  });
+  it('a price keeps its cents', () => {
+    setMoneyCountry('at');
+    expect(priceText(8.5)).toBe('€8.50');
+  });
+  it('an unknown region falls back to Canada', () => {
+    setMoneyCountry('zz');
+    expect(money(5)).toBe('$5');
   });
 });

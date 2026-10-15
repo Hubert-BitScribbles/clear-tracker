@@ -1,7 +1,7 @@
 import { useEffect, useId, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getSavingsEstimate, getSavingsSettings, type FirstThreeMonths, type SavingsEstimate, type SavingsSettings } from '../data/database';
-import { describeSavings, priceText } from '../lib/savings';
+import { currencySymbol, describeSavings, priceText } from '../lib/savings';
 import { monthPhrase } from '../lib/challengeText';
 import { MonthlyChart } from './MonthlyChart';
 import { wholeDrinks } from '../lib/reportText';
@@ -213,7 +213,7 @@ export function SavingsSetup({
           </label>
         )}
         <label className="sv-field" htmlFor={`${id}-p`}>
-          <span>Price per drink ($)</span>
+          <span>Price per drink ({currencySymbol()})</span>
           <input id={`${id}-p`} inputMode="decimal" value={p} onChange={(e) => setP(e.target.value)} placeholder="e.g. 9" />
         </label>
       </div>

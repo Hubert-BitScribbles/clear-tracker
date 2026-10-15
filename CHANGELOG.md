@@ -4,6 +4,18 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.1.0-rc.1 — 14 October 2026 (branch `austria`, for testing)
+
+- Germany and Austria as regions, in English. Resources lists each country's
+  emergency number (112), TelefonSeelsorge, help with drinking, and programmes,
+  checked against official sources on 14 October 2026; all are in German.
+  Austria has no national alcohol helpline, so AA Austria and the 1450 health
+  line stand in. A device set to Berlin or Vienna time starts on that country.
+- Savings use the region's currency: € for Germany and Austria, £ for the
+  United Kingdom (which showed $ before), $ elsewhere. Amounts aren't
+  converted; the price per drink is whatever was typed. The price field says
+  which currency it's in.
+
 ## 1.0.0 — 12 October 2026
 
 The first release. Tested on iPhone, Mac and other platforms by several

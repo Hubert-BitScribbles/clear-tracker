@@ -12,6 +12,15 @@
 // - Programmes: smartrecovery-canada.ca, smartrecovery.org.uk, smartrecoveryaustralia.com.au,
 //   smartrecovery.org (US); drinklesslivemore.ca (CCSA); rethinkingdrinking.niaaa.nih.gov;
 //   nhs.uk; health.gov.au "Drug Help".
+// - Germany (checked 14 October 2026): telefonseelsorge.de; bioeg.de (Sucht & Drogen
+//   Hotline: daily 8am–midnight, €0.20 a call; Infotelefon zur Suchtvorbeugung and
+//   its hours); bundesdrogenbeauftragter.de "Beratungsangebote"; kenn-dein-limit.de
+//   (BIÖG); suchtberatung.digital (DigiSucht); dhs.de Suchthilfeverzeichnis.
+// - Austria (checked 14 October 2026): telefonseelsorge.at (142); 1450.at;
+//   anonyme-alkoholiker.at; sozialministerium.gv.at "Alkohol" (Suchthilfekompass,
+//   gesundheit.gv.at). There's no national alcohol helpline: AA and 1450 stand in.
+// - Germany and Austria: 112 is the EU-wide emergency number (Austria also has 144
+//   for an ambulance). All of these are in German.
 
 export const CHECKED = 'October 2026';
 
@@ -86,6 +95,33 @@ export function resourcesFor(country: string, province: string): Resources {
         programmes: [
           { name: 'SMART Recovery Australia', url: 'https://smartrecoveryaustralia.com.au', note: 'Free 4-Point Program meetings, online and in person.' },
           { name: 'Drug Help', url: 'https://www.health.gov.au/our-work/drug-help', note: 'Information and support options, from the Australian Government.' },
+        ],
+      };
+    case 'de':
+      return {
+        emergency: '112',
+        talk: [{ name: 'TelefonSeelsorge', call: '0800 111 0 111', hours: 'Free, 24/7, in German', note: 'Also 0800 111 0 222 or 116 123; chat and email at telefonseelsorge.de' }],
+        drinking: [
+          { name: 'Sucht & Drogen Hotline', call: '01806 313031', hours: 'Daily 8am–midnight, in German', note: '€0.20 a call' },
+          { name: 'BIÖG addiction prevention line', call: '0221 892031', hours: 'Mon–Thu 10am–10pm, Fri–Sun 10am–6pm, in German', note: 'Points you to counselling near you' },
+        ],
+        programmes: [
+          { name: 'Kenn dein Limit', url: 'https://www.kenn-dein-limit.de', note: 'Alcohol and health, a self-test and free online counselling, from the Federal Institute for Public Health (BIÖG). In German.' },
+          { name: 'DigiSucht', url: 'https://suchtberatung.digital', note: 'Free, anonymous online counselling with local addiction counsellors, for you or someone close to you. In German.' },
+          { name: 'Find counselling near you', url: 'https://www.dhs.de/service/suchthilfeverzeichnis/', note: 'Free, confidential addiction counselling services across Germany, from the German Centre for Addiction Issues (DHS).' },
+        ],
+      };
+    case 'at':
+      return {
+        emergency: '112',
+        talk: [{ name: 'TelefonSeelsorge', call: '142', hours: 'Free, 24/7, in German', note: 'Chat daily 4–11pm at telefonseelsorge.at' }],
+        drinking: [
+          { name: 'Alcoholics Anonymous Austria', call: '01 799 55 99', hours: 'Any time, in German', note: 'Also online meetings at anonyme-alkoholiker.at' },
+          { name: 'Health advice line 1450', call: '1450', hours: '24/7, in German', note: 'Nurses advise where to get care' },
+        ],
+        programmes: [
+          { name: 'Suchthilfekompass', url: 'https://suchthilfekompass.goeg.at', note: 'Find counselling and treatment near you, by region and type of help, from Gesundheit Österreich. In German.' },
+          { name: 'Gesundheitsportal: Alcohol dependence', url: 'https://www.gesundheit.gv.at/krankheiten/sucht/alkoholismus.html', note: 'Signs, treatment and support for you and your family, from Austria’s public health portal. In German.' },
         ],
       };
     default: // 'ca'

@@ -12,6 +12,7 @@ export const COUNTRIES = [
   { key: 'de', label: 'Germany' },
   { key: 'at', label: 'Austria' },
   { key: 'ie', label: 'Ireland' },
+  { key: 'nz', label: 'New Zealand' },
 ];
 export const PROVINCES = [
   { key: 'ca_ab', label: 'Alberta' }, { key: 'ca_bc', label: 'British Columbia' }, { key: 'ca_mb', label: 'Manitoba' },
@@ -42,12 +43,13 @@ export function regionFromTimeZone(tz: string): Region {
   if (tz === 'Europe/Berlin' || tz === 'Europe/Busingen') return { country: 'de', province: 'ca_ab' };
   if (tz === 'Europe/Vienna') return { country: 'at', province: 'ca_ab' };
   if (tz === 'Europe/Dublin') return { country: 'ie', province: 'ca_ab' };
+  if (tz === 'Pacific/Auckland' || tz === 'Pacific/Chatham') return { country: 'nz', province: 'ca_ab' };
   return { country: 'us', province: 'ca_ab' };
 }
 
 
 export interface Region {
-  country: string; // 'us' | 'uk' | 'au' | 'ca' | 'de' | 'at' | 'ie'
+  country: string; // 'us' | 'uk' | 'au' | 'ca' | 'de' | 'at' | 'ie' | 'nz'
   province: string; // used when country is 'ca'
   nation?: string; // used when country is 'uk'; missing (saved before 1.1) means England
 }

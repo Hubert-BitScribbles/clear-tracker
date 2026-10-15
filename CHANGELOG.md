@@ -19,6 +19,9 @@ on the branch, before merging.
   night, Welsh on request); Scotland gets Drinkline Scotland and Breathing
   Space; Northern Ireland adds Lifeline. A UK region saved before this reads
   as England.
+- New Zealand, too: 111, 1737 (call or text), the Alcohol Drug Helpline
+  (free, 24/7), SMART Recovery Aotearoa and the standard-drink guide
+  (checked 15 October 2026); Auckland time starts on New Zealand.
 - Savings use the region's currency: € for Ireland, Germany and Austria, £ for the
   United Kingdom (which showed $ before), $ elsewhere. Amounts aren't
   converted; the price per drink is whatever was typed. The price field says
@@ -26,7 +29,7 @@ on the branch, before merging.
   ("4,50", as German and Austrian keypads give) and a typed symbol; changing
   region in Settings updates the savings line straight away.
 - Resources: "What counts as one drink", a link to the country's official
-  guide (Canada, the US, the UK, Australia, Ireland, Germany; none found for Austria
+  guide (Canada, the US, the UK, Australia, New Zealand, Ireland, Germany; none found for Austria
   yet). The app still doesn't count drink sizes; Help's logging topic says
   so and points there.
 

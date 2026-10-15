@@ -16,6 +16,7 @@ const CURRENCIES: Record<string, { locale: string; currency: string }> = {
   de: { locale: 'en-IE', currency: 'EUR' },
   at: { locale: 'en-IE', currency: 'EUR' },
   ie: { locale: 'en-IE', currency: 'EUR' },
+  nz: { locale: 'en-NZ', currency: 'NZD' },
 };
 let current = CURRENCIES.ca;
 

@@ -37,6 +37,10 @@
 //   "Alcohol supports and services" (HSE Drugs and Alcohol Helpline, freephone, weekdays
 //   9:30am–5:30pm, helpline@hse.ie); smartrecovery.ie (SMART Recovery Ireland CLG);
 //   hse.ie "Weekly low-risk alcohol guidelines" (standard drink: 10 g).
+// - New Zealand (checked 15 October 2026): govt.nz "111 emergency service"; 1737.org.nz
+//   (call or text 1737, free, 24/7, Whakarongorau Aotearoa); alcoholdrughelp.org.nz
+//   (Alcohol Drug Helpline 0800 787 797, free, 24/7, and webchat); smartrecoveryaustralia.com.au
+//   "Aotearoa NZ" (free meetings in NZ and online); alcohol.org.nz "Standard drinks" (10 g).
 // - Germany and Austria: 112 is the EU-wide emergency number (Austria also has 144
 //   for an ambulance). All of these are in German.
 
@@ -169,6 +173,17 @@ export function resourcesFor(country: string, province: string, nation = 'eng'):
           { name: 'HSE: Alcohol supports and services', url: 'https://www2.hse.ie/living-well/alcohol/alcohol-supports-and-services/', note: 'Where to get help, including services in your area, from the HSE.' },
         ],
         drinkGuide: { name: 'Standard drinks in Ireland', url: 'https://www2.hse.ie/living-well/alcohol/health/improve-your-health/weekly-low-risk-alcohol-guidelines/', note: 'What a standard drink is, with examples, on the HSE’s low-risk guidelines page.' },
+      };
+    case 'nz':
+      return {
+        emergency: '111',
+        talk: [{ name: '1737: Need to talk?', call: '1737', text: { to: '1737' }, hours: 'Free, 24/7', note: 'Call or text to talk with a trained counsellor' }],
+        drinking: [{ name: 'Alcohol Drug Helpline', call: '0800 787 797', hours: 'Free, 24/7', note: 'Also webchat at alcoholdrughelp.org.nz' }],
+        programmes: [
+          { name: 'SMART Recovery Aotearoa New Zealand', url: 'https://smartrecoveryaustralia.com.au/aotearoa-nz', note: 'Free 4-Point Program meetings, in person across Aotearoa and online.' },
+          { name: 'Alcohol Drug Helpline', url: 'https://alcoholdrughelp.org.nz', note: 'Webchat and information from the helpline’s team.' },
+        ],
+        drinkGuide: { name: 'Standard drinks', url: 'https://alcohol.org.nz/help-advice/standard-drinks', note: 'What a standard drink is in Aotearoa, and how labels show it.' },
       };
     default: // 'ca'
       return { emergency: '911', talk: CA_TALK, drinking: PROVINCIAL[province] ? [PROVINCIAL[province]] : [], programmes: CA_PROGRAMMES, drinkGuide: CA_DRINK };

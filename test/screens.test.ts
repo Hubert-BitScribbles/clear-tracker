@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { regionFromTimeZone } from '../src/lib/regions';
+import { parseRegion, regionFromTimeZone, regionLabel } from '../src/lib/regions';
 import { daysLeftInMonth, daysLeftInYear } from '../src/screens/Intention';
 
 describe('Intention: days left (inclusive)', () => {
@@ -30,5 +30,21 @@ describe('About: region from time zone', () => {
     const r = regionFromTimeZone(tz);
     expect(r.country).toBe(country);
     if (province) expect(r.province).toBe(province);
+  });
+});
+
+describe('UK nations', () => {
+  it('a UK region saved before nations existed reads as England', () => {
+    const r = parseRegion(JSON.stringify({ country: 'uk', province: 'ca_ab' }), 'Europe/London');
+    expect(r.nation).toBe('eng');
+    expect(regionLabel(r)).toBe('United Kingdom · England');
+  });
+  it('a chosen nation is kept, and an unknown one falls back to England', () => {
+    expect(regionLabel(parseRegion(JSON.stringify({ country: 'uk', province: 'ca_ab', nation: 'wls' }), 'UTC'))).toBe('United Kingdom · Wales');
+    expect(parseRegion(JSON.stringify({ country: 'uk', province: 'ca_ab', nation: 'zz' }), 'UTC').nation).toBe('eng');
+  });
+  it('other countries are labelled as before', () => {
+    expect(regionLabel({ country: 'ca', province: 'ca_bc' })).toBe('Canada · British Columbia');
+    expect(regionLabel({ country: 'ie', province: 'ca_ab', nation: 'eng' })).toBe('Ireland');
   });
 });

@@ -30,6 +30,15 @@ describe('resources', () => {
     expect(resourcesFor('at', 'ca_ab')).toMatchObject({ emergency: '112', talk: [{ call: '142' }] });
     expect(dialable('01806 313031')).toBe('01806313031');
   });
+  it('UK nations: Wales, Scotland and Northern Ireland get their own lines; England keeps Drinkline', () => {
+    expect(resourcesFor('uk', 'ca_ab').drinking[0].name).toBe('Drinkline');
+    expect(resourcesFor('uk', 'ca_ab', 'eng').drinking[0].name).toBe('Drinkline');
+    expect(resourcesFor('uk', 'ca_ab', 'wls').drinking[0].call).toBe('0808 808 2234');
+    expect(resourcesFor('uk', 'ca_ab', 'sct').talk.map((l) => l.name)).toEqual(['Samaritans', 'Breathing Space']);
+    expect(resourcesFor('uk', 'ca_ab', 'sct').drinking[0].call).toBe('0800 7 314 314');
+    expect(resourcesFor('uk', 'ca_ab', 'nir').talk.map((l) => l.name)).toEqual(['Samaritans', 'Lifeline']);
+    for (const n of ['eng', 'sct', 'wls', 'nir']) expect(resourcesFor('uk', 'ca_ab', n).emergency).toBe('999');
+  });
   it('Ireland: 112, Samaritans, the HSE helpline', () => {
     expect(resourcesFor('ie', 'ca_ab')).toMatchObject({ emergency: '112', talk: [{ call: '116 123' }], drinking: [{ call: '1800 459 459' }] });
   });

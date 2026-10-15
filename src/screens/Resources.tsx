@@ -49,7 +49,7 @@ export function Resources() {
     if (region && hash === '#drink') document.getElementById('drink')?.scrollIntoView({ block: 'start' });
   }, [region, hash]);
   if (!region) return <main className="support" />;
-  const r = resourcesFor(region.country, region.province);
+  const r = resourcesFor(region.country, region.province, region.nation);
 
   return (
     <main className="support">

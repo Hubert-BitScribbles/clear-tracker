@@ -14,6 +14,11 @@ on the branch, before merging.
 - Ireland, too: 112, Samaritans, the HSE Drugs and Alcohol Helpline, SMART
   Recovery Ireland and the HSE's supports page (checked 14 October 2026);
   Dublin time starts on Ireland.
+- The United Kingdom now asks for the nation, as Canada asks for the
+  province. England keeps Drinkline; Wales gets DAN 24/7 (free, day and
+  night, Welsh on request); Scotland gets Drinkline Scotland and Breathing
+  Space; Northern Ireland adds Lifeline. A UK region saved before this reads
+  as England.
 - Savings use the region's currency: € for Ireland, Germany and Austria, £ for the
   United Kingdom (which showed $ before), $ elsewhere. Amounts aren't
   converted; the price per drink is whatever was typed. The price field says

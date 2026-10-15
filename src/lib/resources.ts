@@ -26,6 +26,12 @@
 //   ein Standardglas?". Austria: no official consumer page found (the 20 g
 //   "Standardglas" appears in ministry reports and an industry site), so none yet.
 //   Only a link: the app doesn't count drink sizes.
+// - UK nations (checked 14 October 2026): Wales — dan247.org.uk (DAN 24/7, free,
+//   bilingual, day and night). Scotland — breathingspace.scot and nhsinform.scot
+//   (Breathing Space, free, Mon–Thu 6pm–2am, Fri 6pm–Mon 6am); NHS Grampian "Alcohol"
+//   (Drinkline Scotland 0800 7 314 314, 8am–11pm daily). Northern Ireland —
+//   nidirect.gov.uk (Lifeline, freephone, 24 hours); no NI-only alcohol line found, so
+//   it keeps Drinkline (listed for NI by findahelpline.com). England: as the UK above.
 // - Ireland (checked 14 October 2026): gov.ie "How to contact emergency services" (112 or
 //   999, both free); samaritans.org (116 123, free, 24/7, UK and Ireland); hse.ie
 //   "Alcohol supports and services" (HSE Drugs and Alcohol Helpline, freephone, weekdays
@@ -79,7 +85,19 @@ const PROVINCIAL: Record<string, Line> = {
   ca_yt: { name: 'Mental Wellness and Substance Use Services', call: '1-866-456-3838', hours: 'Weekdays 8:30am–4:30pm' },
 };
 
-export function resourcesFor(country: string, province: string): Resources {
+const SAMARITANS: Line = { name: 'Samaritans', call: '116 123', hours: 'Free from any phone, 24 hours a day' };
+const DRINKLINE: Line = { name: 'Drinkline', call: '0300 123 1110', hours: 'Weekdays 9am–8pm, weekends 11am–4pm' };
+const UK_LINES: Record<string, { talk: Line[]; drinking: Line[] }> = {
+  eng: { talk: [SAMARITANS], drinking: [DRINKLINE] },
+  wls: { talk: [SAMARITANS], drinking: [{ name: 'DAN 24/7: Wales Drug and Alcohol Helpline', call: '0808 808 2234', hours: 'Free, day and night', note: 'In English, or in Welsh on request' }] },
+  sct: {
+    talk: [SAMARITANS, { name: 'Breathing Space', call: '0800 83 85 87', hours: 'Free; Mon–Thu 6pm–2am, and from 6pm Friday to 6am Monday', note: 'Also webchat, same hours' }],
+    drinking: [{ name: 'Drinkline Scotland', call: '0800 7 314 314', hours: 'Free, 8am–11pm daily' }],
+  },
+  nir: { talk: [SAMARITANS, { name: 'Lifeline', call: '0808 808 8000', hours: 'Freephone, 24 hours a day', note: 'Northern Ireland’s crisis line' }], drinking: [DRINKLINE] },
+};
+
+export function resourcesFor(country: string, province: string, nation = 'eng'): Resources {
   switch (country) {
     case 'us':
       return {
@@ -95,8 +113,7 @@ export function resourcesFor(country: string, province: string): Resources {
     case 'uk':
       return {
         emergency: '999',
-        talk: [{ name: 'Samaritans', call: '116 123', hours: 'Free from any phone, 24 hours a day' }],
-        drinking: [{ name: 'Drinkline', call: '0300 123 1110', hours: 'Weekdays 9am–8pm, weekends 11am–4pm' }],
+        ...(UK_LINES[nation] ?? UK_LINES.eng),
         programmes: [
           { name: 'UK SMART Recovery', url: 'https://smartrecovery.org.uk', note: 'Free mutual-aid meetings, online and in person.' },
           { name: 'NHS: Alcohol support', url: 'https://www.nhs.uk/live-well/alcohol-advice/alcohol-support/', note: 'Where to get help, from the NHS.' },

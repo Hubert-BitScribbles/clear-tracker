@@ -19,6 +19,13 @@
 // - Austria (checked 14 October 2026): telefonseelsorge.at (142); 1450.at;
 //   anonyme-alkoholiker.at; sozialministerium.gv.at "Alkohol" (Suchthilfekompass,
 //   gesundheit.gv.at). There's no national alcohol helpline: AA and 1450 stand in.
+// - What counts as one drink (checked 14 October 2026): ccsa.ca "Know Your Standard
+//   Drink" (2025 poster, matches Canada's Guidance on Alcohol and Health);
+//   rethinkingdrinking.niaaa.nih.gov "What's a standard drink?"; nhs.uk "Alcohol
+//   units"; health.gov.au "Standard drinks guide"; kenn-dein-limit.de FAQ "Was ist
+//   ein Standardglas?". Austria: no official consumer page found (the 20 g
+//   "Standardglas" appears in ministry reports and an industry site), so none yet.
+//   Only a link: the app doesn't count drink sizes.
 // - Germany and Austria: 112 is the EU-wide emergency number (Austria also has 144
 //   for an ambulance). All of these are in German.
 
@@ -41,9 +48,11 @@ export interface Resources {
   talk: Line[]; // someone to talk to, any time
   drinking: Line[]; // help with drinking, in this region
   programmes: Link[];
+  drinkGuide?: Link; // what counts as one drink here; none where there's no clear official page
 }
 
 const CA_TALK: Line[] = [{ name: '9-8-8: Suicide Crisis Helpline', call: '9-8-8', text: { to: '988' }, hours: '24/7, in English and French' }];
+const CA_DRINK: Link = { name: 'Know your standard drink', url: 'https://www.ccsa.ca/sites/default/files/2025-05/CGAH-Standard-Drinks-Poster-en.pdf', note: 'Canada’s standard drink, from the Canadian Centre on Substance Use and Addiction (a one-page PDF).' };
 const CA_PROGRAMMES: Link[] = [
   { name: 'SMART Recovery Canada', url: 'https://smartrecovery-canada.ca', note: 'Free 4-Point Program meetings, online and in person. Doesn’t require abstinence; works alongside other supports.' },
   { name: 'Drink Less Live More', url: 'https://drinklesslivemore.ca/en', note: 'Canada’s guidance on alcohol and health, from the Canadian Centre on Substance Use and Addiction.' },
@@ -76,6 +85,7 @@ export function resourcesFor(country: string, province: string): Resources {
           { name: 'SMART Recovery', url: 'https://smartrecovery.org', note: 'Free 4-Point Program meetings, online and in person.' },
           { name: 'Rethinking Drinking', url: 'https://rethinkingdrinking.niaaa.nih.gov', note: 'Evidence-based information and tools for cutting down or quitting, from the U.S. National Institutes of Health.' },
         ],
+        drinkGuide: { name: 'What’s a standard drink?', url: 'https://rethinkingdrinking.niaaa.nih.gov/how-much-too-much/whats-standard-drink', note: 'The U.S. standard drink, with examples, from the National Institutes of Health.' },
       };
     case 'uk':
       return {
@@ -86,6 +96,7 @@ export function resourcesFor(country: string, province: string): Resources {
           { name: 'UK SMART Recovery', url: 'https://smartrecovery.org.uk', note: 'Free mutual-aid meetings, online and in person.' },
           { name: 'NHS: Alcohol support', url: 'https://www.nhs.uk/live-well/alcohol-advice/alcohol-support/', note: 'Where to get help, from the NHS.' },
         ],
+        drinkGuide: { name: 'Alcohol units', url: 'https://www.nhs.uk/live-well/alcohol-advice/calculating-alcohol-units/', note: 'What a unit is and how many are in common drinks, from the NHS.' },
       };
     case 'au':
       return {
@@ -96,6 +107,7 @@ export function resourcesFor(country: string, province: string): Resources {
           { name: 'SMART Recovery Australia', url: 'https://smartrecoveryaustralia.com.au', note: 'Free 4-Point Program meetings, online and in person.' },
           { name: 'Drug Help', url: 'https://www.health.gov.au/our-work/drug-help', note: 'Information and support options, from the Australian Government.' },
         ],
+        drinkGuide: { name: 'Standard drinks guide', url: 'https://www.health.gov.au/topics/alcohol/about-alcohol/standard-drinks-guide', note: 'The Australian standard drink, with common serves, from the Australian Government.' },
       };
     case 'de':
       return {
@@ -110,6 +122,7 @@ export function resourcesFor(country: string, province: string): Resources {
           { name: 'DigiSucht', url: 'https://suchtberatung.digital', note: 'Free, anonymous online counselling with local addiction counsellors, for you or someone close to you. In German.' },
           { name: 'Find counselling near you', url: 'https://www.dhs.de/service/suchthilfeverzeichnis/', note: 'Free, confidential addiction counselling services across Germany, from the German Centre for Addiction Issues (DHS).' },
         ],
+        drinkGuide: { name: 'Was ist ein Standardglas?', url: 'https://www.kenn-dein-limit.de/haeufige-fragen-zum-thema-alkohol/#c2369', note: 'The German “standard glass”, with examples, from Kenn dein Limit (BIÖG). In German.' },
       };
     case 'at':
       return {
@@ -125,7 +138,7 @@ export function resourcesFor(country: string, province: string): Resources {
         ],
       };
     default: // 'ca'
-      return { emergency: '911', talk: CA_TALK, drinking: PROVINCIAL[province] ? [PROVINCIAL[province]] : [], programmes: CA_PROGRAMMES };
+      return { emergency: '911', talk: CA_TALK, drinking: PROVINCIAL[province] ? [PROVINCIAL[province]] : [], programmes: CA_PROGRAMMES, drinkGuide: CA_DRINK };
   }
 }
 

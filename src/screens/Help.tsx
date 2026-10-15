@@ -74,7 +74,7 @@ function articles(d: Device): Article[] {
   const P = platform(d);
   return [
   {
-    id: 'start', title: 'Logging your days', keywords: 'tap calendar clear a few moderate a lot level unlogged past change edit',
+    id: 'start', title: 'Logging your days', keywords: 'tap calendar clear a few moderate a lot level unlogged past change edit standard drink unit size',
     body: (
       <>
         <p>Tap a day to select it, then tap it again to log it. Each tap moves to the next level:</p>
@@ -85,6 +85,7 @@ function articles(d: Device): Article[] {
           <li><strong>A lot</strong> — 5 or more</li>
           <li>then back to <strong>not logged</strong>.</li>
         </ul>
+        <p>What counts as one drink differs from country to country, and the app doesn't count sizes. If it helps you log the same way each time, <Link to="/settings/resources#drink">Resources</Link> links to your country's guide where there is one.</p>
         <p>You can log or change past days at any time; use the arrows to move between months. Future days can't be logged. A day you don't log is simply not logged: nothing assumes it was clear or not.</p>
       </>
     ),

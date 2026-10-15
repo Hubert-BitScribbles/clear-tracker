@@ -30,6 +30,12 @@ describe('resources', () => {
     expect(resourcesFor('at', 'ca_ab')).toMatchObject({ emergency: '112', talk: [{ call: '142' }] });
     expect(dialable('01806 313031')).toBe('01806313031');
   });
+  it('what counts as one drink: an official guide for each country except Austria (none found)', () => {
+    for (const [c, p] of [['ca', 'ca_on'], ['us', 'ca_ab'], ['uk', 'ca_ab'], ['au', 'ca_ab'], ['de', 'ca_ab']]) {
+      expect(resourcesFor(c, p).drinkGuide?.url).toMatch(/^https:\/\//);
+    }
+    expect(resourcesFor('at', 'ca_ab').drinkGuide).toBeUndefined();
+  });
   it('dialable keeps digits only', () => {
     expect(dialable('1-866-531-2600')).toBe('18665312600');
     expect(dialable('13 11 14')).toBe('131114');

@@ -15,6 +15,10 @@ on the branch, before merging.
   United Kingdom (which showed $ before), $ elsewhere. Amounts aren't
   converted; the price per drink is whatever was typed. The price field says
   which currency it's in.
+- Resources: "What counts as one drink", a link to the country's official
+  guide (Canada, the US, the UK, Australia, Germany; none found for Austria
+  yet). The app still doesn't count drink sizes; Help's logging topic says
+  so and points there.
 
 ## 1.0.0 — 12 October 2026
 

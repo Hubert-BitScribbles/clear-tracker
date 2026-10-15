@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { Data, savingsEstimate } from '../src/data/compute';
-import { currencySymbol, describeSavings, money, priceText, setMoneyCountry } from '../src/lib/savings';
+import { currencySymbol, describeSavings, money, parseAmount, priceText, setMoneyCountry } from '../src/lib/savings';
 
 const day = (d: string, level: 'clear' | 'a-few' | 'moderate' | 'a-lot') => ({
   id: d, entry_date: d, status: level === 'clear' ? 'clear' : 'drinking', amount: level === 'clear' ? null : level,
@@ -87,4 +87,12 @@ describe('currency follows the region', () => {
     setMoneyCountry('zz');
     expect(money(5)).toBe('$5');
   });
+});
+
+describe('typed amounts', () => {
+  it.each([
+    ['8', 8], ['8.50', 8.5], ['8,50', 8.5], ['€4', 4], ['£4.20', 4.2], ['$ 9', 9], [' 12 ', 12],
+    ['1.234,50', 1234.5], ['1,234.50', 1234.5], ['14,5', 14.5],
+  ])('%s → %s', (text, n) => expect(parseAmount(text)).toBe(n));
+  it.each(['', 'abc', '1.2.3'])('%s is not a number', (text) => expect(parseAmount(text)).toBeNaN());
 });

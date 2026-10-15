@@ -1,7 +1,7 @@
 import { useEffect, useId, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getSavingsEstimate, getSavingsSettings, type FirstThreeMonths, type SavingsEstimate, type SavingsSettings } from '../data/database';
-import { currencySymbol, describeSavings, priceText } from '../lib/savings';
+import { currencySymbol, describeSavings, parseAmount, priceText } from '../lib/savings';
 import { monthPhrase } from '../lib/challengeText';
 import { MonthlyChart } from './MonthlyChart';
 import { wholeDrinks } from '../lib/reportText';
@@ -167,10 +167,10 @@ export function SavingsSetup({
   const first3Ready = first3.status === 'ready';
 
   function save() {
-    const pn = Number(p.replace(/^\$/, ''));
+    const pn = parseAmount(p);
     let bn: number | null = null;
     if (source === 'entered') {
-      bn = Number(b);
+      bn = parseAmount(b);
       if (b.trim() === '' || !Number.isFinite(bn) || bn < 0 || bn > 200) {
         setError('Enter drinks a week as a number from 0 to 200.');
         return;

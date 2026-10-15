@@ -24,6 +24,20 @@ export function setMoneyCountry(country: string): void {
   current = CURRENCIES[country] ?? CURRENCIES.ca;
 }
 
+/**
+ * A typed amount as a number: "8.50", "8,50" (a comma decimal, as German and
+ * Austrian keypads give), "€4", "$ 9", "1.234,50" or "1,234.50". NaN if not a number.
+ */
+export function parseAmount(text: string): number {
+  let s = text.trim().replace(/[^\d.,-]/g, '');
+  if (s === '') return NaN;
+  const comma = s.lastIndexOf(',');
+  const dot = s.lastIndexOf('.');
+  if (comma > dot) s = s.replace(/\./g, '').replace(',', '.'); // comma is the decimal mark
+  else s = s.replace(/,/g, ''); // dot (or nothing) is the decimal mark
+  return s.split('.').length > 2 ? NaN : Number(s);
+}
+
 /** "$", "£", "€" — for labels such as "Price per drink (€)". */
 export function currencySymbol(): string {
   const parts = new Intl.NumberFormat(current.locale, { style: 'currency', currency: current.currency }).formatToParts(0);

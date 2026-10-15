@@ -22,7 +22,9 @@ on the branch, before merging.
 - Savings use the region's currency: € for Ireland, Germany and Austria, £ for the
   United Kingdom (which showed $ before), $ elsewhere. Amounts aren't
   converted; the price per drink is whatever was typed. The price field says
-  which currency it's in.
+  which currency it's in. Prices and baselines accept a comma decimal
+  ("4,50", as German and Austrian keypads give) and a typed symbol; changing
+  region in Settings updates the savings line straight away.
 - Resources: "What counts as one drink", a link to the country's official
   guide (Canada, the US, the UK, Australia, Ireland, Germany; none found for Austria
   yet). The app still doesn't count drink sizes; Help's logging topic says

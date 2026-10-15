@@ -7,7 +7,7 @@ export const PRICE_KEY = 'savings_price_per_drink';
 
 // Currency follows the region (set in onboarding or Settings). The amounts
 // themselves are whatever the user typed as a price; nothing is converted.
-// English formatting throughout: €1,234 in Germany and Austria (en-IE).
+// English formatting throughout: €1,234 in Ireland, Germany and Austria (en-IE).
 const CURRENCIES: Record<string, { locale: string; currency: string }> = {
   ca: { locale: 'en-CA', currency: 'CAD' },
   us: { locale: 'en-US', currency: 'USD' },
@@ -15,6 +15,7 @@ const CURRENCIES: Record<string, { locale: string; currency: string }> = {
   au: { locale: 'en-AU', currency: 'AUD' },
   de: { locale: 'en-IE', currency: 'EUR' },
   at: { locale: 'en-IE', currency: 'EUR' },
+  ie: { locale: 'en-IE', currency: 'EUR' },
 };
 let current = CURRENCIES.ca;
 

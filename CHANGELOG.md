@@ -11,12 +11,15 @@ on the branch, before merging.
   checked against official sources on 14 October 2026; all are in German.
   Austria has no national alcohol helpline, so AA Austria and the 1450 health
   line stand in. A device set to Berlin or Vienna time starts on that country.
-- Savings use the region's currency: € for Germany and Austria, £ for the
+- Ireland, too: 112, Samaritans, the HSE Drugs and Alcohol Helpline, SMART
+  Recovery Ireland and the HSE's supports page (checked 14 October 2026);
+  Dublin time starts on Ireland.
+- Savings use the region's currency: € for Ireland, Germany and Austria, £ for the
   United Kingdom (which showed $ before), $ elsewhere. Amounts aren't
   converted; the price per drink is whatever was typed. The price field says
   which currency it's in.
 - Resources: "What counts as one drink", a link to the country's official
-  guide (Canada, the US, the UK, Australia, Germany; none found for Austria
+  guide (Canada, the US, the UK, Australia, Ireland, Germany; none found for Austria
   yet). The app still doesn't count drink sizes; Help's logging topic says
   so and points there.
 

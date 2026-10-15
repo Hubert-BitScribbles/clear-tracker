@@ -26,6 +26,11 @@
 //   ein Standardglas?". Austria: no official consumer page found (the 20 g
 //   "Standardglas" appears in ministry reports and an industry site), so none yet.
 //   Only a link: the app doesn't count drink sizes.
+// - Ireland (checked 14 October 2026): gov.ie "How to contact emergency services" (112 or
+//   999, both free); samaritans.org (116 123, free, 24/7, UK and Ireland); hse.ie
+//   "Alcohol supports and services" (HSE Drugs and Alcohol Helpline, freephone, weekdays
+//   9:30am–5:30pm, helpline@hse.ie); smartrecovery.ie (SMART Recovery Ireland CLG);
+//   hse.ie "Weekly low-risk alcohol guidelines" (standard drink: 10 g).
 // - Germany and Austria: 112 is the EU-wide emergency number (Austria also has 144
 //   for an ambulance). All of these are in German.
 
@@ -136,6 +141,17 @@ export function resourcesFor(country: string, province: string): Resources {
           { name: 'Suchthilfekompass', url: 'https://suchthilfekompass.goeg.at', note: 'Find counselling and treatment near you, by region and type of help, from Gesundheit Österreich. In German.' },
           { name: 'Gesundheitsportal: Alcohol dependence', url: 'https://www.gesundheit.gv.at/krankheiten/sucht/alkoholismus.html', note: 'Signs, treatment and support for you and your family, from Austria’s public health portal. In German.' },
         ],
+      };
+    case 'ie':
+      return {
+        emergency: '112',
+        talk: [{ name: 'Samaritans', call: '116 123', hours: 'Free, 24/7' }],
+        drinking: [{ name: 'HSE Drugs and Alcohol Helpline', call: '1800 459 459', hours: 'Freephone, weekdays 9:30am–5:30pm', note: 'Or email helpline@hse.ie' }],
+        programmes: [
+          { name: 'SMART Recovery Ireland', url: 'https://smartrecovery.ie', note: 'Free mutual-aid meetings, online and in person.' },
+          { name: 'HSE: Alcohol supports and services', url: 'https://www2.hse.ie/living-well/alcohol/alcohol-supports-and-services/', note: 'Where to get help, including services in your area, from the HSE.' },
+        ],
+        drinkGuide: { name: 'Standard drinks in Ireland', url: 'https://www2.hse.ie/living-well/alcohol/health/improve-your-health/weekly-low-risk-alcohol-guidelines/', note: 'What a standard drink is, with examples, on the HSE’s low-risk guidelines page.' },
       };
     default: // 'ca'
       return { emergency: '911', talk: CA_TALK, drinking: PROVINCIAL[province] ? [PROVINCIAL[province]] : [], programmes: CA_PROGRAMMES, drinkGuide: CA_DRINK };

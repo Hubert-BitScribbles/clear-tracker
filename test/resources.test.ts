@@ -30,8 +30,11 @@ describe('resources', () => {
     expect(resourcesFor('at', 'ca_ab')).toMatchObject({ emergency: '112', talk: [{ call: '142' }] });
     expect(dialable('01806 313031')).toBe('01806313031');
   });
+  it('Ireland: 112, Samaritans, the HSE helpline', () => {
+    expect(resourcesFor('ie', 'ca_ab')).toMatchObject({ emergency: '112', talk: [{ call: '116 123' }], drinking: [{ call: '1800 459 459' }] });
+  });
   it('what counts as one drink: an official guide for each country except Austria (none found)', () => {
-    for (const [c, p] of [['ca', 'ca_on'], ['us', 'ca_ab'], ['uk', 'ca_ab'], ['au', 'ca_ab'], ['de', 'ca_ab']]) {
+    for (const [c, p] of [['ca', 'ca_on'], ['us', 'ca_ab'], ['uk', 'ca_ab'], ['au', 'ca_ab'], ['de', 'ca_ab'], ['ie', 'ca_ab']]) {
       expect(resourcesFor(c, p).drinkGuide?.url).toMatch(/^https:\/\//);
     }
     expect(resourcesFor('at', 'ca_ab').drinkGuide).toBeUndefined();

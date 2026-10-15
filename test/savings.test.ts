@@ -73,6 +73,7 @@ describe('currency follows the region', () => {
     ['uk', '£1,234', '£'],
     ['de', '€1,234', '€'],
     ['at', '€1,234', '€'],
+    ['ie', '€1,234', '€'],
   ])('%s: %s', (country, amount, symbol) => {
     setMoneyCountry(country);
     expect(money(1234)).toBe(amount);

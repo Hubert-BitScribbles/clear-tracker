@@ -95,6 +95,7 @@ function articles(d: Device): Article[] {
     body: (
       <>
         <p>Your intention is how many clear days a week you're aiming for, from 1 to 7. Cutting back and stepping away completely are both valid.</p>
+        <p>If you drink heavily every day, stopping suddenly can be dangerous. Talk to a doctor first, or one of the lines in <Link to="/settings/resources">Resources</Link>.</p>
         <p>Weeks run Monday to Sunday. A week is <strong>met</strong> when its clear days reach your intention, and <strong>beyond</strong> when they pass it.</p>
         <p>If you change your intention, it applies to this week if nothing is logged in it yet, otherwise from next Monday. Past weeks always keep the intention that was active at the time.</p>
         <p>Weeks before your first intention — days you've filled in from before you started — count as logged days, but aren't measured as met or missed.</p>

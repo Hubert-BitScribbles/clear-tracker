@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { COUNTRIES, PROVINCES } from '../src/lib/regions';
-import { dialable, resourcesFor } from '../src/lib/resources';
+import { dialable, resourcesFor, STOPPING_CAUTION } from '../src/lib/resources';
 
 describe('resources', () => {
   const regions = [
@@ -50,6 +50,10 @@ describe('resources', () => {
       expect(resourcesFor(c, p).drinkGuide?.url).toMatch(/^https:\/\//);
     }
     expect(resourcesFor('at', 'ca_ab').drinkGuide).toBeUndefined();
+  });
+  it('the stopping-suddenly caution is plain and points to help', () => {
+    expect(STOPPING_CAUTION).toMatch(/stopping suddenly can be dangerous/);
+    expect(STOPPING_CAUTION).toMatch(/doctor/);
   });
   it('dialable keeps digits only', () => {
     expect(dialable('1-866-531-2600')).toBe('18665312600');

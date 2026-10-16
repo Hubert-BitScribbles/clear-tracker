@@ -46,6 +46,17 @@
 
 export const CHECKED = 'October 2026';
 
+// Stopping suddenly after heavy daily drinking can bring dangerous withdrawal
+// (seizures, delirium). Shown in Resources, Help (intention) and Challenges.
+// Checked 16 October 2026: nhs.uk "Alcohol misuse: treatment" ("It can be very
+// dangerous to stop drinking suddenly if you're dependent on alcohol");
+// healthlinkbc.ca "Alcohol withdrawal" (talk to your doctor before you stop);
+// rethinkingdrinking.niaaa.nih.gov "Cut down or quit" (withdrawal can be
+// life-threatening; seek medical help); kenn-dein-limit.de FAQ (delirium tremens).
+// Prompted by Alcohol Change UK's "Get help now" page, via a UK tester.
+export const STOPPING_CAUTION =
+  'If you drink heavily every day, stopping suddenly can be dangerous. Talk to a doctor, or one of these lines, before you stop completely.';
+
 export interface Line {
   name: string;
   call?: string; // shown as written; dialled digits only

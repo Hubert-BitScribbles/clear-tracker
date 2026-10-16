@@ -22,6 +22,10 @@ on the branch, before merging.
 - New Zealand, too: 111, 1737 (call or text), the Alcohol Drug Helpline
   (free, 24/7), SMART Recovery Aotearoa and the standard-drink guide
   (checked 15 October 2026); Auckland time starts on New Zealand.
+- A short caution, in Resources, Help and Challenges: stopping suddenly
+  after heavy daily drinking can be dangerous, so talk to a doctor or a help
+  line first. Prompted by a UK tester's link to Alcohol Change UK; wording
+  checked against the NHS, HealthLink BC and NIAAA.
 - Savings use the region's currency: € for Ireland, Germany and Austria, £ for the
   United Kingdom (which showed $ before), $ elsewhere. Amounts aren't
   converted; the price per drink is whatever was typed. The price field says

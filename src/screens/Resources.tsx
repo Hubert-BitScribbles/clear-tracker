@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { SegmentNav } from '../components/SegmentNav';
 import { getSetting } from '../data/database';
 import { deviceTimeZone, parseRegion, regionLabel, type Region } from '../lib/regions';
-import { CHECKED, dialable, resourcesFor, type Line } from '../lib/resources';
+import { CHECKED, dialable, resourcesFor, STOPPING_CAUTION, type Line } from '../lib/resources';
 import './Support.css';
 
 // Resources: where to find help, for the region set in Settings. Checked
@@ -68,6 +68,7 @@ export function Resources() {
       <div className="card sp-card">{r.talk.map((l) => <LineCard key={l.name} line={l} />)}</div>
 
       <h2 className="sp-sec">Help with drinking</h2>
+      <p className="sp-caution">{STOPPING_CAUTION}</p>
       <div className="card sp-card">{r.drinking.map((l) => <LineCard key={l.name} line={l} />)}</div>
 
       <h2 className="sp-sec">Programmes and information</h2>

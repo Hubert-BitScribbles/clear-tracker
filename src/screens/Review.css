@@ -18,7 +18,8 @@
 .rv-sub { font-size: 12px; text-align: center; margin: 2px 0 16px; color: var(--text-muted); }
 .rv-section { margin-top: 18px; break-inside: avoid; }
 .rv-sec { font-family: var(--font-body); font-weight: 400; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; color: var(--text-muted); }
-.rv-card { padding: 14px; }
+/* .rv-card takes its padding from .card. (A 14px padding here never applied:
+   while Check-in imported this screen, this file loaded before base.css.) */
 .rv-text p + p { margin-top: 6px; }
 .rv-text { font-size: 13px; line-height: 19px; color: var(--on-card-secondary); }
 .rv-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }

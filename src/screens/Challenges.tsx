@@ -5,16 +5,17 @@ import { MilestonesNav } from '../components/SegmentNav';
 import { TierBadges } from '../components/TierBadges';
 import { getChallengeStatus, setChallengeOn, setChallenges, tiersFrom, WEEK_TIERS, WEEKEND_TIERS } from '../data/database';
 import { addDays, mondayOf, todayIso } from '../data/dates';
-import { dayText, MONTH_LONG, monthStatusText, monthTitle, spanStatusText } from '../lib/challengeText';
+import { dayText, monthStatusText, monthTitle, spanStatusText } from '../lib/challengeText';
 import './Milestones.css';
 import './Challenges.css';
+import { rich, t, type Key } from '../i18n';
+import { dayMonth, monthYear } from '../i18n/format';
 
 // Challenges: optional, all-or-nothing goals the user takes on. Weekends and
 // weeks start like an intention — this one if it hasn't started (nothing
 // logged in it yet), otherwise the next — and only count from then on.
 
-const SHORT = MONTH_LONG.map((m) => m.slice(0, 3));
-const fmt = (iso: string) => `${SHORT[Number(iso.slice(5, 7)) - 1]} ${Number(iso.slice(8, 10))}`;
+const fmt = dayMonth;
 
 export function Challenges() {
   const [st, setSt] = useState<Awaited<ReturnType<typeof getChallengeStatus>> | null>(null);
@@ -23,7 +24,7 @@ export function Challenges() {
     const y = Number(today.slice(0, 4));
     const m = Number(today.slice(5, 7)) - 1 + i;
     const ym = `${y + Math.floor(m / 12)}-${String((m % 12) + 1).padStart(2, '0')}`;
-    return { ym, label: `${MONTH_LONG[m % 12]} ${y + Math.floor(m / 12)}` };
+    return { ym, label: monthYear((m % 12) + 1, y + Math.floor(m / 12)) };
   });
   const [pick, setPick] = useState(options[0].ym);
 
@@ -39,8 +40,8 @@ export function Challenges() {
   const startsText = (kind: 'weekend' | 'week', start: string) => {
     const thisOne = kind === 'weekend' ? addDays(mondayOf(today), 4) : mondayOf(today);
     return start === thisOne
-      ? `Starts ${kind === 'weekend' ? 'this weekend' : 'this week'}, ${dayText(start)}`
-      : `Starts ${dayText(start)} — ${kind === 'weekend' ? 'this Friday is already logged' : 'this week already has logged days'}`;
+      ? t(`challenges.startsThis.${kind}` as Key, { date: dayText(start) })
+      : t(`challenges.startsLater.${kind}` as Key, { date: dayText(start) });
   };
 
   const section = (kind: 'weekend' | 'week') => {
@@ -50,19 +51,19 @@ export function Challenges() {
     const earned = kind === 'weekend' ? st.weekends : st.weeks;
     const tiers = kind === 'weekend' ? WEEKEND_TIERS : WEEK_TIERS;
     const ever = (kind === 'weekend' ? st.settings.weekendRuns : st.settings.weekRuns).length > 0;
-    const label = kind === 'weekend' ? 'Clear weekends' : 'Clear weeks';
+    const label = t(`challenges.label.${kind}` as Key);
     return (
       <section className="card ch-card" aria-labelledby={`ch-${kind}`}>
         <div className="ch-row">
           <div className="ch-row-text">
             <h2 id={`ch-${kind}`} className="ch-label">{label}</h2>
-            <p className="ch-sub">{kind === 'weekend' ? 'Friday, Saturday and Sunday, all clear' : 'Monday to Sunday, all clear'}</p>
+            <p className="ch-sub">{t(`challenges.sub.${kind}` as Key)}</p>
           </div>
           <button
             type="button"
             role="switch"
             aria-checked={on}
-            aria-label={`Take on ${label.toLowerCase()}`}
+            aria-label={t(`challenges.takeOn.${kind}` as Key)}
             className="switch"
             onClick={async () => {
               await setChallengeOn(kind, !on);
@@ -75,11 +76,11 @@ export function Challenges() {
         <div className="ch-detail">
           {on && runStart ? (
             <>
-              <p className="ch-line">{runStart > today ? startsText(kind, runStart) : `Since ${dayText(runStart)}`}</p>
+              <p className="ch-line">{runStart > today ? startsText(kind, runStart) : t('challenges.since', { date: dayText(runStart) })}</p>
               {now && <p className="ch-line ch-now">{spanStatusText(now, kind)}</p>}
             </>
           ) : (
-            <p className="ch-line">{startsText(kind, kind === 'weekend' ? st.weekendStartsIfOn : st.weekStartsIfOn)}, if you switch it on now.</p>
+            <p className="ch-line">{t('challenges.ifOn', { starts: startsText(kind, kind === 'weekend' ? st.weekendStartsIfOn : st.weekStartsIfOn) })}</p>
           )}
         </div>
         {ever && earned.length > 0 && (
@@ -89,7 +90,7 @@ export function Challenges() {
               tiers={tiers}
               earned={tiersFrom(earned, tiers)}
               progress={earned.length}
-              title={(t) => (t === 1 ? `A clear ${kind}` : `${t} clear ${kind}s`)}
+              title={(n) => kind === 'weekend' ? (n === 1 ? t('ms.clearWeekend1') : t('ms.clearWeekendN', { n })) : (n === 1 ? t('ms.clearWeek1') : t('ms.clearWeekN', { n }))}
               formatDate={fmt}
             />
           </div>
@@ -100,17 +101,10 @@ export function Challenges() {
 
   return (
     <main className="milestones">
-      <h1 className="ms-title">Challenges</h1>
+      <h1 className="ms-title">{t('challenges.title')}</h1>
       <MilestonesNav active="challenges" />
-      <p className="ch-intro">
-        Optional goals you take on. They're all-or-nothing — one drinking day means that one isn't earned — which suits
-        some people and not others. Like an intention, a weekend or week challenge starts with the next one that hasn't
-        begun, and only counts from then.
-      </p>
-      <p className="ch-intro">
-        If you drink heavily every day, stopping suddenly can be dangerous. Talk to a doctor first, or one of the lines
-        in <Link to="/settings/resources">Resources</Link>.
-      </p>
+      <p className="ch-intro">{t('challenges.intro')}</p>
+      <p className="ch-intro">{rich('challenges.caution', { link: (c) => <Link to="/settings/resources">{c}</Link> })}</p>
 
       {section('weekend')}
       {section('week')}
@@ -118,11 +112,8 @@ export function Challenges() {
       <section className="card ch-card" aria-labelledby="ch-months">
         <div className="ch-row">
           <div className="ch-row-text">
-            <h2 id="ch-months" className="ch-label">A clear month</h2>
-            <p className="ch-sub">
-              Pick a month to keep clear. Days you forget to log can be filled in afterwards. A chosen month is left out of
-              the "first 3 months" savings baseline.
-            </p>
+            <h2 id="ch-months" className="ch-label">{t('challenges.month')}</h2>
+            <p className="ch-sub">{t('challenges.monthSub')}</p>
           </div>
         </div>
         {st.months.map((c) => (
@@ -134,19 +125,19 @@ export function Challenges() {
             <button
               type="button"
               className="ch-remove"
-              aria-label={`Remove ${monthTitle(c.ym)}`}
+              aria-label={t('challenges.removeLabel', { title: monthTitle(c.ym) })}
               onClick={async () => {
                 await setChallenges({ ...st.settings, months: st.settings.months.filter((m) => m !== c.ym) });
                 await load();
               }}
             >
-              Remove
+              {t('challenges.remove')}
             </button>
           </div>
         ))}
         {available.length > 0 && (
           <div className="ch-row ch-add">
-            <label className="sr-only" htmlFor="ch-month">Month to add</label>
+            <label className="sr-only" htmlFor="ch-month">{t('challenges.monthToAdd')}</label>
             <select id="ch-month" className="ch-select" value={available.some((o) => o.ym === pick) ? pick : available[0].ym} onChange={(e) => setPick(e.target.value)}>
               {available.map((o) => <option key={o.ym} value={o.ym}>{o.label}</option>)}
             </select>
@@ -159,12 +150,12 @@ export function Challenges() {
                 await load();
               }}
             >
-              Add
+              {t('challenges.add')}
             </button>
           </div>
         )}
       </section>
-      <HelpLinks topic="milestones">How challenges work</HelpLinks>
+      <HelpLinks topic="milestones">{t('challenges.howTheyWork')}</HelpLinks>
     </main>
   );
 }

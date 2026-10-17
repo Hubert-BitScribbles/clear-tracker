@@ -28,9 +28,9 @@ import iconUrl from '../assets/clear-icon-96.png';
 import { playLoggingSound, unlockAudio } from '../lib/sounds';
 import { backupNudge, SNOOZE_DAYS } from '../lib/backupNudge';
 import { defaultPeriod } from '../data/report';
-import { MONTH_LONG } from '../lib/challengeText';
-import { periodLabel } from './Review';
 import './CheckIn.css';
+import { t } from '../i18n';
+import { dayMonth, monthName, monthYear, weekdayDayMonthLong, weekdayLetter } from '../i18n/format';
 
 // Port of the native app/(tabs)/index.tsx. The second stat card shows weeks
 // that met the intention in the shown month (native: week streak, which
@@ -38,35 +38,17 @@ import './CheckIn.css';
 // steps a day through clear → a few → moderate → a lot → unlogged, and the
 // check-in questions are gone. One native bug fix is marked FIX.
 
-const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
-const WEEKDAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
 /** Shown in the selected-day card. */
-const LEVEL_NAME: Record<DayLevel, string> = {
-  clear: 'Clear',
-  'a-few': 'A few (1–2 drinks)',
-  moderate: 'Moderate (3–4 drinks)',
-  'a-lot': 'A lot (5+ drinks)',
-};
+const levelName = (l: DayLevel) => t(`checkin.level.${l}`);
+/** The level alone, for "tap again for Moderate". */
+const levelShort = (l: DayLevel) => t(LEVEL_KEY[l]);
+const LEVEL_KEY = { clear: 'level.clear', 'a-few': 'level.aFew', moderate: 'level.moderate', 'a-lot': 'level.aLot' } as const;
 /** Read out by screen readers for each calendar cell. */
-const LEVEL_SPOKEN: Record<DayLevel, string> = {
-  clear: 'clear',
-  'a-few': 'a few drinks',
-  moderate: 'moderate, 3 to 4 drinks',
-  'a-lot': 'a lot, 5 or more drinks',
-};
+const levelSpoken = (l: DayLevel | null) => t(`checkin.spoken.${l ?? 'unlogged'}`);
 
-function formatLongDate(iso: string) {
-  const [, m, d] = iso.split('-').map(Number);
-  return `${WEEKDAY_NAMES[weekdayOf(iso)]}, ${MONTH_NAMES[m - 1]} ${d}`;
-}
-const shortDate = (iso: string) => {
-  const [, m, d] = iso.split('-').map(Number);
-  return `${MONTH_NAMES[m - 1].slice(0, 3)} ${d}`;
-};
+const formatLongDate = weekdayDayMonthLong;
+const shortDate = dayMonth;
+const MONTHS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 interface WeekState {
   clearCount: number;
@@ -91,14 +73,14 @@ export function CheckIn() {
   const [challengeLine, setChallengeLine] = useState<string | null>(null);
   const refreshChallenge = useCallback(async () => {
     const st = await getChallengeStatus();
-    const toLog = (n: number) => (n ? ` · ${n} day${n === 1 ? '' : 's'} to log` : '');
+    const toLog = (n: number) => (n ? t('checkin.toLog', { count: n }) : '');
     // A chosen month first, then a week, then a weekend — whichever is under way.
     const m = st.months.find((x) => x.state === 'under-way');
-    if (m && m.state === 'under-way') return setChallengeLine(`Clear ${MONTH_LONG[Number(m.ym.slice(5, 7)) - 1]} · day ${m.day}${toLog(m.toLog)}`);
+    if (m && m.state === 'under-way') return setChallengeLine(t('checkin.challengeMonth', { month: monthName(Number(m.ym.slice(5, 7))), day: m.day, toLog: toLog(m.toLog) }));
     for (const [kind, span, len] of [['week', st.weekNow, 7], ['weekend', st.weekendNow, 3]] as const) {
       if (span?.state === 'under-way') {
         const day = Math.round((Date.parse(`${todayIso()}T00:00:00Z`) - Date.parse(`${span.first}T00:00:00Z`)) / 86_400_000) + 1;
-        return setChallengeLine(`Clear ${kind} · day ${day} of ${len}${toLog(span.toLog)}`);
+        return setChallengeLine(t(`checkin.challengeSpan.${kind}`, { day, len, toLog: toLog(span.toLog) }));
       }
     }
     setChallengeLine(null);
@@ -118,7 +100,7 @@ export function CheckIn() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [ready, setReady] = useState(false);
   const [week, setWeek] = useState<WeekState>({
-    clearCount: 0, hasAny: false, target: 3, label: 'This week', isCurrent: true,
+    clearCount: 0, hasAny: false, target: 3, label: t('checkin.thisWeek'), isCurrent: true,
   });
   const [weekVersion, setWeekVersion] = useState(0);
 
@@ -170,7 +152,7 @@ export function CheckIn() {
   useEffect(() => {
     if (Number(shownToday.slice(8, 10)) > 7) return setReviewNote(null);
     Promise.all([getSetting(seenKey, ''), getMonthCells(lastMonth.year, lastMonth.month!)]).then(([seen, cells]) =>
-      setReviewNote(seen === '' && Object.keys(cells).length > 0 ? periodLabel(lastMonth) : null),
+      setReviewNote(seen === '' && Object.keys(cells).length > 0 ? monthName(lastMonth.month!) : null),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shownToday, seenKey]);
@@ -212,7 +194,7 @@ export function CheckIn() {
         hasAny: summary.hasEntries,
         target,
         isCurrent,
-        label: isCurrent ? 'This week' : `Week of ${shortDate(start)}–${shortDate(end)}`,
+        label: isCurrent ? t('checkin.thisWeek') : t('checkin.weekOf', { start: shortDate(start), end: shortDate(end) }),
       });
     })();
     return () => {
@@ -225,25 +207,24 @@ export function CheckIn() {
   let cardNote: string;
   let icon: 'check' | 'sparkle' | null = null;
   const { clearCount, target } = week;
-  const thisThat = week.isCurrent ? 'this' : 'that';
-  const days = (n: number) => `${n} clear day${n === 1 ? '' : 's'}`;
+  const days = (n: number) => t('checkin.clearDays', { count: n });
   if (target === null) {
     // Logged from before the app was first used: nothing to measure against.
-    cardNote = 'Before your first intention, so this week isn’t measured.';
+    cardNote = t('checkin.beforeIntention');
   } else if (week.hasAny) {
     if (clearCount >= target) {
       const beyond = clearCount > target;
       barColor = beyond ? 'var(--align-exceeded)' : 'var(--align-met)';
       icon = beyond ? 'sparkle' : 'check';
-      cardNote = beyond ? `Beyond your intention ${thisThat} week.` : `Intention met ${thisThat} week.`;
+      cardNote = beyond ? t(week.isCurrent ? 'checkin.beyondThis' : 'checkin.beyondThat') : t(week.isCurrent ? 'checkin.metThis' : 'checkin.metThat');
     } else {
       barColor = 'var(--align-partial)';
       cardNote = week.isCurrent
-        ? `${days(clearCount)} so far — ${target - clearCount} more to go this week.`
-        : `${days(clearCount)} that week.`;
+        ? t('checkin.soFar', { days: days(clearCount), left: target - clearCount })
+        : t('checkin.thatWeek', { days: days(clearCount) });
     }
   } else {
-    cardNote = week.isCurrent ? `Nothing logged yet this week. Aiming for ${target}.` : 'Nothing was logged that week.';
+    cardNote = week.isCurrent ? t('checkin.nothingYet', { target }) : t('checkin.nothingThatWeek');
   }
   const barPct = week.hasAny && target ? Math.min(100, Math.round((clearCount / target) * 100)) : 0;
 
@@ -303,25 +284,25 @@ export function CheckIn() {
   // a mostly-vertical move is left to scroll the page.
   const swipe = useRef<{ x: number; y: number } | null>(null);
   function swipeStart(e: TouchEvent<HTMLDivElement>) {
-    const t = e.touches[0];
-    swipe.current = e.touches.length === 1 ? { x: t.clientX, y: t.clientY } : null;
+    const touch = e.touches[0];
+    swipe.current = e.touches.length === 1 ? { x: touch.clientX, y: touch.clientY } : null;
   }
   function swipeEnd(e: TouchEvent<HTMLDivElement>) {
     const s = swipe.current;
     swipe.current = null;
     if (!s) return;
-    const t = e.changedTouches[0];
-    const dx = t.clientX - s.x;
-    const dy = t.clientY - s.y;
+    const touch = e.changedTouches[0];
+    const dx = touch.clientX - s.x;
+    const dy = touch.clientY - s.y;
     if (Math.abs(dx) >= 50 && Math.abs(dx) > Math.abs(dy) * 1.5) goMonth(dx < 0 ? 1 : -1);
   }
 
   function goToday() {
     setPickerOpen(false);
-    const t = todayIso();
-    setYear(Number(t.slice(0, 4)));
-    setMonth(Number(t.slice(5, 7)));
-    setSelected(t);
+    const now = todayIso();
+    setYear(Number(now.slice(0, 4)));
+    setMonth(Number(now.slice(5, 7)));
+    setSelected(now);
   }
 
   // ---- Render --------------------------------------------------------------
@@ -343,14 +324,14 @@ export function CheckIn() {
       <div className="ci-byline">
         <Byline />
       </div>
-      <h1 className="ci-title">Check-in</h1>
+      <h1 className="ci-title">{t('checkin.title')}</h1>
       {challengeLine && <p className="ci-challenge">{challengeLine}</p>}
       {newMilestone && (
         <div className="ci-milestone" role="status">
           <Link className="ci-milestone-link" to="/milestones" onClick={() => markMilestonesSeen([newMilestone.title])}>
             <span className="ci-milestone-glyph" aria-hidden="true">{GLYPH[newMilestone.kind]}</span> {newMilestone.title}
           </Link>
-          <button type="button" className="ci-milestone-x" aria-label={`Dismiss: ${newMilestone.title}`} onClick={() => seeMilestone(newMilestone)}>
+          <button type="button" className="ci-milestone-x" aria-label={t('checkin.dismiss', { title: newMilestone.title })} onClick={() => seeMilestone(newMilestone)}>
             ✕
           </button>
         </div>
@@ -358,9 +339,9 @@ export function CheckIn() {
 
       {reviewNote && (
         <div className="card ci-note" role="note">
-          <p className="ci-note-text">Your {reviewNote.split(' ')[0]} in review is ready.</p>
+          <p className="ci-note-text">{t('checkin.reviewReady', { month: reviewNote })}</p>
           <div className="ci-note-actions">
-            <Link className="ci-note-link" to={`/trends/review?year=${lastMonth.year}&month=${lastMonth.month}`}>Open it</Link>
+            <Link className="ci-note-link" to={`/trends/review?year=${lastMonth.year}&month=${lastMonth.month}`}>{t('checkin.openIt')}</Link>
             <button
               type="button"
               className="ci-note-later"
@@ -369,7 +350,7 @@ export function CheckIn() {
                 setReviewNote(null);
               }}
             >
-              Not now
+              {t('checkin.notNow')}
             </button>
           </div>
         </div>
@@ -379,12 +360,12 @@ export function CheckIn() {
         <div className="card ci-note" role="note">
           <p className="ci-note-text">
             {nudge.kind === 'never'
-              ? `You have ${nudge.days} days of records and no backup yet.`
-              : `It's been ${nudge.days} days since your last backup.`}{' '}
-            A backup is the only copy outside this browser.
+              ? t('checkin.nudgeNever', { days: nudge.days })
+              : t('checkin.nudgeSince', { days: nudge.days })}{' '}
+            {t('checkin.nudgeWhy')}
           </p>
           <div className="ci-note-actions">
-            <Link className="ci-note-link" to="/settings/backup">Back up now</Link>
+            <Link className="ci-note-link" to="/settings/backup">{t('checkin.backUpNow')}</Link>
             <button
               type="button"
               className="ci-note-later"
@@ -393,7 +374,7 @@ export function CheckIn() {
                 setNudge(null);
               }}
             >
-              Later
+              {t('checkin.later')}
             </button>
           </div>
         </div>
@@ -401,21 +382,21 @@ export function CheckIn() {
 
       <div className="ci-stats">
         <div className="card ci-stat">
-          <p className="ci-stat-label">Clear days in {MONTH_NAMES[month - 1]}</p>
+          <p className="ci-stat-label">{t('checkin.clearDaysIn', { month: monthName(month) })}</p>
           <p className="ci-stat-value">{monthClearCount}</p>
         </div>
         <div className="card ci-stat">
-          <p className="ci-stat-label">Intentions met in {MONTH_NAMES[month - 1]}</p>
+          <p className="ci-stat-label">{t('checkin.metIn', { month: monthName(month) })}</p>
           {/* Weeks belong to the month with their Thursday. Before the month
               has any weeks, a dash rather than a bold "0". */}
           <p className="ci-stat-value">
-            {monthMet.counted ? `${monthMet.met} of ${monthMet.counted}` : '—'}
+            {monthMet.counted ? t('checkin.metOf', { met: monthMet.met, counted: monthMet.counted }) : '—'}
           </p>
         </div>
       </div>
 
       <div className="ci-month-header">
-        <button type="button" className="ci-arrow" onClick={() => goMonth(-1)} aria-label="Previous month">
+        <button type="button" className="ci-arrow" onClick={() => goMonth(-1)} aria-label={t('chart.previousMonth')}>
           ‹
         </button>
         <button
@@ -424,14 +405,14 @@ export function CheckIn() {
           onClick={() => setPickerOpen((o) => !o)}
           aria-expanded={pickerOpen}
         >
-          {MONTH_NAMES[month - 1]} {year}
+          {monthYear(month, year)}
         </button>
         <div className="ci-month-right">
-          <button type="button" className="ci-arrow" onClick={() => goMonth(1)} aria-label="Next month">
+          <button type="button" className="ci-arrow" onClick={() => goMonth(1)} aria-label={t('chart.nextMonth')}>
             ›
           </button>
           <button type="button" className="ci-today" onClick={goToday}>
-            Today
+            {t('checkin.today')}
           </button>
         </div>
       </div>
@@ -439,38 +420,38 @@ export function CheckIn() {
       {pickerOpen && (
         <div className="card ci-picker">
           <div className="ci-picker-year">
-            <button type="button" className="ci-arrow" onClick={() => setYear((y) => y - 1)} aria-label="Previous year">
+            <button type="button" className="ci-arrow" onClick={() => setYear((y) => y - 1)} aria-label={t('checkin.previousYear')}>
               ‹
             </button>
             <span className="ci-picker-year-label">{year}</span>
-            <button type="button" className="ci-arrow" onClick={() => setYear((y) => y + 1)} aria-label="Next year">
+            <button type="button" className="ci-arrow" onClick={() => setYear((y) => y + 1)} aria-label={t('checkin.nextYear')}>
               ›
             </button>
           </div>
           <div className="ci-picker-grid">
-            {MONTH_NAMES.map((name, idx) => (
+            {MONTHS.map((m) => (
               <button
-                key={name}
+                key={m}
                 type="button"
                 className="ci-picker-month"
-                aria-pressed={idx + 1 === month}
-                aria-label={name}
+                aria-pressed={m === month}
+                aria-label={monthName(m)}
                 onClick={() => {
-                  setMonth(idx + 1);
+                  setMonth(m);
                   setPickerOpen(false);
                 }}
               >
-                {name.slice(0, 3)}
+                {monthName(m, 'short')}
               </button>
             ))}
           </div>
         </div>
       )}
 
-      <Link to="/intention" className="card ci-align" aria-label={`Intention: ${week.label}, ${target === null ? days(clearCount) : `${clearCount} of ${target} clear days`}. ${cardNote} Change intention`}>
+      <Link to="/intention" className="card ci-align" aria-label={t('checkin.cardLabel', { week: week.label, count: target === null ? days(clearCount) : t('checkin.weekCount', { count: clearCount, target }), note: cardNote })}>
         <div className="ci-row-between ci-align-head">
-          <h2 className="ci-align-title">Intention</h2>
-          <span className="ci-align-change" aria-hidden="true">Change ›</span>
+          <h2 className="ci-align-title">{t('checkin.intention')}</h2>
+          <span className="ci-align-change" aria-hidden="true">{t('checkin.change')}</span>
         </div>
         <div className="ci-row-between">
           <span className="ci-secondary">{week.label}</span>
@@ -480,7 +461,7 @@ export function CheckIn() {
                 {icon === 'check' ? '✓' : '✦'}
               </span>
             )}
-            {target === null ? days(clearCount) : `${clearCount} of ${target} clear days`}
+            {target === null ? days(clearCount) : t('checkin.weekCount', { count: clearCount, target })}
           </span>
         </div>
         {target !== null && (
@@ -492,8 +473,8 @@ export function CheckIn() {
       </Link>
 
       <div className="ci-weekdays" aria-hidden="true">
-        {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
-          <span key={i}>{d}</span>
+        {[1, 2, 3, 4, 5, 6, 0].map((d) => (
+          <span key={d}>{weekdayLetter(d)}</span>
         ))}
       </div>
 
@@ -501,9 +482,7 @@ export function CheckIn() {
         {cells.map((iso, i) => {
           if (!iso) return <div key={`pad-${i}`} className="day-cell" aria-hidden="true" />;
           const level = levelOf(entries[iso]);
-          const label =
-            `${formatLongDate(iso)}${iso === today ? ', today' : ''}, ` +
-            (level ? LEVEL_SPOKEN[level] : 'not logged');
+          const label = t('checkin.cellLabel', { date: formatLongDate(iso), today: iso === today ? t('checkin.cellToday') : '', level: levelSpoken(level) });
           return (
             <DayCell
               key={iso}
@@ -522,23 +501,23 @@ export function CheckIn() {
       <div className="ci-legend">
         <span className="ci-legend-item">
           <span className="ci-swatch" style={{ background: 'var(--clear-fill)' }} />
-          Clear day
+          {t('checkin.legend.clear')}
         </span>
         <span className="ci-legend-item">
           <span className="ci-swatch ci-swatch-a-few" />
-          A few
+          {t('level.aFew')}
         </span>
         <span className="ci-legend-item">
           <span className="ci-swatch" style={{ background: 'var(--drinking-fill)' }} />
-          Moderate
+          {t('level.moderate')}
         </span>
         <span className="ci-legend-item">
           <span className="ci-swatch" style={{ background: 'var(--lot-fill)' }} />
-          A lot
+          {t('level.aLot')}
         </span>
         <span className="ci-legend-item">
           <span className="ci-swatch ci-swatch-unlogged" />
-          Unlogged
+          {t('checkin.legend.unlogged')}
         </span>
       </div>
 
@@ -546,14 +525,12 @@ export function CheckIn() {
         <h2 className="ci-details-date">{formatLongDate(selected)}</h2>
         <p className="ci-secondary">
           {selLevel
-            ? `Selected · ${LEVEL_NAME[selLevel]} — tap again for ${
-                selNext ? LEVEL_NAME[selNext].split(' (')[0] : 'unlogged'
-              }`
-            : 'Not logged yet — tap this day again to mark it clear'}
+            ? t('checkin.selected', { level: levelName(selLevel), next: selNext ? levelShort(selNext) : t('checkin.unloggedWord') })
+            : t('checkin.notLogged')}
         </p>
       </section>
 
-      <HelpLinks topic="start">How logging works</HelpLinks>
+      <HelpLinks topic="start">{t('checkin.help')}</HelpLinks>
     </main>
   );
 }

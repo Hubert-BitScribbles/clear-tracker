@@ -20,14 +20,16 @@ import { SavingsCard } from '../components/SavingsCard';
 import { TrendsNav } from '../components/SegmentNav';
 import { LevelLegend } from '../components/LevelLegend';
 import { buildReport, sameStretchLastYear, summarizeRange, weekdaySummary } from '../data/report';
-import { ALIGNMENT_NAMES, alignmentOf, IntentionChart, type MeasuredWeek } from '../components/IntentionChart';
+import { alignmentName, alignmentOf, alignmentWord, IntentionChart, type MeasuredWeek } from '../components/IntentionChart';
 import { comparisonText, drinksText, wholeDrinks } from '../lib/reportText';
 import { momentumIncludes } from '../data/baseline';
 import { chartMonths, monthlyRates, SIX_MONTHS, THREE_MONTHS, windowChange, type DrinksEstimate } from '../data/trend';
 import { MonthlyChart } from '../components/MonthlyChart';
-import { challengeNote, drinksChangeText, ML, monthVsPrevious, type DrinksTrend } from '../lib/trendText';
+import { challengeNote, drinksChangeText, monthVsPrevious, type DrinksTrend } from '../lib/trendText';
 import { chosenMonthRanges, getChallenges } from '../data/database';
 import './Trends.css';
+import { t, type Key } from '../i18n';
+import { dayMonth, dayMonthYear, monthName, monthYear, weekdayName } from '../i18n/format';
 
 // Port of the native app/(tabs)/trends.tsx. Differences:
 // - The "Check-in responses" section is gone, with the check-in questions.
@@ -47,16 +49,9 @@ import './Trends.css';
 //   Check-in); the last 12 months under All time.
 // - Weeks by intention: weekly bars against the target (IntentionChart).
 
-const MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const WEEKDAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const WEEKDAY_LONG = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
 type Scope = number | 'all';
 
-const labelFor = (iso: string) => {
-  const [, m, d] = iso.split('-').map(Number);
-  return `${MONTH_SHORT[m - 1]} ${d}`;
-};
+const labelFor = dayMonth;
 
 interface Data {
   years: number[];
@@ -150,7 +145,7 @@ export function Trends() {
           const last = sameStretchLastYear(r.start, r.end);
           const prev = summarizeRange(d, last.start, last.end);
           // As in the report: only if tracking had begun by the start of that stretch.
-          if (prev.logged > 0 && first !== null && first <= last.start) compare = { before: prev.levels.clear, label: 'the same time last year' };
+          if (prev.logged > 0 && first !== null && first <= last.start) compare = { before: prev.levels.clear, label: t('trends.sameTimeLastYear') };
         }
         glance = {
           total: r.levels.clear,
@@ -165,7 +160,7 @@ export function Trends() {
             .map((m) => {
               const end = clip(new Date(Date.UTC(scope, m.month, 0)).toISOString().slice(0, 10));
               const available = daysSinceStart(isoOf(scope, m.month, 1), end);
-              return { label: MONTH_SHORT[m.month - 1], clear: m.clear, aFew: m.aFew, more: m.more, available, start: isoOf(scope, m.month, 1), end, year: scope, month: m.month };
+              return { label: monthName(m.month, 'short'), clear: m.clear, aFew: m.aFew, more: m.more, available, start: isoOf(scope, m.month, 1), end, year: scope, month: m.month };
             }),
           rangeStart: r.start,
           rangeEnd: r.end,
@@ -209,28 +204,24 @@ export function Trends() {
 
   if (!data) return <main className="trends" />;
 
-  const scopeLabel = scope === 'all' ? 'All time' : String(scope);
+  const scopeLabel = scope === 'all' ? t('trends.allTime') : String(scope);
   const isPastYear = scope !== 'all' && scope < thisYear;
-  const plural = (n: number, unit: string) => `${n} ${unit}${n === 1 ? '' : 's'}`;
 
   return (
     <main className="trends">
-      <h1 className="tr-title">Trends</h1>
+      <h1 className="tr-title">{t('trends.title')}</h1>
       <TrendsNav active="trends" />
 
       {!data.hasEntries ? (
         <div className="tr-empty">
-          <h2 className="tr-empty-title">No trends yet</h2>
-          <p className="tr-empty-body">
-            Once you've logged a few days, this is where patterns show up — which days tend to be clear, how
-            your weeks line up with your intention, and how much you've tracked.
-          </p>
+          <h2 className="tr-empty-title">{t('trends.emptyTitle')}</h2>
+          <p className="tr-empty-body">{t('trends.emptyBody')}</p>
         </div>
       ) : (
         <>
-          <div className="tr-scope" role="group" aria-label="Period">
+          <div className="tr-scope" role="group" aria-label={t('trends.period')}>
             {[...data.years, 'all' as const].map((opt) => {
-              const label = opt === 'all' ? 'All time' : String(opt);
+              const label = opt === 'all' ? t('trends.allTime') : String(opt);
               return (
                 <button
                   key={label}
@@ -256,7 +247,7 @@ export function Trends() {
                 isPastYear={isPastYear}
                 now={data.dayStreak}
                 best={data.bestDayStreak}
-                scopeLabel={scope === 'all' ? 'all time' : String(scope)}
+                scopeLabel={scope === 'all' ? t('trends.allTimeLower') : String(scope)}
               />
             )}
             <StreakCard
@@ -264,48 +255,46 @@ export function Trends() {
               isPastYear={isPastYear}
               now={data.weekStreak}
               best={data.bestWeekStreak}
-              scopeLabel={scope === 'all' ? 'all time' : String(scope)}
+              scopeLabel={scope === 'all' ? t('trends.allTimeLower') : String(scope)}
             />
           </div>
 
-          <h2 className="tr-section">{scopeLabel} at a glance</h2>
-          <section className="card tr-glance" aria-label={`${scopeLabel} at a glance`}>
+          <h2 className="tr-section">{t('trends.atAGlance', { scope: scopeLabel })}</h2>
+          <section className="card tr-glance" aria-label={t('trends.atAGlance', { scope: scopeLabel })}>
             {/* Clear days and weeks met lead; days logged is context (rc.13). */}
             <div className="tr-hero-row">
-              <div><p className="tr-hero-value">{data.total}</p><p className="tr-stat-label">clear days</p></div>
-              <div><p className="tr-hero-value">{data.weeksMet}<span className="tr-of"> / {data.weeksCounted}</span></p><p className="tr-stat-label">weeks met intention</p></div>
+              <div><p className="tr-hero-value">{data.total}</p><p className="tr-stat-label">{t('trends.clearDays')}</p></div>
+              <div><p className="tr-hero-value">{data.weeksMet}<span className="tr-of">{t('trends.ofTotal', { total: data.weeksCounted })}</span></p><p className="tr-stat-label">{t('trends.weeksMet')}</p></div>
             </div>
             {data.compare && <p className="tr-compare">{comparisonText(data.total, data.compare.before, data.compare.label)}</p>}
-            <p className="tr-glance-logged">{data.trackedDays} of {data.availableDays} days logged</p>
+            <p className="tr-glance-logged">{t('trends.daysLogged', { logged: data.trackedDays, available: data.availableDays })}</p>
             <div className="tr-glance-levels"><LevelLegend levels={data.levels} /></div>
           </section>
 
-          <h2 className="tr-section">Month by month · {scope === 'all' ? 'last 12 months' : scopeLabel}</h2>
+          <h2 className="tr-section">{t('trends.monthByMonth', { scope: scope === 'all' ? t('trends.last12') : scopeLabel })}</h2>
           <div className="card tr-card">
             <MonthlyChart
               kind="bars"
-              name={`Months of ${scopeLabel}: clear days`}
+              name={t('trends.clearChartName', { scope: scopeLabel })}
               format={(v) => String(Math.round(v))}
               points={data.trend.points.map((p) => {
                 const r = summarizeRange(data.snap, isoOf(p.year, p.month, 1), new Date(Date.UTC(p.year, p.month, 0)).toISOString().slice(0, 10));
-                return { label: ML[p.month - 1].slice(0, 3), full: `${ML[p.month - 1]} ${p.year}`, value: r.logged ? r.levels.clear : null, soFar: p.soFar };
+                return { label: monthName(p.month, 'short'), full: monthYear(p.month, p.year), value: r.logged ? r.levels.clear : null, soFar: p.soFar };
               })}
               detail={(_, i) => {
                 const p = data.trend.points[i];
                 const start = isoOf(p.year, p.month, 1);
                 const end = new Date(Date.UTC(p.year, p.month, 0)).toISOString().slice(0, 10);
                 const r = summarizeRange(data.snap, start, end);
-                if (!r.logged) return <p className="mc-detail-line">No days logged.</p>;
+                if (!r.logged) return <p className="mc-detail-line">{t('trends.noDaysLogged')}</p>;
                 return (
                   <>
-                    <p className="mc-detail-line mc-detail-strong">{r.levels.clear} clear day{r.levels.clear === 1 ? '' : 's'} · {r.logged} days logged</p>
-                    <p className="mc-detail-line">
-                      {r.levels['a-few']} a few · {r.levels.moderate} moderate · {r.levels['a-lot']} a lot
-                    </p>
-                    {p.perWeek !== null && <p className="mc-detail-line mc-detail-quiet">Estimated {drinksText({ perWeek: p.perWeek }).toLowerCase()}</p>}
+                    <p className="mc-detail-line mc-detail-strong">{t('trends.monthClear', { count: r.levels.clear, logged: r.logged })}</p>
+                    <p className="mc-detail-line">{t('trends.levelsLine', { aFew: r.levels['a-few'], moderate: r.levels.moderate, aLot: r.levels['a-lot'] })}</p>
+                    {p.perWeek !== null && <p className="mc-detail-line mc-detail-quiet">{t('trends.estimated', { count: wholeDrinks(p.perWeek) })}</p>}
                     <div className="mc-detail-links">
-                      <Link className="mc-detail-link" to={`/trends/review?year=${p.year}&month=${p.month}`}>{ML[p.month - 1]} {p.year} in review →</Link>
-                      <Link className="mc-detail-link" to={`/?year=${p.year}&month=${p.month}`}>View on Check-in →</Link>
+                      <Link className="mc-detail-link" to={`/trends/review?year=${p.year}&month=${p.month}`}>{t('trends.inReview', { month: monthYear(p.month, p.year) })}</Link>
+                      <Link className="mc-detail-link" to={`/?year=${p.year}&month=${p.month}`}>{t('trends.viewOnCheckin')}</Link>
                     </div>
                   </>
                 );
@@ -314,26 +303,23 @@ export function Trends() {
           </div>
 
           <h2 className="tr-section">
-            Weeks by intention · {alignmentYear}
-            {scope === 'all' ? ' (most recent year)' : ''}
+            {t('trends.weeksHead', { year: alignmentYear })}
+            {scope === 'all' ? t('trends.mostRecentYear') : ''}
           </h2>
           <div className="tr-legend">
             {(['exceeded', 'met', 'partial', 'unclear', 'unlogged', ...(data.weeks.some((w) => w.target === null) ? (['before'] as const) : [])] as const).map((a) => (
               <span key={a} className="tr-legend-item">
                 <span className={`tr-swatch tr-align-${a}`} />
-                {ALIGNMENT_NAMES[a]}
+                {alignmentName(a)}
               </span>
             ))}
           </div>
-          <p className="tr-grid-key">
-            Each tile is a week, showing its clear days. "2 of 4": weeks met that month. "Not enough logged": short of the
-            intention, but with days not logged that could still make it — log them to settle it.
-          </p>
+          <p className="tr-grid-key">{t('trends.gridKey')}</p>
           {data.weeks.length === 0 ? (
             <p className="tr-empty-text">
               {data.intentionStart && data.intentionStart.slice(0, 4) > String(alignmentYear)
-                ? `Your intention starts the week of ${labelFor(data.intentionStart)}, ${data.intentionStart.slice(0, 4)}, so weeks in ${alignmentYear} aren't measured.`
-                : `No logged weeks yet for ${alignmentYear}.`}
+                ? t('trends.intentionLater', { date: dayMonthYear(data.intentionStart), year: alignmentYear })
+                : t('trends.noWeeks', { year: alignmentYear })}
             </p>
           ) : (
             <div className="card tr-card">
@@ -347,16 +333,16 @@ export function Trends() {
                     <IntentionChart weeks={data.weeks} selected={w.weekStartIso} onSelect={setExpandedWeek} year={alignmentYear} />
                     <div className="tr-detail" aria-live="polite">
                       <div className="tr-detail-nav">
-                        <button type="button" className="tr-step" aria-label="Previous week" disabled={at === 0} onClick={() => setExpandedWeek(data.weeks[at - 1].weekStartIso)}>‹</button>
-                        <p className="tr-detail-week">Week of {labelFor(w.weekStartIso)} · {ALIGNMENT_NAMES[a].toLowerCase()}</p>
-                        <button type="button" className="tr-step" aria-label="Next week" disabled={at === data.weeks.length - 1} onClick={() => setExpandedWeek(data.weeks[at + 1].weekStartIso)}>›</button>
+                        <button type="button" className="tr-step" aria-label={t('trends.previousWeek')} disabled={at === 0} onClick={() => setExpandedWeek(data.weeks[at - 1].weekStartIso)}>‹</button>
+                        <p className="tr-detail-week">{t('trends.weekOf', { date: labelFor(w.weekStartIso), alignment: alignmentWord(a) })}</p>
+                        <button type="button" className="tr-step" aria-label={t('trends.nextWeek')} disabled={at === data.weeks.length - 1} onClick={() => setExpandedWeek(data.weeks[at + 1].weekStartIso)}>›</button>
                       </div>
                       <div className="tr-detail-stats">
-                        <span>{w.target === null ? 'No intention yet' : `Intention: ${w.target} clear days`}</span>
-                        <span>Actual: {w.hasEntries ? w.count : '—'}{w.hasEntries && (w.logged ?? 7) < 7 ? ` (${w.logged} of 7 days logged)` : ''}</span>
+                        <span>{w.target === null ? t('trends.noIntentionYet') : t('trends.intention', { n: w.target })}</span>
+                        <span>{t('trends.actual', { count: w.hasEntries ? w.count : '—', partial: w.hasEntries && (w.logged ?? 7) < 7 ? t('trends.actualPartial', { logged: w.logged ?? 0 }) : '' })}</span>
                       </div>
                       <Link className="tr-view-week" to={`/?year=${w.weekStartIso.slice(0, 4)}&month=${Number(w.weekStartIso.slice(5, 7))}`}>
-                        View week →
+                        {t('trends.viewWeek')}
                       </Link>
                     </div>
                   </>
@@ -365,7 +351,7 @@ export function Trends() {
             </div>
           )}
 
-          <h2 className="tr-section">By day of week · {scopeLabel}</h2>
+          <h2 className="tr-section">{t('trends.byWeekday', { scope: scopeLabel })}</h2>
           <div className="card tr-card">
           <LevelLegend />
           <ul className="tr-dow">
@@ -376,7 +362,7 @@ export function Trends() {
               // Each row is scaled to its own total: weekdays occur about
               // equally often, so only the split is compared.
               const share = (n: number) => (rowTotal > 0 ? (n / rowTotal) * 100 : 0);
-              const name = WEEKDAY_SHORT[wd];
+              const name = weekdayName(wd, 'short');
               return (
                 <li key={wd} className="tr-dow-li">
                   <button
@@ -386,8 +372,8 @@ export function Trends() {
                   onClick={() => setDowSel((x) => (x === wd ? null : wd))}
                   aria-label={
                     rowTotal > 0
-                      ? `${name}: ${pct}% clear; ${stat.clear} clear, ${stat.aFew} a few, ${stat.more - stat.aLot} moderate, ${stat.aLot} a lot; ${plural(rowTotal, 'day')} logged`
-                      : `${name}: no days logged`
+                      ? t('trends.dowLabel', { day: name, pct: pct ?? 0, clear: stat.clear, aFew: stat.aFew, moderate: stat.more - stat.aLot, aLot: stat.aLot, count: rowTotal })
+                      : t('trends.dowEmpty', { day: name })
                   }
                 >
                   <span className="tr-dow-label" aria-hidden="true">{name}</span>
@@ -403,19 +389,18 @@ export function Trends() {
             })}
           </ul>
           {(() => {
-            if (dowSel === null) return <p className="tr-foot">Tap a day for details.</p>;
+            if (dowSel === null) return <p className="tr-foot">{t('trends.tapDay')}</p>;
             const w = weekdaySummary(data.snap, data.rangeStart, data.rangeEnd, dowSel);
-            const day = WEEKDAY_LONG[dowSel];
+            const days = t(`trends.weekdayPlural.${dowSel}` as Key);
             return (
-              <div className="tr-detail tr-dow-detail" role="region" aria-label={`${day}s details`}>
-                <p className="tr-detail-week">{day}s · {scopeLabel}</p>
+              <div className="tr-detail tr-dow-detail" role="region" aria-label={t('trends.dowDetails', { days })}>
+                <p className="tr-detail-week">{t('trends.dowHead', { days, scope: scopeLabel })}</p>
                 {w.logged === 0 ? (
-                  <p className="tr-detail-line">No {day}s logged.</p>
+                  <p className="tr-detail-line">{t('trends.dowNone', { days })}</p>
                 ) : (
                   <>
                     <p className="tr-detail-line">
-                      {w.logged} logged: {w.levels.clear} clear · {w.levels['a-few']} a few · {w.levels.moderate} moderate · {w.levels['a-lot']} a lot.{' '}
-                      {Math.round((w.levels.clear / w.logged) * 100)}% clear.
+                      {t('trends.dowLine', { logged: w.logged, clear: w.levels.clear, aFew: w.levels['a-few'], moderate: w.levels.moderate, aLot: w.levels['a-lot'], pct: Math.round((w.levels.clear / w.logged) * 100) })}
                     </p>
                   </>
                 )}
@@ -424,20 +409,20 @@ export function Trends() {
           })()}
           </div>
 
-          <h2 className="tr-section tr-est-head">Estimates · {scopeLabel}</h2>
-          <p className="tr-est-intro">Rough figures from the levels you logged — for context, alongside your clear days.</p>
-          <h3 className="tr-sub">Drinks a week</h3>
+          <h2 className="tr-section tr-est-head">{t('trends.estimates', { scope: scopeLabel })}</h2>
+          <p className="tr-est-intro">{t('trends.estIntro')}</p>
+          <h3 className="tr-sub">{t('trends.drinksAWeek')}</h3>
           <div className="card tr-card">
-            <p className="tr-est-figure">{data.drinksPerWeek ? drinksText(data.drinksPerWeek) : 'Not enough logged days for a weekly estimate.'}</p>
+            <p className="tr-est-figure">{data.drinksPerWeek ? drinksText(data.drinksPerWeek) : t('trends.noWeekly')}</p>
             <MonthlyChart
               kind="line"
-              name={`Months of ${scopeLabel}: estimated drinks a week`}
+              name={t('trends.drinksChartName', { scope: scopeLabel })}
               format={(v) => String(wholeDrinks(v))}
-              points={data.trend.points.map((p) => ({ label: ML[p.month - 1].slice(0, 3), full: `${ML[p.month - 1]} ${p.year}`, value: p.perWeek, soFar: p.soFar }))}
+              points={data.trend.points.map((p) => ({ label: monthName(p.month, 'short'), full: monthYear(p.month, p.year), value: p.perWeek, soFar: p.soFar }))}
               detail={(_, i) => {
                 const p = data.trend.points[i];
                 if (p.perWeek === null) {
-                  return <p className="mc-detail-line">Not enough logged days for an estimate ({p.logged} logged; 7 needed).</p>;
+                  return <p className="mc-detail-line">{t('savings.notEnough', { logged: p.logged })}</p>;
                 }
                 const start = isoOf(p.year, p.month, 1);
                 const end = new Date(Date.UTC(p.year, p.month, 0)).toISOString().slice(0, 10);
@@ -450,11 +435,11 @@ export function Trends() {
                       return c && <p className="mc-detail-line">{drinksChangeText(null, c.diff, c.vs)}</p>;
                     })()}
                     <p className="mc-detail-line">
-                      {r.levels.clear} clear · {r.levels['a-few']} a few · {r.levels.moderate} moderate · {r.levels['a-lot']} a lot · {p.logged} days logged
+                      {t('trends.monthLevels', { clear: r.levels.clear, aFew: r.levels['a-few'], moderate: r.levels.moderate, aLot: r.levels['a-lot'], logged: p.logged })}
                     </p>
                     <div className="mc-detail-links">
-                      <Link className="mc-detail-link" to={`/trends/review?year=${p.year}&month=${p.month}`}>{ML[p.month - 1]} {p.year} in review →</Link>
-                      <Link className="mc-detail-link" to={`/?year=${p.year}&month=${p.month}`}>View on Check-in →</Link>
+                      <Link className="mc-detail-link" to={`/trends/review?year=${p.year}&month=${p.month}`}>{t('trends.inReview', { month: monthYear(p.month, p.year) })}</Link>
+                      <Link className="mc-detail-link" to={`/?year=${p.year}&month=${p.month}`}>{t('trends.viewOnCheckin')}</Link>
                     </div>
                   </>
                 );
@@ -462,21 +447,21 @@ export function Trends() {
             />
             {(data.trend.three || data.trend.six) && (
               <ul className="tr-trends">
-                {data.trend.three && <li>{drinksChangeText('Last 3 months', data.trend.three.diff, 'the 3 before')}{challengeNote(data.trend.notes.three)}</li>}
-                {data.trend.six && <li>{drinksChangeText('Last 6 months', data.trend.six.diff, 'the 6 before')}{challengeNote(data.trend.notes.six)}</li>}
+                {data.trend.three && <li>{drinksChangeText(t('savings.last3'), data.trend.three.diff, t('savings.the3Before'))}{challengeNote(data.trend.notes.three)}</li>}
+                {data.trend.six && <li>{drinksChangeText(t('savings.last6'), data.trend.six.diff, t('savings.the6Before'))}{challengeNote(data.trend.notes.six)}</li>}
               </ul>
             )}
             <p className="tr-foot">
-              From logged days, counting A few as 1.5 drinks, Moderate as 3.5 and A lot as 5 — its minimum, so a period with an A lot day could be higher.{' '}
-              <Link className="tr-help" to="/settings/help?topic=estimates">How is this calculated?</Link>
+              {t('trends.estFoot')}{' '}
+              <Link className="tr-help" to="/settings/help?topic=estimates">{t('savings.howCalculated')}</Link>
             </p>
           </div>
 
-          <h3 className="tr-sub">Savings</h3>
+          <h3 className="tr-sub">{t('trends.savings')}</h3>
           <SavingsCard scope={scope} scopeLabel={scopeLabel} trend={data.trend} />
         </>
       )}
-      <HelpLinks topic="trends">About Trends and reports</HelpLinks>
+      <HelpLinks topic="trends">{t('trends.help')}</HelpLinks>
     </main>
   );
 }
@@ -488,21 +473,20 @@ export function Trends() {
 function StreakCard({
   unit, isPastYear, now, best, scopeLabel,
 }: { unit: 'day' | 'week'; isPastYear: boolean; now: number; best: number; scopeLabel: string }) {
-  const n = (v: number) => (v > 0 ? `${v} ${unit}${v === 1 ? '' : 's'}` : '—');
-  const Unit = unit === 'day' ? 'Day' : 'Week';
+  const n = (v: number) => (v > 0 ? t(unit === 'day' ? 'trends.days' : 'trends.weeks', { count: v }) : '—');
   if (isPastYear) {
     return (
       <div className="card tr-stat">
-        <p className="tr-stat-label">Best {unit} streak · {scopeLabel}</p>
+        <p className="tr-stat-label">{t(`trends.bestStreak.${unit}`, { scope: scopeLabel })}</p>
         <p className="tr-stat-value">{n(best)}</p>
       </div>
     );
   }
   return (
     <div className="card tr-stat">
-      <p className="tr-stat-label">{Unit} streak · now</p>
+      <p className="tr-stat-label">{t(`trends.streakNow.${unit}`)}</p>
       <p className="tr-stat-value">{n(now)}</p>
-      <p className="tr-stat-sub">Best {best} · {scopeLabel}</p>
+      <p className="tr-stat-sub">{t('trends.streakBest', { n: best, scope: scopeLabel })}</p>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import './Badge.css';
+import { t } from '../i18n';
 
 type Props = {
   glyph: string;
@@ -21,7 +22,7 @@ export function Badge({ glyph, title, sub, earned, chip, progress, size = 'main'
       <div className="badge-text">
         <p className="badge-title">
           {title}
-          <span className="sr-only">{earned ? ', earned' : ', not yet earned'}</span>
+          <span className="sr-only">{earned ? t('badge.earned') : t('badge.notEarned')}</span>
         </p>
         <p className="badge-sub">{sub}</p>
         {!earned && progress !== undefined && (

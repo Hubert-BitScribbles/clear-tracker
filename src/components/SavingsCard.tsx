@@ -5,33 +5,37 @@ import { currencySymbol, describeSavings, money, parseAmount, priceText } from '
 import { monthPhrase } from '../lib/challengeText';
 import { MonthlyChart } from './MonthlyChart';
 import { wholeDrinks } from '../lib/reportText';
-import { challengeNote, ML, monthVsPrevious, savingsChangeText, type DrinksTrend } from '../lib/trendText';
+import { challengeNote, monthVsPrevious, savingsChangeText, type DrinksTrend } from '../lib/trendText';
 import './SavingsCard.css';
+import { t } from '../i18n';
+import { andList, dayMonthYear, monthName, monthYear } from '../i18n/format';
 
 // Estimated savings against a baseline: one the user types, or measured
 // from their first 3 months of tracking. Set in Settings; SavingsSetup (the
 // form) is used there.
 
-const SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const fmt = (iso: string) => `${SHORT[Number(iso.slice(5, 7)) - 1]} ${Number(iso.slice(8, 10))}, ${iso.slice(0, 4)}`;
+const fmt = dayMonthYear;
 
 /** "about 11 drinks a week, from your first 3 months (Apr 4, 2026 – Jul 3, 2026)" */
 export function baselineText(s: SavingsSettings): string {
   if (!s.effective) return '';
   const n = wholeDrinks(s.effective.baselinePerWeek);
-  const drinks = `about ${n} drink${n === 1 ? '' : 's'} a week`;
+  const drinks = t('savings.drinksAWeek', { count: n });
   return s.source === 'first3' && s.first3.status === 'ready'
-    ? `${drinks}, from your first 3 months (${fmt(s.first3.start)} – ${fmt(s.first3.end)}${s.first3.skipped.length ? `, after ${s.first3.skipped.map(monthPhrase).join(' and ')}` : ''})`
-    : `${drinks} before tracking`;
+    ? t('savings.baselineFirst3', {
+        drinks, start: fmt(s.first3.start), end: fmt(s.first3.end),
+        skipped: s.first3.skipped.length ? t('savings.baselineFirst3After', { months: andList(s.first3.skipped.map(monthPhrase)) }) : '',
+      })
+    : t('savings.baselineEntered', { drinks });
 }
 
 /** Why "first 3 months" isn't available yet. */
 export function first3WaitingText(f: FirstThreeMonths): string {
-  if (f.status === 'none') return 'Available once you’ve logged your first 3 months.';
+  if (f.status === 'none') return t('savings.first3None');
   if (f.status !== 'waiting') return '';
   return f.complete
-    ? `Not enough of your first 3 months was logged (${f.logged} of ${f.needed} days needed).`
-    : `Available after ${fmt(f.end)}, if at least ${f.needed} of those days are logged (${f.logged} so far).`;
+    ? t('savings.first3Short', { logged: f.logged, needed: f.needed })
+    : t('savings.first3Waiting', { date: fmt(f.end), needed: f.needed, logged: f.logged });
 }
 
 type Props = { scope: number | 'all'; scopeLabel: string; trend?: DrinksTrend };
@@ -60,13 +64,13 @@ export function SavingsCard({ scope, scopeLabel, trend }: Props) {
     const waiting = settings.source === 'first3' && settings.price !== null;
     return (
       <div className="card sv-card">
-        <p className="sv-setup-title">{waiting ? 'Your first 3 months aren’t measured yet' : 'Estimate your savings'}</p>
+        <p className="sv-setup-title">{waiting ? t('savings.first3NotYet') : t('savings.title')}</p>
         <p className="sv-basis">
           {waiting
             ? first3WaitingText(settings.first3)
-            : 'Two rough numbers are enough: how many drinks you had in a typical week before tracking, and what a drink usually costs you. Or measure the first from your first 3 months.'}
+            : t('savings.intro')}
         </p>
-        <Link className="sv-change" to="/settings#savings">{waiting ? 'Change in Settings' : 'Set up in Settings'}</Link>
+        <Link className="sv-change" to="/settings#savings">{waiting ? t('savings.changeInSettings') : t('savings.setUpInSettings')}</Link>
       </div>
     );
   }
@@ -80,7 +84,7 @@ export function SavingsCard({ scope, scopeLabel, trend }: Props) {
   return (
     <div className="card sv-card">
       {est.loggedDays === 0 ? (
-        <p className="sv-value">No days logged · {scopeLabel}</p>
+        <p className="sv-value">{t('savings.noDays', { scope: scopeLabel })}</p>
       ) : (
         <>
           <p className="sv-value">{describeSavings(most, least)}</p>
@@ -91,11 +95,11 @@ export function SavingsCard({ scope, scopeLabel, trend }: Props) {
         <>
           <MonthlyChart
             kind="bars"
-            name={`Months of ${scopeLabel}: estimated amount saved`}
+            name={t('savings.chartName', { scope: scopeLabel })}
             format={(v) => `${v < 0 ? '−' : ''}${money(v)}`}
             points={trend.points.map((p) => ({
-              label: ML[p.month - 1].slice(0, 3),
-              full: `${ML[p.month - 1]} ${p.year}`,
+              label: monthName(p.month, 'short'),
+              full: monthYear(p.month, p.year),
               soFar: p.soFar,
               // Saved that month: (baseline − drinks a week) × weeks logged × price. Below zero = over baseline.
               value: p.perWeek === null ? null : ((settings.effective!.baselinePerWeek - p.perWeek) / 7) * p.logged * price,
@@ -103,14 +107,14 @@ export function SavingsCard({ scope, scopeLabel, trend }: Props) {
             detail={(pt, i) => {
               const p = trend.points[i];
               if (pt.value === null) {
-                return <p className="mc-detail-line">Not enough logged days for an estimate ({p.logged} logged; 7 needed).</p>;
+                return <p className="mc-detail-line">{t('savings.notEnough', { logged: p.logged })}</p>;
               }
               const weekly = pt.value / (p.logged / 7);
               return (
                 <>
-                  <p className="mc-detail-line">{pt.value >= 0 ? `About ${money(pt.value)} saved` : `About ${money(pt.value)} over baseline`}</p>
+                  <p className="mc-detail-line">{pt.value >= 0 ? t('savings.monthSaved', { amount: money(pt.value) }) : t('savings.monthOver', { amount: money(pt.value) })}</p>
                   <p className="mc-detail-line">
-                    {weekly >= 0 ? `About ${money(weekly)} a week` : `About ${money(weekly)} a week over baseline`} · {p.logged} days logged
+                    {weekly >= 0 ? t('savings.weekSaved', { amount: money(weekly) }) : t('savings.weekOver', { amount: money(weekly) })} · {t('savings.daysLogged', { count: p.logged })}
                   </p>
                   {(() => {
                     const c = monthVsPrevious(p);
@@ -122,20 +126,18 @@ export function SavingsCard({ scope, scopeLabel, trend }: Props) {
           />
           {(trend.three || trend.six) && (
             <ul className="sv-trends">
-              {trend.three && <li>{savingsChangeText('Last 3 months', trend.three.diff, price, 'the 3 before')}{challengeNote(trend.notes.three)}</li>}
-              {trend.six && <li>{savingsChangeText('Last 6 months', trend.six.diff, price, 'the 6 before')}{challengeNote(trend.notes.six)}</li>}
+              {trend.three && <li>{savingsChangeText(t('savings.last3'), trend.three.diff, price, t('savings.the3Before'))}{challengeNote(trend.notes.three)}</li>}
+              {trend.six && <li>{savingsChangeText(t('savings.last6'), trend.six.diff, price, t('savings.the6Before'))}{challengeNote(trend.notes.six)}</li>}
             </ul>
           )}
         </>
       )}
       <p className="sv-basis">
-        Based on {baselineText(settings)}, at {priceText(price)} a drink. {est.loggedDays} logged day
-        {est.loggedDays === 1 ? '' : 's'}; unlogged days aren't counted. "A lot" counts as 5 drinks, so any period with
-        one shows "up to" or "at least".
+        {t('savings.basis', { baseline: baselineText(settings), price: priceText(price), count: est.loggedDays })}
       </p>
       <div className="sv-links">
-        <Link className="sv-change" to="/settings#savings">Change baseline or price</Link>
-        <Link className="sv-change" to="/settings/help?topic=estimates">How is this calculated?</Link>
+        <Link className="sv-change" to="/settings#savings">{t('savings.changeBaseline')}</Link>
+        <Link className="sv-change" to="/settings/help?topic=estimates">{t('savings.howCalculated')}</Link>
       </div>
     </div>
   );
@@ -171,12 +173,12 @@ export function SavingsSetup({
     if (source === 'entered') {
       bn = parseAmount(b);
       if (b.trim() === '' || !Number.isFinite(bn) || bn < 0 || bn > 200) {
-        setError('Enter drinks a week as a number from 0 to 200.');
+        setError(t('savings.errorBaseline'));
         return;
       }
     }
     if (p.trim() === '' || !Number.isFinite(pn) || pn <= 0 || pn > 1000) {
-      setError('Enter the price of a drink, e.g. 8 or 8.50.');
+      setError(t('savings.errorPrice'));
       return;
     }
     setError('');
@@ -185,20 +187,23 @@ export function SavingsSetup({
 
   return (
     <div className="card sv-card">
-      <p className="sv-setup-title">Estimate your savings</p>
+      <p className="sv-setup-title">{t('savings.title')}</p>
       <fieldset className="sv-source">
-        <legend className="sv-field-label">Baseline: drinks in a typical week</legend>
+        <legend className="sv-field-label">{t('savings.baselineLegend')}</legend>
         <label className="sv-radio">
           <input type="radio" name={`${id}-src`} checked={source === 'entered'} onChange={() => setSource('entered')} />
-          <span>A number I enter (before tracking)</span>
+          <span>{t('savings.sourceEntered')}</span>
         </label>
         <label className="sv-radio" data-disabled={!first3Ready || undefined}>
           <input type="radio" name={`${id}-src`} checked={source === 'first3'} disabled={!first3Ready} onChange={() => setSource('first3')} />
           <span>
-            Measured from my first 3 months
+            {t('savings.sourceFirst3')}
             <span className="sv-radio-note">
               {first3Ready && first3.status === 'ready'
-                ? `About ${wholeDrinks(first3.perWeek)} drinks a week (${first3.logged} logged days${first3.skipped.length ? `; starts after ${first3.skipped.map(monthPhrase).join(' and ')}` : ''})`
+                ? t('savings.first3Ready', {
+                    drinks: wholeDrinks(first3.perWeek), logged: first3.logged,
+                    skipped: first3.skipped.length ? t('savings.first3StartsAfter', { months: andList(first3.skipped.map(monthPhrase)) }) : '',
+                  })
                 : first3WaitingText(first3)}
             </span>
           </span>
@@ -207,19 +212,19 @@ export function SavingsSetup({
       <div className="sv-fields">
         {source === 'entered' && (
           <label className="sv-field" htmlFor={`${id}-b`}>
-            <span>Drinks a week, before</span>
-            <input id={`${id}-b`} inputMode="decimal" value={b} onChange={(e) => setB(e.target.value)} placeholder="e.g. 14" />
+            <span>{t('savings.drinksBefore')}</span>
+            <input id={`${id}-b`} inputMode="decimal" value={b} onChange={(e) => setB(e.target.value)} placeholder={t('savings.drinksPlaceholder')} />
           </label>
         )}
         <label className="sv-field" htmlFor={`${id}-p`}>
-          <span>Price per drink ({currencySymbol()})</span>
-          <input id={`${id}-p`} inputMode="decimal" value={p} onChange={(e) => setP(e.target.value)} placeholder="e.g. 9" />
+          <span>{t('savings.pricePerDrink', { symbol: currencySymbol() })}</span>
+          <input id={`${id}-p`} inputMode="decimal" value={p} onChange={(e) => setP(e.target.value)} placeholder={t('savings.pricePlaceholder')} />
         </label>
       </div>
       {error && <p className="sv-error" role="alert">{error}</p>}
       <div className="sv-actions">
-        <button type="button" className="btn btn-primary" onClick={save}>Save</button>
-        {canCancel && <button type="button" className="sv-change" onClick={onCancel}>Cancel</button>}
+        <button type="button" className="btn btn-primary" onClick={save}>{t('common.save')}</button>
+        {canCancel && <button type="button" className="sv-change" onClick={onCancel}>{t('common.cancel')}</button>}
       </div>
     </div>
   );

@@ -5,6 +5,8 @@ import { BackupError, backupsAvailable, decryptBackup, type BackupPayload } from
 import { getEntryCount, restoreBackup } from '../data/database';
 import { loadMoneyCountry } from '../lib/moneyRegion';
 import './Flow.css';
+import { t } from '../i18n';
+import { mediumDate } from '../i18n/format';
 
 // Port of the native app/import.tsx: choose a file, enter its passphrase,
 // confirm, then everything on this device is replaced in one step (a
@@ -41,7 +43,7 @@ export function Restore() {
       setCurrent(await getEntryCount());
       setStep(2);
     } catch (e) {
-      setError(e instanceof BackupError ? e.message : 'This file could not be read.');
+      setError(e instanceof BackupError ? e.message : t('restore.unreadable'));
     } finally {
       setBusy(false);
     }
@@ -55,7 +57,7 @@ export function Restore() {
       await loadMoneyCountry(); // the backup's region decides the currency
       setStep(3);
     } catch {
-      setError('Something went wrong restoring this backup. Nothing was changed. Please try again.');
+      setError(t('restore.failed'));
     } finally {
       setBusy(false);
     }
@@ -66,18 +68,15 @@ export function Restore() {
       {[0, 1, 2].map((k) => <span key={k} className="fl-dot" data-on={k === Math.min(step, 2) || undefined} />)}
     </div>
   );
-  const plural = (n: number) => `${n} logged day${n === 1 ? '' : 's'}`;
-  const exported = parsed?.exportedAt ? new Date(parsed.exportedAt).toLocaleDateString(undefined, { dateStyle: 'medium' }) : '—';
+  const plural = (n: number) => t('restore.loggedDays', { count: n });
+  const exported = parsed?.exportedAt ? mediumDate(new Date(parsed.exportedAt)) : '—';
 
   if (!backupsAvailable()) {
     return (
       <main className="flow">
-        <div className="fl-close-row"><button type="button" className="fl-close" onClick={close} aria-label="Close">✕</button></div>
-        <h1 className="fl-title">Restore from a backup</h1>
-        <p className="fl-body">
-          Backups use your browser's built-in encryption, which only works on the app's secure (https) address — not
-          on a local network address like this one.
-        </p>
+        <div className="fl-close-row"><button type="button" className="fl-close" onClick={close} aria-label={t('common.close')}>✕</button></div>
+        <h1 className="fl-title">{t('restore.title')}</h1>
+        <p className="fl-body">{t('backup.insecure')}</p>
       </main>
     );
   }
@@ -88,49 +87,48 @@ export function Restore() {
       {step === 0 && (
         <section className="fl-step">
           <div>
-            <div className="fl-close-row"><button type="button" className="fl-close" onClick={close} aria-label="Close">✕</button></div>
-            <h1 className="fl-title">Restore from a backup</h1>
-            <p className="fl-danger">Restoring a backup replaces all data currently on this device. This can't be undone.</p>
-            <p className="fl-body">Choose a Clear Tracker backup file.</p>
-            <p className="fl-help"><HelpLink topic="backups">About backups</HelpLink></p>
+            <div className="fl-close-row"><button type="button" className="fl-close" onClick={close} aria-label={t('common.close')}>✕</button></div>
+            <h1 className="fl-title">{t('restore.title')}</h1>
+            <p className="fl-danger">{t('restore.warning')}</p>
+            <p className="fl-body">{t('restore.choose')}</p>
+            <p className="fl-help"><HelpLink topic="backups">{t('restore.about')}</HelpLink></p>
           </div>
           <div>
-            <input ref={input} type="file" accept=".json,application/json" hidden onChange={(e) => choose(e.target.files?.[0])} aria-label="Backup file" />
-            <button type="button" className="fl-secondary" onClick={() => input.current?.click()}>Choose file</button>
+            <input ref={input} type="file" accept=".json,application/json" hidden onChange={(e) => choose(e.target.files?.[0])} aria-label={t('restore.fileLabel')} />
+            <button type="button" className="fl-secondary" onClick={() => input.current?.click()}>{t('restore.chooseFile')}</button>
           </div>
         </section>
       )}
       {step === 1 && (
         <section className="fl-step">
           <div>
-            <h1 className="fl-title">Enter passphrase</h1>
+            <h1 className="fl-title">{t('restore.enterPassphrase')}</h1>
             <p className="fl-file">{name}</p>
-            <label className="fl-label" htmlFor="im-pass">The backup's passphrase</label>
+            <label className="fl-label" htmlFor="im-pass">{t('restore.passphraseLabel')}</label>
             <input id="im-pass" className="fl-input" type="password" autoComplete="current-password" value={pass} onChange={(e) => setPass(e.target.value)} />
             {error && <p className="fl-error" role="alert">{error}</p>}
           </div>
           <button type="button" className="btn btn-primary fl-button" onClick={check} disabled={busy}>
-            {busy ? 'Checking…' : 'Continue'}
+            {busy ? t('restore.checking') : t('common.continue')}
           </button>
         </section>
       )}
       {step === 2 && parsed && (
         <section className="fl-step">
           <div>
-            <h1 className="fl-title">Confirm restore</h1>
+            <h1 className="fl-title">{t('restore.confirm')}</h1>
             <div className="card fl-card" style={{ marginBottom: 12 }}>
-              <div className="fl-row"><span>Logged days in backup</span><strong>{parsed.dayEntries.length}</strong></div>
-              <div className="fl-row"><span>Intentions</span><strong>{parsed.intentions.length}</strong></div>
-              <div className="fl-row"><span>Backed up</span><strong>{exported}</strong></div>
+              <div className="fl-row"><span>{t('restore.daysInBackup')}</span><strong>{parsed.dayEntries.length}</strong></div>
+              <div className="fl-row"><span>{t('restore.intentions')}</span><strong>{parsed.intentions.length}</strong></div>
+              <div className="fl-row"><span>{t('restore.backedUp')}</span><strong>{exported}</strong></div>
             </div>
             <p className="fl-danger">
-              This will replace the {plural(current)} currently on this device with the {plural(parsed.dayEntries.length)} from
-              this backup, along with your intentions and settings. This can't be undone.
+              {t('restore.replaceWarning', { current: plural(current), incoming: plural(parsed.dayEntries.length) })}
             </p>
             {error && <p className="fl-error" role="alert">{error}</p>}
           </div>
           <button type="button" className="fl-danger-btn" onClick={restore} disabled={busy}>
-            {busy ? 'Restoring…' : 'Replace data and restore'}
+            {busy ? t('restore.restoring') : t('restore.replace')}
           </button>
         </section>
       )}
@@ -138,10 +136,10 @@ export function Restore() {
         <section className="fl-step">
           <div className="fl-center">
             <div className="fl-tick" aria-hidden="true">✓</div>
-            <h1 className="fl-title">Your data has been restored</h1>
+            <h1 className="fl-title">{t('restore.done')}</h1>
           </div>
           <button type="button" className="btn btn-primary fl-button" onClick={() => navigate('/', { replace: true })}>
-            Go to Check-in
+            {t('restore.goCheckin')}
           </button>
         </section>
       )}

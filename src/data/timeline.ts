@@ -12,9 +12,11 @@ import {
   BACK_ON_TRACK_TIERS, backOnTrackWeeks, bestMonths, HONEST_LOGGING_TIERS, honestLoggingDates, KEPT_TO_A_FEW_TIERS,
   keptToAFewWeeks, tiersFrom,
 } from './milestones';
+import { t } from '../i18n';
+import { monthYear } from '../i18n/format';
+import { monthTitle } from '../lib/challengeText';
 
 export const BEYOND_TARGET_TIERS = [1, 5, 15, 40, 100];
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 export type Kind =
   | 'first' | 'logging' | 'clear' | 'deciding' | 'back' | 'best' | 'months' | 'anniversary' | 'streak' | 'growth' | 'challenge';
@@ -42,49 +44,49 @@ export function earnedMilestones(d: Data, today: Iso, opts: TimelineOptions = {}
   };
   const base = baseMilestones(d, today);
 
-  add('First clear day', base.firstClearDate, 'first');
+  add(t('ms.firstClear'), base.firstClearDate, 'first');
   const firstIntention = [...d.snap.intentions].sort((a, b) => a.created_at.localeCompare(b.created_at))[0];
-  add('Set your first intention', firstIntention?.effective_date && firstIntention.effective_date <= today ? firstIntention.effective_date : null, 'deciding');
-  add('First week you met your intention', base.firstClearWeekEndIso, 'first');
+  add(t('ms.firstIntention'), firstIntention?.effective_date && firstIntention.effective_date <= today ? firstIntention.effective_date : null, 'deciding');
+  add(t('ms.firstWeekMet'), base.firstClearWeekEndIso, 'first');
 
   const firstLogging = new Map<number, Iso>();
   for (const e of loggingTierEarnings(d)) if (!firstLogging.has(e.tierDays)) firstLogging.set(e.tierDays, e.reachedDateIso);
-  for (const t of LOGGING_TIERS) add(`${t} days logged in a row`, firstLogging.get(t), 'logging');
-  for (const e of clearTierEarnings(d)) add(`${e.threshold} clear days`, e.reachedDateIso, 'clear');
+  for (const n of LOGGING_TIERS) add(t('ms.loggedInARow', { n }), firstLogging.get(n), 'logging');
+  for (const e of clearTierEarnings(d)) add(t('ms.clearDays', { n: e.threshold }), e.reachedDateIso, 'clear');
 
   for (const e of tiersFrom(honestLoggingDates(d), HONEST_LOGGING_TIERS)) {
-    add(e.tier === 1 ? 'Logged a drinking day the same day' : `${e.tier} drinking days logged the same day`, e.reachedIso, 'deciding');
+    add(e.tier === 1 ? t('ms.sameDay1') : t('ms.sameDayN', { n: e.tier }), e.reachedIso, 'deciding');
   }
   for (const e of tiersFrom(keptToAFewWeeks(d, today), KEPT_TO_A_FEW_TIERS)) {
-    add(e.tier === 1 ? 'A week kept to a few' : `${e.tier} weeks kept to a few`, e.reachedIso, 'deciding');
+    add(e.tier === 1 ? t('ms.fewWeek1') : t('ms.fewWeekN', { n: e.tier }), e.reachedIso, 'deciding');
   }
   for (const e of tiersFrom(backOnTrackWeeks(d, today), BACK_ON_TRACK_TIERS)) {
-    add(e.tier === 1 ? 'Back on track after a missed week' : `Back on track ${e.tier} times`, e.reachedIso, 'back');
+    add(e.tier === 1 ? t('ms.back1') : t('ms.backN', { n: e.tier }), e.reachedIso, 'back');
   }
   const beyond = [...base.beyondTargetInstances].reverse().map((b) => b.weekEndIso);
-  for (const e of tiersFrom(beyond, BEYOND_TARGET_TIERS)) add(e.tier === 1 ? 'Beyond target' : `Beyond target ${e.tier} weeks`, e.reachedIso, 'growth');
+  for (const e of tiersFrom(beyond, BEYOND_TARGET_TIERS)) add(e.tier === 1 ? t('ms.beyond1') : t('ms.beyondN', { n: e.tier }), e.reachedIso, 'growth');
 
-  for (const b of bestMonths(d)) add(`Best month yet: ${MONTHS[b.month - 1].slice(0, 3)} ${b.year}`, b.reachedIso, 'best');
+  for (const b of bestMonths(d)) add(t('ms.bestMonth', { month: monthYear(b.month, b.year, 'short') }), b.reachedIso, 'best');
   // Fully logged months count once the month is over.
   for (const f of fullyLoggedMonths(d, today)) {
     const end = isoOf(f.year, f.month, daysInMonth(f.year, f.month));
-    if (end < today) add(`${MONTHS[f.month - 1]} ${f.year} fully logged`, end, 'months');
+    if (end < today) add(t('ms.fullyLogged', { month: monthYear(f.month, f.year) }), end, 'months');
   }
-  for (const a of trackingAnniversaries(d, today)) if (a.reached) add(`${a.years} year${a.years === 1 ? '' : 's'} of tracking`, a.reachedIso, 'anniversary');
+  for (const a of trackingAnniversaries(d, today)) if (a.reached) add(t('ms.years', { count: a.years }), a.reachedIso, 'anniversary');
   // Weeks in a row meeting the intention: for everyone (unlike clear-day
   // streaks, they never punish a chosen drinking day).
-  for (const e of streakTierFirsts(d, today)) add(`${e.tierWeeks}-week streak`, e.reachedWeekEndIso, 'streak');
+  for (const e of streakTierFirsts(d, today)) add(t('ms.streak', { n: e.tierWeeks }), e.reachedWeekEndIso, 'streak');
   const c = opts.challenges;
   if (c) {
     for (const e of tiersFrom(clearWeekends(d, today, c.weekendRuns), WEEKEND_TIERS)) {
-      add(e.tier === 1 ? 'A clear weekend' : `${e.tier} clear weekends`, e.reachedIso, 'challenge');
+      add(e.tier === 1 ? t('ms.clearWeekend1') : t('ms.clearWeekendN', { n: e.tier }), e.reachedIso, 'challenge');
     }
     for (const e of tiersFrom(clearWeeks(d, today, c.weekRuns), WEEK_TIERS)) {
-      add(e.tier === 1 ? 'A clear week' : `${e.tier} clear weeks`, e.reachedIso, 'challenge');
+      add(e.tier === 1 ? t('ms.clearWeek1') : t('ms.clearWeekN', { n: e.tier }), e.reachedIso, 'challenge');
     }
     for (const ym of c.months) {
       const s = monthChallenge(d, today, ym);
-      if (s.state === 'earned') add(`Clear ${MONTHS[Number(ym.slice(5, 7)) - 1]} ${ym.slice(0, 4)}`, s.date, 'challenge');
+      if (s.state === 'earned') add(monthTitle(ym), s.date, 'challenge');
     }
   }
   return out.sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title));
@@ -105,7 +107,7 @@ export function upNext(
 ): NextUp[] {
   const out: NextUp[] = [];
   const push = (title: string, have: number, need: number, kind: Kind, sub?: string) => {
-    if (need > 0 && have < need) out.push({ title, sub: sub ?? `${Math.floor(have)} of ${need}`, progress: have / need, kind });
+    if (need > 0 && have < need) out.push({ title, sub: sub ?? t('tier.progress', { done: Math.floor(have), target: need }), progress: have / need, kind });
   };
   const nextOf = (tiers: number[], have: number) => tiers.find((t) => have < t);
   if (!d.earliest) return out;
@@ -113,27 +115,27 @@ export function upNext(
   const earnedLogging = new Set(loggingTierEarnings(d).map((e) => e.tierDays));
   const nl = LOGGING_TIERS.find((t) => !earnedLogging.has(t));
   const longest = longestLoggingRun(d);
-  if (nl) push(`${nl} days logged in a row`, longest, nl, 'logging', `Longest run: ${longest} of ${nl}`);
+  if (nl) push(t('ms.loggedInARow', { n: nl }), longest, nl, 'logging', t('ms.longestRun', { done: longest, target: nl }));
 
   const clearCount = d.datesAsc.filter((x) => d.status(x) === 'clear').length;
   const nc = nextOf(CLEAR_DAY_TIERS, clearCount);
-  if (nc) push(`${nc} clear days`, clearCount, nc, 'clear');
+  if (nc) push(t('ms.clearDays', { n: nc }), clearCount, nc, 'clear');
 
   const back = backOnTrackWeeks(d, today).length;
   const nb = nextOf(BACK_ON_TRACK_TIERS, back);
-  if (nb) push(nb === 1 ? 'Back on track after a missed week' : `Back on track ${nb} times`, back, nb, 'back');
+  if (nb) push(nb === 1 ? t('ms.back1') : t('ms.backN', { n: nb }), back, nb, 'back');
   const few = keptToAFewWeeks(d, today).length;
   const nf = nextOf(KEPT_TO_A_FEW_TIERS, few);
-  if (nf) push(nf === 1 ? 'A week kept to a few' : `${nf} weeks kept to a few`, few, nf, 'deciding');
+  if (nf) push(nf === 1 ? t('ms.fewWeek1') : t('ms.fewWeekN', { n: nf }), few, nf, 'deciding');
   const honest = honestLoggingDates(d).length;
   const nh = nextOf(HONEST_LOGGING_TIERS, honest);
-  if (nh) push(nh === 1 ? 'Logged a drinking day the same day' : `${nh} drinking days logged the same day`, honest, nh, 'deciding');
+  if (nh) push(nh === 1 ? t('ms.sameDay1') : t('ms.sameDayN', { n: nh }), honest, nh, 'deciding');
   const beyond = baseMilestones(d, today).beyondTargetInstances.length;
   const nt = nextOf(BEYOND_TARGET_TIERS, beyond);
-  if (nt) push(nt === 1 ? 'Beyond target' : `Beyond target ${nt} weeks`, beyond, nt, 'growth');
+  if (nt) push(nt === 1 ? t('ms.beyond1') : t('ms.beyondN', { n: nt }), beyond, nt, 'growth');
 
   const earnedStreaks = new Set(streakTierFirsts(d, today).map((e) => e.tierWeeks));
   const ns = STREAK_TIERS_WEEKS.find((t) => !earnedStreaks.has(t));
-  if (ns) push(`${ns}-week streak`, currentWeekStreak(d, today), ns, 'streak');
+  if (ns) push(t('ms.streak', { n: ns }), currentWeekStreak(d, today), ns, 'streak');
   return out.sort((a, b) => b.progress - a.progress).slice(0, opts.limit ?? 3);
 }

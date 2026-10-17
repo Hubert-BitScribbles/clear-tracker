@@ -7,6 +7,7 @@ import { backupsAvailable, encryptBackup, MIN_PASSPHRASE, payloadFrom } from '..
 import { getBackupData, setSetting } from '../data/database';
 import { todayIso } from '../data/dates';
 import './Flow.css';
+import { t } from '../i18n';
 
 // Port of the native app/export.tsx, for the web: the browser's own
 // encryption (see data/backup.ts), a passphrase of at least 8 characters
@@ -29,8 +30,8 @@ export function Backup() {
   const [saved, setSaved] = useState('');
 
   async function create() {
-    if (pass.length < MIN_PASSPHRASE) return setError(`Passphrase must be at least ${MIN_PASSPHRASE} characters.`);
-    if (pass !== confirm) return setError('Passphrases do not match.');
+    if (pass.length < MIN_PASSPHRASE) return setError(t('backup.errShort', { n: MIN_PASSPHRASE }));
+    if (pass !== confirm) return setError(t('backup.errMatch'));
     setError('');
     setBusy(true);
     try {
@@ -56,11 +57,11 @@ export function Backup() {
     }).showSaveFilePicker;
     try {
       if (P !== 'other' && nav.share && nav.canShare?.({ files: [file] })) {
-        await nav.share({ files: [file], title: 'Clear Tracker backup' });
+        await nav.share({ files: [file], title: t('backup.fileTitle') });
       } else if (P === 'other' && picker) {
         const handle = await picker({
           suggestedName: file.name,
-          types: [{ description: 'Clear Tracker backup', accept: { 'application/json': ['.json'] } }],
+          types: [{ description: t('backup.fileTitle'), accept: { 'application/json': ['.json'] } }],
         });
         const w = await handle.createWritable();
         await w.write(file);
@@ -74,10 +75,10 @@ export function Backup() {
         setTimeout(() => URL.revokeObjectURL(url), 10_000);
       }
       await setSetting('last_backup_at', new Date().toISOString());
-      setSaved('Saved. Keep your passphrase somewhere safe.');
+      setSaved(t('backup.saved'));
     } catch (e) {
       // Closing the share sheet without choosing anywhere isn't an error.
-      setSaved(e instanceof DOMException && e.name === 'AbortError' ? 'Not saved yet.' : 'Couldn’t save the file. Please try again.');
+      setSaved(e instanceof DOMException && e.name === 'AbortError' ? t('backup.notSaved') : t('backup.couldntSave'));
     }
   }
 
@@ -90,12 +91,9 @@ export function Backup() {
   if (!backupsAvailable()) {
     return (
       <main className="flow">
-        <div className="fl-close-row"><button type="button" className="fl-close" onClick={close} aria-label="Close">✕</button></div>
-        <h1 className="fl-title">Back up your data</h1>
-        <p className="fl-body">
-          Backups use your browser's built-in encryption, which only works on the app's secure (https) address — not
-          on a local network address like this one.
-        </p>
+        <div className="fl-close-row"><button type="button" className="fl-close" onClick={close} aria-label={t('common.close')}>✕</button></div>
+        <h1 className="fl-title">{t('backup.title')}</h1>
+        <p className="fl-body">{t('backup.insecure')}</p>
       </main>
     );
   }
@@ -106,37 +104,31 @@ export function Backup() {
       {step === 0 && (
         <section className="fl-step">
           <div>
-            <div className="fl-close-row"><button type="button" className="fl-close" onClick={close} aria-label="Close">✕</button></div>
-            <h1 className="fl-title">Back up your data</h1>
-            <p className="fl-body">
-              This creates an encrypted backup file with your logged days, intentions and settings. It stays on your
-              device until you choose where to save it.
-            </p>
+            <div className="fl-close-row"><button type="button" className="fl-close" onClick={close} aria-label={t('common.close')}>✕</button></div>
+            <h1 className="fl-title">{t('backup.title')}</h1>
+            <p className="fl-body">{t('backup.intro')}</p>
             <div className="card fl-card">
-              <p className="fl-info">Encrypted with a passphrase you set</p>
-              <p className="fl-info">Never sent anywhere by Clear Tracker</p>
+              <p className="fl-info">{t('backup.encrypted')}</p>
+              <p className="fl-info">{t('backup.neverSent')}</p>
             </div>
-            <p className="fl-help"><HelpLink topic="backups">About backups and passphrases</HelpLink></p>
+            <p className="fl-help"><HelpLink topic="backups">{t('backup.about')}</HelpLink></p>
           </div>
-          <button type="button" className="btn btn-primary fl-button" onClick={() => setStep(1)}>Continue</button>
+          <button type="button" className="btn btn-primary fl-button" onClick={() => setStep(1)}>{t('common.continue')}</button>
         </section>
       )}
       {step === 1 && (
         <section className="fl-step">
           <div>
-            <h1 className="fl-title">Set a passphrase</h1>
-            <p className="fl-body">
-              You'll need this to restore the backup. Clear Tracker doesn't keep it, so if you lose it, this backup can't
-              be recovered.
-            </p>
-            <label className="fl-label" htmlFor="ex-pass">Passphrase (at least {MIN_PASSPHRASE} characters)</label>
+            <h1 className="fl-title">{t('backup.setPassphrase')}</h1>
+            <p className="fl-body">{t('backup.passphraseNote')}</p>
+            <label className="fl-label" htmlFor="ex-pass">{t('backup.passphraseLabel', { n: MIN_PASSPHRASE })}</label>
             <input id="ex-pass" className="fl-input" type="password" autoComplete="new-password" value={pass} onChange={(e) => setPass(e.target.value)} />
-            <label className="fl-label" htmlFor="ex-confirm">Confirm passphrase</label>
+            <label className="fl-label" htmlFor="ex-confirm">{t('backup.confirmLabel')}</label>
             <input id="ex-confirm" className="fl-input" type="password" autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
             {error && <p className="fl-error" role="alert">{error}</p>}
           </div>
           <button type="button" className="btn btn-primary fl-button" onClick={create} disabled={busy}>
-            {busy ? 'Creating…' : 'Create encrypted backup'}
+            {busy ? t('backup.creating') : t('backup.create')}
           </button>
         </section>
       )}
@@ -144,17 +136,15 @@ export function Backup() {
         <section className="fl-step">
           <div className="fl-center">
             <div className="fl-tick" aria-hidden="true">✓</div>
-            <h1 className="fl-title">Your backup is ready</h1>
+            <h1 className="fl-title">{t('backup.readyTitle')}</h1>
             <p className="fl-body">
-              Choose where to keep it —{' '}
-              {P === 'ios' ? 'Files, iCloud Drive, or another device' : P === 'android' ? 'Google Drive, Files, or email it to yourself' : 'your browser asks where to save it, or puts it in Downloads'}.
-              Keep your passphrase somewhere safe.
+              {t('backup.ready', { where: P === 'ios' ? t('backup.whereIos') : P === 'android' ? t('backup.whereAndroid') : t('backup.whereOther') })}
             </p>
             {saved && <p className="fl-note" role="status">{saved}</p>}
           </div>
           <div className="fl-actions">
-            <button type="button" className="btn btn-primary fl-button" onClick={save}>Save backup file</button>
-            <button type="button" className="fl-secondary" onClick={close}>Done</button>
+            <button type="button" className="btn btn-primary fl-button" onClick={save}>{t('backup.saveFile')}</button>
+            <button type="button" className="fl-secondary" onClick={close}>{t('common.done')}</button>
           </div>
         </section>
       )}

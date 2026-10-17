@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { COUNTRIES, PROVINCES } from '../src/lib/regions';
-import { dialable, resourcesFor, STOPPING_CAUTION } from '../src/lib/resources';
+import { checkedFor, dialable, resourcesFor } from '../src/lib/resources';
+import { COUNTRY_RESOURCES, type Checked } from '../src/resources';
+import { hasText, t } from '../src/i18n';
 
 describe('resources', () => {
   const regions = [
@@ -52,8 +54,30 @@ describe('resources', () => {
     expect(resourcesFor('at', 'ca_ab').drinkGuide).toBeUndefined();
   });
   it('the stopping-suddenly caution is plain and points to help', () => {
-    expect(STOPPING_CAUTION).toMatch(/stopping suddenly can be dangerous/);
-    expect(STOPPING_CAUTION).toMatch(/doctor/);
+    expect(t('resources.caution')).toMatch(/stopping suddenly can be dangerous/);
+    expect(t('resources.caution')).toMatch(/doctor/);
+  });
+  it.each(Object.entries(COUNTRY_RESOURCES))('%s: every entry says where and when it was checked, and has its words', (cc, c) => {
+    const lines = [...c.talk, ...c.drinking, ...Object.values(c.areas ?? {}).flatMap((a) => [...(a.talk ?? []), ...(a.drinking ?? [])])];
+    const links = [...c.programmes, ...(c.drinkGuide ? [c.drinkGuide] : [])];
+    const all: Checked[] = [c.emergency, ...lines, ...links];
+    for (const e of all) {
+      expect(e.source.length).toBeGreaterThan(3);
+      expect(e.checked).toMatch(/^20\d\d-[01]\d-[0-3]\d$/);
+      expect(Number.isNaN(Date.parse(e.checked))).toBe(false);
+    }
+    // A line and a link can't share an id: they'd share words.
+    const ids = new Map<string, unknown>();
+    for (const e of [...lines, ...links]) {
+      expect(ids.get(e.id) ?? e, `${cc}: ${e.id} is used twice`).toBe(e);
+      ids.set(e.id, e);
+      expect(hasText(`res.${cc}.${e.id}.name`), `res.${cc}.${e.id}.name`).toBe(true);
+    }
+    for (const l of links) expect(hasText(`res.${cc}.${l.id}.note`)).toBe(true);
+  });
+  it('the "numbers checked" date is when the oldest entry shown was checked', () => {
+    expect(checkedFor('ca', 'ca_bc')).toBe('October 2026');
+    expect(checkedFor('xx', 'ca_bc')).toBe('October 2026');
   });
   it('dialable keeps digits only', () => {
     expect(dialable('1-866-531-2600')).toBe('18665312600');

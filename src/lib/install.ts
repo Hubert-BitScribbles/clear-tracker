@@ -5,6 +5,8 @@
 // "beforeinstallprompt" event that lets the page offer its own Install
 // button. That event fires once, early, so it's captured at startup.
 
+import { t } from '../i18n';
+
 type InstallEvent = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
 let deferred: InstallEvent | null = null;
 const listeners = new Set<() => void>();
@@ -118,6 +120,10 @@ export function onDeviceChange(cb: () => void): () => void {
   deviceListeners.add(cb);
   return () => deviceListeners.delete(cb);
 }
+
+/** The device's name for sentences and menus: product names as they are; "another device" in the current language. */
+export const osName = (os: Os) => (os === 'other' ? t('device.otherDevice') : OS_NAMES[os]);
+export const browserName = (b: Browser) => (b === 'other' ? t('device.otherBrowser') : BROWSER_NAMES[b]);
 
 export const deviceLabel = (d: Device = device()) => `${OS_NAMES[d.os]} · ${BROWSER_NAMES[d.browser]}`;
 

@@ -29,6 +29,8 @@ import {
   type StreakTierEarn,
 } from '../data/database';
 import './Milestones.css';
+import { t } from '../i18n';
+import { dayMonth, monthYear } from '../i18n/format';
 
 // Port of the native app/all-milestones.tsx. Differences:
 // - FIX: the week-streak tiers listed are the ones that can be earned
@@ -47,11 +49,7 @@ import './Milestones.css';
 // - Consistency (week streaks) shows for everyone; native tied it to the
 //   clear-day-streak setting, but week streaks never punish a drinking day.
 
-const MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const formatShort = (iso: string) => {
-  const [, m, d] = iso.split('-').map(Number);
-  return `${MONTH_SHORT[m - 1]} ${d}`;
-};
+const formatShort = dayMonth;
 
 interface Data {
   m: MilestonesData;
@@ -95,8 +93,8 @@ export function AllMilestones() {
 
   const header = (
     <div className="ms-all-header">
-      <Link to="/milestones" className="ms-back" aria-label="Back to Milestones">‹</Link>
-      <h1 className="ms-all-title">All milestones</h1>
+      <Link to="/milestones" className="ms-back" aria-label={t('all.back')}>‹</Link>
+      <h1 className="ms-all-title">{t('all.title')}</h1>
       <span style={{ width: 36 }} />
     </div>
   );
@@ -117,38 +115,38 @@ export function AllMilestones() {
     <main className="milestones">
       {header}
 
-      <h2 className="ms-all-sec">Firsts</h2>
+      <h2 className="ms-all-sec">{t('all.firsts')}</h2>
       <Badge
         size="all"
         glyph="✓"
-        title="First clear day"
-        sub={m.firstClearDate ? formatShort(m.firstClearDate) : 'Not yet earned'}
+        title={t('ms.firstClear')}
+        sub={m.firstClearDate ? formatShort(m.firstClearDate) : t('all.notYet')}
         earned={!!m.firstClearDate}
       />
       <Badge
         size="all"
         glyph="✓"
-        title="First clear week"
-        sub={m.firstClearWeekEndIso ? `Target met, week ending ${formatShort(m.firstClearWeekEndIso)}` : 'Not yet earned'}
+        title={t('all.firstClearWeek')}
+        sub={m.firstClearWeekEndIso ? t('all.firstWeekSub', { date: formatShort(m.firstClearWeekEndIso) }) : t('all.notYet')}
         earned={!!m.firstClearWeekEndIso}
       />
 
-      <h2 className="ms-all-sec">Consistency</h2>
-      <p className="ms-all-note">Weeks in a row meeting your intention</p>
+      <h2 className="ms-all-sec">{t('all.consistency')}</h2>
+      <p className="ms-all-note">{t('all.consistencyNote')}</p>
       {streakTiers.map(({ weeks, reached }) => (
         <Badge
           key={weeks}
           size="all"
           glyph="🔥"
-          title={`${weeks}-week streak`}
-          sub={reached ? 'Earned' : `${data.currentStreak} of ${weeks} weeks`}
+          title={t('ms.streak', { n: weeks })}
+          sub={reached ? t('all.earned') : t('all.weeksProgress', { done: data.currentStreak, target: weeks })}
           earned={reached}
           progress={pct(data.currentStreak, weeks)}
         />
       ))}
 
-      <h2 className="ms-all-sec">Showing up</h2>
-      <p className="ms-all-note">Logging any day — clear or drinking — counts here</p>
+      <h2 className="ms-all-sec">{t('all.showingUp')}</h2>
+      <p className="ms-all-note">{t('all.showingUpNote')}</p>
       {LOGGING_TIERS.map((d) => {
         const reached = earnedLogging.has(d);
         return (
@@ -156,72 +154,72 @@ export function AllMilestones() {
             key={d}
             size="all"
             glyph="◆"
-            title={`${d} days logged in a row`}
-            sub={reached ? 'Earned' : `Longest run: ${data.longestRun} of ${d} days`}
+            title={t('ms.loggedInARow', { n: d })}
+            sub={reached ? t('all.earned') : t('all.longestRunDays', { done: data.longestRun, target: d })}
             earned={reached}
             progress={pct(data.longestRun, d)}
           />
         );
       })}
 
-      <h2 className="ms-all-sec">Total clear days</h2>
-      <p className="ms-all-note">Every clear day you've logged, all time</p>
-      {totalTiers.map((t) => (
+      <h2 className="ms-all-sec">{t('all.totalClear')}</h2>
+      <p className="ms-all-note">{t('all.totalClearNote')}</p>
+      {totalTiers.map((tier) => (
         <Badge
-          key={t.threshold}
+          key={tier.threshold}
           size="all"
           glyph="★"
-          title={`${t.threshold} clear days`}
+          title={t('ms.clearDays', { n: tier.threshold })}
           sub={
-            t.reached
-              ? `Reached ${t.reachedDate ? formatShort(t.reachedDate) : ''}`
-              : `${clearDates.length} of ${t.threshold} days`
+            tier.reached
+              ? t('tier.reached', { date: tier.reachedDate ? formatShort(tier.reachedDate) : '' })
+              : t('all.daysProgress', { done: clearDates.length, target: tier.threshold })
           }
-          earned={t.reached}
-          progress={pct(clearDates.length, t.threshold)}
+          earned={tier.reached}
+          progress={pct(clearDates.length, tier.threshold)}
         />
       ))}
 
-      <h2 className="ms-all-sec">Coming back</h2>
-      <p className="ms-all-note">Meeting your intention in a week right after one that missed it</p>
+      <h2 className="ms-all-sec">{t('all.comingBack')}</h2>
+      <p className="ms-all-note">{t('all.comingBackNote')}</p>
       <TierBadges size="all" mode="all" glyph="↺" tiers={BACK_ON_TRACK_TIERS}
         earned={tiersFrom(ex.backOnTrack, BACK_ON_TRACK_TIERS)} progress={ex.backOnTrack.length}
-        title={(t) => (t === 1 ? 'Back on track after a missed week' : `Back on track ${t} times`)} formatDate={formatShort} />
+        title={(n) => (n === 1 ? t('ms.back1') : t('ms.backN', { n }))} formatDate={formatShort} />
 
-      <h2 className="ms-all-sec">Kept it to a few</h2>
-      <p className="ms-all-note">Weeks with drinking days, every one of them "A few"</p>
+      <h2 className="ms-all-sec">{t('all.keptFew')}</h2>
+      <p className="ms-all-note">{t('all.keptFewNote')}</p>
       <TierBadges size="all" mode="all" glyph="✎" tiers={KEPT_TO_A_FEW_TIERS}
         earned={tiersFrom(ex.keptToAFew, KEPT_TO_A_FEW_TIERS)} progress={ex.keptToAFew.length}
-        title={(t) => (t === 1 ? 'A week kept to a few' : `${t} weeks kept to a few`)} formatDate={formatShort} />
+        title={(n) => (n === 1 ? t('ms.fewWeek1') : t('ms.fewWeekN', { n }))} formatDate={formatShort} />
 
-      <h2 className="ms-all-sec">Honest logging</h2>
-      <p className="ms-all-note">Drinking days logged on the day itself</p>
+      <h2 className="ms-all-sec">{t('all.honest')}</h2>
+      <p className="ms-all-note">{t('all.honestNote')}</p>
       <TierBadges size="all" mode="all" glyph="✎" tiers={HONEST_LOGGING_TIERS}
         earned={tiersFrom(ex.honest, HONEST_LOGGING_TIERS)} progress={ex.honest.length}
-        title={(t) => (t === 1 ? 'Logged a drinking day the same day' : `${t} drinking days logged the same day`)} formatDate={formatShort} />
+        title={(n) => (n === 1 ? t('ms.sameDay1') : t('ms.sameDayN', { n }))} formatDate={formatShort} />
 
-      <h2 className="ms-all-sec">Personal bests</h2>
-      <p className="ms-all-note">Each time a month beats every month before it</p>
+      <h2 className="ms-all-sec">{t('all.bests')}</h2>
+      <p className="ms-all-note">{t('all.bestsNote')}</p>
       {ex.bestMonths.length === 0 ? (
-        <Badge size="all" glyph="▲" title="Best month yet" sub="Not yet earned" earned={false} />
+        <Badge size="all" glyph="▲" title={t('all.bestMonth')} sub={t('all.notYet')} earned={false} />
       ) : (
         [...ex.bestMonths].reverse().map((b) => (
-          <Badge key={`${b.year}-${b.month}`} size="all" glyph="▲" title={`Best month yet: ${MONTH_SHORT[b.month - 1]} ${b.year}`}
-            sub={`${b.clearDays} clear days · reached ${formatShort(b.reachedIso)}`} earned />
+          <Badge key={`${b.year}-${b.month}`} size="all" glyph="▲" title={t('ms.bestMonth', { month: monthYear(b.month, b.year, 'short') })}
+            sub={t('all.bestSub', { n: b.clearDays, date: formatShort(b.reachedIso) })} earned />
         ))
       )}
 
       {(data.challenges.settings.weekendRuns.length > 0 || data.challenges.settings.weekRuns.length > 0 || data.challenges.months.some((x) => x.state !== 'ended')) && (
         <>
-          <h2 className="ms-all-sec">Challenges</h2>
-          <p className="ms-all-note">Goals you chose; all or nothing</p>
+          <h2 className="ms-all-sec">{t('all.challenges')}</h2>
+          <p className="ms-all-note">{t('all.challengesNote')}</p>
           {data.challenges.settings.weekendRuns.length > 0 && (
             <TierBadges size="all" mode="all" glyph="◐" tiers={WEEKEND_TIERS} earned={tiersFrom(data.challenges.weekends, WEEKEND_TIERS)}
-              progress={data.challenges.weekends.length} title={(t) => (t === 1 ? 'A clear weekend' : `${t} clear weekends`)} formatDate={formatShort} />
+              progress={data.challenges.weekends.length} title={(n) => (n === 1 ? t('ms.clearWeekend1') : t('ms.clearWeekendN', { n }))} formatDate={formatShort} />
           )}
           {data.challenges.settings.weekRuns.length > 0 && (
             <TierBadges size="all" mode="all" glyph="◑" tiers={WEEK_TIERS} earned={tiersFrom(data.challenges.weeks, WEEK_TIERS)}
-              progress={data.challenges.weeks.length} title={(t) => (t === 1 ? 'A clear week' : `${t} clear weeks`)} formatDate={formatShort} />
+              progress={data.challenges.weeks.length} title={(n) => (n === 1 ? t('ms.clearWeek1') : t('ms.clearWeekN', { n }))} formatDate={formatShort} />
           )}
           {data.challenges.months.filter((x) => x.state !== 'ended').map((x) => (
             <Badge key={x.ym} size="all" glyph="○" title={monthTitle(x.ym)} sub={monthStatusText(x)} earned={x.state === 'earned'} />
@@ -229,11 +227,11 @@ export function AllMilestones() {
         </>
       )}
 
-      <h2 className="ms-all-sec">Growth</h2>
-      <p className="ms-all-note">Weeks with more clear days than your intention</p>
+      <h2 className="ms-all-sec">{t('all.growth')}</h2>
+      <p className="ms-all-note">{t('all.growthNote')}</p>
       <TierBadges size="all" mode="all" glyph="✦" tiers={BEYOND_TARGET_TIERS}
         earned={tiersFrom(ex.beyondTarget, BEYOND_TARGET_TIERS)} progress={ex.beyondTarget.length}
-        title={(t) => (t === 1 ? 'Beyond target' : `Beyond target ${t} weeks`)} formatDate={formatShort} />
+        title={(n) => (n === 1 ? t('ms.beyond1') : t('ms.beyondN', { n }))} formatDate={formatShort} />
     </main>
   );
 }

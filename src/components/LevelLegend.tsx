@@ -1,4 +1,5 @@
 import './LevelLegend.css';
+import { t } from '../i18n';
 
 type Levels = { clear: number; 'a-few': number; moderate: number; 'a-lot': number };
 
@@ -13,10 +14,10 @@ export function LevelLegend({ levels }: { levels?: Levels }) {
   const n = (k: keyof Levels) => (levels ? ` ${levels[k]}` : '');
   return (
     <p className="lvl-legend">
-      <span><span className="lvl-sw lvl-clear" />Clear{n('clear')}</span>
-      <span><span className="lvl-sw lvl-few" />A few{n('a-few')}</span>
-      <span><span className="lvl-sw lvl-more" />Moderate{n('moderate')}</span>
-      <span><span className="lvl-sw lvl-lot" />A lot{n('a-lot')}</span>
+      <span><span className="lvl-sw lvl-clear" />{t('level.clear')}{n('clear')}</span>
+      <span><span className="lvl-sw lvl-few" />{t('level.aFew')}{n('a-few')}</span>
+      <span><span className="lvl-sw lvl-more" />{t('level.moderate')}{n('moderate')}</span>
+      <span><span className="lvl-sw lvl-lot" />{t('level.aLot')}{n('a-lot')}</span>
     </p>
   );
 }

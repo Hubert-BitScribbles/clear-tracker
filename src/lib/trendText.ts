@@ -4,6 +4,8 @@
 import type { Change, MonthPoint } from '../data/trend';
 import { monthPhrase } from './challengeText';
 import { money } from './savings';
+import { t } from '../i18n';
+import { andList, monthName } from '../i18n/format';
 
 /** The drinks trend for the Trends screen, shared with the savings card. */
 export interface DrinksTrend {
@@ -13,21 +15,19 @@ export interface DrinksTrend {
   notes: { three: string[]; six: string[] };
 }
 
-export const ML = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 /** " (the comparison includes your clear August)" when a chosen challenge month is inside the windows. */
-export const challengeNote = (yms: string[]) => (yms.length ? ` (the comparison includes ${yms.map(monthPhrase).join(' and ')})` : '');
+export const challengeNote = (yms: string[]) => (yms.length ? t('trend.challengeNote', { months: andList(yms.map(monthPhrase)) }) : '');
 
 const n1 = (x: number) => Math.max(1, Math.round(Math.abs(x)));
 
 /** "Last 3 months: …" — or, with no lead (under a heading that already names the period), "About …". */
-const led = (lead: string | null, text: string) => (lead ? `${lead}: ${text}` : text.charAt(0).toUpperCase() + text.slice(1));
+const led = (lead: string | null, text: string) => (lead ? t('trend.lead', { lead, text }) : text.charAt(0).toUpperCase() + text.slice(1));
 
 /** "Last 3 months: about 1 fewer drink a week than the 3 before" (within ½ a drink: "about the same as …"). */
 export function drinksChangeText(lead: string | null, diff: number, vs: string): string {
-  if (Math.abs(diff) < 0.5) return led(lead, `about the same as ${vs}`);
-  const k = n1(diff);
-  return led(lead, `about ${k} ${diff < 0 ? 'fewer' : 'more'} drink${k === 1 ? '' : 's'} a week than ${vs}`);
+  if (Math.abs(diff) < 0.5) return led(lead, t('trend.same', { vs }));
+  return led(lead, t(diff < 0 ? 'trend.fewer' : 'trend.more', { count: n1(diff), vs }));
 }
 
 /**
@@ -38,8 +38,8 @@ export function drinksChangeText(lead: string | null, diff: number, vs: string):
  */
 export function savingsChangeText(lead: string | null, drinksDiff: number, price: number, vs: string): string {
   const dollars = -drinksDiff * price;
-  if (Math.abs(drinksDiff) < 0.5) return led(lead, `about the same as ${vs}`);
-  return led(lead, `saving about ${money(dollars)} ${dollars > 0 ? 'more' : 'less'} a week than ${vs}`);
+  if (Math.abs(drinksDiff) < 0.5) return led(lead, t('trend.same', { vs }));
+  return led(lead, t(dollars > 0 ? 'trend.savingMore' : 'trend.savingLess', { amount: money(dollars), vs }));
 }
 
 /**
@@ -49,5 +49,5 @@ export function savingsChangeText(lead: string | null, drinksDiff: number, price
  */
 export function monthVsPrevious(p: MonthPoint): { lead: string; diff: number; vs: string } | null {
   if (p.perWeek === null || p.prev.perWeek === null) return null;
-  return { lead: `${ML[p.month - 1]}${p.soFar ? ' so far' : ''}`, diff: p.perWeek - p.prev.perWeek, vs: ML[p.prev.month - 1] };
+  return { lead: p.soFar ? t('trend.monthSoFar', { month: monthName(p.month) }) : monthName(p.month), diff: p.perWeek - p.prev.perWeek, vs: monthName(p.prev.month) };
 }

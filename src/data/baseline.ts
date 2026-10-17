@@ -12,6 +12,7 @@
 
 import { Data } from './compute';
 import { addDays, type Iso } from './dates';
+import { t } from '../i18n';
 
 export const MIDPOINT = { clear: 0, 'a-few': 1.5, moderate: 3.5, 'a-lot': 5 } as const;
 export const WINDOW_DAYS = 91; // 13 weeks
@@ -86,9 +87,8 @@ export function momentum(d: Data, today: Iso): { recent: number; previous: numbe
 
 /** "About 2 fewer drinks a week than the previous 3 months"; within ½ a drink: "About the same…". */
 export function momentumText(diff: number): string {
-  if (Math.abs(diff) < 0.5) return 'About the same as the previous 3 months';
-  const n = Math.max(1, Math.round(Math.abs(diff)));
-  return `About ${n} ${diff < 0 ? 'fewer' : 'more'} drink${n === 1 ? '' : 's'} a week than the previous 3 months`;
+  if (Math.abs(diff) < 0.5) return t('momentum.same');
+  return t(diff < 0 ? 'momentum.fewer' : 'momentum.more', { count: Math.max(1, Math.round(Math.abs(diff))) });
 }
 
 

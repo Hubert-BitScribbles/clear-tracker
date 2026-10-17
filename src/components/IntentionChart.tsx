@@ -2,10 +2,10 @@ import { useEffect, useRef, type KeyboardEvent } from 'react';
 import type { WeekAlignment } from '../data/database';
 import { addDays, mondayOf, todayIso } from '../data/dates';
 import './IntentionChart.css';
+import { t, type Key } from '../i18n';
+import { dayMonth, monthName } from '../i18n/format';
 
-const SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const label = (iso: string) => `${SHORT[Number(iso.slice(5, 7)) - 1]} ${Number(iso.slice(8, 10))}`;
+const label = dayMonth;
 
 /** A week on the grid; target null = before the first intention (shown, not measured). */
 export type MeasuredWeek = WeekAlignment;
@@ -30,15 +30,17 @@ export function alignmentOf(w: WeekAlignment): Alignment {
   return w.count + unlogged < w.target ? 'partial' : 'unclear';
 }
 
-export const ALIGNMENT_NAMES: Record<Alignment, string> = {
-  exceeded: 'Beyond', met: 'Met', partial: 'Partial', unclear: 'Not enough logged', unlogged: 'Unlogged', before: 'Before your intention',
-};
+/** "Met", "Not enough logged" … as a heading word. */
+export const alignmentName = (a: Alignment) => t(`week.alignment.${a}` as Key);
+/** The same within a sentence: "met", "not enough logged". */
+export const alignmentWord = (a: Alignment) => t(`week.alignmentLower.${a}` as Key);
 
 export function weekLabel(w: WeekAlignment): string {
   const a = alignmentOf(w);
-  if (a === 'before') return `Week of ${label(w.weekStartIso)}: ${w.hasEntries ? `${w.count} clear day${w.count === 1 ? '' : 's'}, ` : 'nothing logged, '}before your first intention`;
-  if (a === 'unlogged') return `Week of ${label(w.weekStartIso)}: nothing logged`;
-  return `Week of ${label(w.weekStartIso)}: ${w.count} of ${w.target} clear days, ${ALIGNMENT_NAMES[a].toLowerCase()}`;
+  const date = label(w.weekStartIso);
+  if (a === 'before') return w.hasEntries ? t('week.labelBeforeLogged', { date, count: w.count }) : t('week.labelBeforeEmpty', { date });
+  if (a === 'unlogged') return t('week.labelUnlogged', { date });
+  return t('week.label', { date, count: w.count, target: w.target ?? 0, alignment: alignmentWord(a) });
 }
 
 type Props = { weeks: MeasuredWeek[]; selected: string; onSelect: (weekStart: string) => void; year: number };
@@ -104,7 +106,7 @@ export function IntentionChart({ weeks, selected, onSelect, year }: Props) {
   }
 
   return (
-    <div className="wg" role="grid" aria-label={`Weeks of ${year}, by month`} ref={grid} onKeyDown={key}>
+    <div className="wg" role="grid" aria-label={t('week.gridLabel', { year })} ref={grid} onKeyDown={key}>
       {rows.map((r) => {
         const isMet = (w: MeasuredWeek) => alignmentOf(w) === 'met' || alignmentOf(w) === 'exceeded';
         // Weeks before the first intention aren't measured, so they're not counted.
@@ -112,7 +114,7 @@ export function IntentionChart({ weeks, selected, onSelect, year }: Props) {
         const met = counted.filter(isMet).length;
         return (
           <div key={r.month} className="wg-row" role="row">
-            <span className="wg-month" role="rowheader" aria-label={LONG[r.month - 1]}>{SHORT[r.month - 1]}</span>
+            <span className="wg-month" role="rowheader" aria-label={monthName(r.month)}>{monthName(r.month, 'short')}</span>
             <span className="wg-weeks" role="presentation">
               {r.weeks.map((w) => {
                 const a = alignmentOf(w);
@@ -135,7 +137,7 @@ export function IntentionChart({ weeks, selected, onSelect, year }: Props) {
                 );
               })}
             </span>
-            <span className="wg-sum" role="gridcell">{counted.length ? `${met} of ${counted.length}` : ''}</span>
+            <span className="wg-sum" role="gridcell">{counted.length ? t('week.monthSum', { met, total: counted.length }) : ''}</span>
           </div>
         );
       })}

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import './SegmentNav.css';
+import { t } from '../i18n';
 
 /**
  * Two related pages under one tab, switched like a segmented control:
@@ -20,16 +21,16 @@ export function SegmentNav({ label, items, current }: { label: string; items: { 
 
 export const MilestonesNav = ({ active }: { active: 'milestones' | 'challenges' }) => (
   <SegmentNav
-    label="Milestones and challenges"
-    current={active === 'milestones' ? 'Milestones' : 'Challenges'}
-    items={[{ to: '/milestones', text: 'Milestones' }, { to: '/milestones/challenges', text: 'Challenges' }]}
+    label={t('nav.milestonesAndChallenges')}
+    current={active === 'milestones' ? t('nav.milestones') : t('nav.challenges')}
+    items={[{ to: '/milestones', text: t('nav.milestones') }, { to: '/milestones/challenges', text: t('nav.challenges') }]}
   />
 );
 
 export const TrendsNav = ({ active }: { active: 'trends' | 'reports' }) => (
   <SegmentNav
-    label="Trends and reports"
-    current={active === 'trends' ? 'Trends' : 'Reports'}
-    items={[{ to: '/trends', text: 'Trends' }, { to: '/trends/review', text: 'Reports' }]}
+    label={t('nav.trendsAndReports')}
+    current={active === 'trends' ? t('nav.trends') : t('nav.reports')}
+    items={[{ to: '/trends', text: t('nav.trends') }, { to: '/trends/review', text: t('nav.reports') }]}
   />
 );

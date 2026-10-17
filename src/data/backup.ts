@@ -11,6 +11,7 @@
 // can't be made from a phone at http://192.168… during development.
 
 import type { DayEntryRow, IntentionRow } from './db';
+import { t } from '../i18n';
 
 export const FORMAT = 'clear-tracker-backup';
 export const VERSION = 1;
@@ -83,7 +84,7 @@ export function payloadFrom(data: {
 }
 
 export async function encryptBackup(payload: BackupPayload, passphrase: string, iterations = ITERATIONS): Promise<string> {
-  if (!backupsAvailable()) throw new BackupError('insecure-page', 'Backups need the app’s secure (https) address.');
+  if (!backupsAvailable()) throw new BackupError('insecure-page', t('backup.err.insecure'));
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const key = await deriveKey(passphrase, salt, iterations);
@@ -99,18 +100,18 @@ export async function encryptBackup(payload: BackupPayload, passphrase: string, 
 }
 
 export async function decryptBackup(fileText: string, passphrase: string): Promise<BackupPayload> {
-  if (!backupsAvailable()) throw new BackupError('insecure-page', 'Backups need the app’s secure (https) address.');
+  if (!backupsAvailable()) throw new BackupError('insecure-page', t('backup.err.insecure'));
   let env: Envelope;
   try {
     env = JSON.parse(fileText);
   } catch {
-    throw new BackupError('not-a-backup', 'This file is not a Clear Tracker backup.');
+    throw new BackupError('not-a-backup', t('backup.err.notBackup'));
   }
   if (env?.format !== FORMAT || typeof env.data !== 'string' || !env.kdf?.salt || !env.cipher?.iv) {
-    throw new BackupError('not-a-backup', 'This file is not a Clear Tracker backup.');
+    throw new BackupError('not-a-backup', t('backup.err.notBackup'));
   }
   if (env.version > VERSION) {
-    throw new BackupError('not-a-backup', 'This backup was made by a newer version of Clear Tracker.');
+    throw new BackupError('not-a-backup', t('backup.err.newer'));
   }
   let plain: string;
   try {
@@ -118,7 +119,7 @@ export async function decryptBackup(fileText: string, passphrase: string): Promi
     const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(env.cipher.iv) }, key, unb64(env.data));
     plain = new TextDecoder().decode(pt);
   } catch {
-    throw new BackupError('wrong-passphrase', 'Incorrect passphrase, or the file is damaged.');
+    throw new BackupError('wrong-passphrase', t('backup.err.passphrase'));
   }
   return validatePayload(JSON.parse(plain));
 }
@@ -130,27 +131,27 @@ const AMOUNTS = new Set(['a-few', 'moderate', 'a-lot']);
 export function validatePayload(data: unknown): BackupPayload {
   const d = data as Partial<BackupPayload> | null;
   if (!d || d.app !== 'clear-tracker' || !Array.isArray(d.dayEntries) || !Array.isArray(d.intentions)) {
-    throw new BackupError('invalid-contents', 'This file is not a valid Clear Tracker backup.');
+    throw new BackupError('invalid-contents', t('backup.err.invalid'));
   }
   const problems: string[] = [];
   const seen = new Set<string>();
   for (const e of d.dayEntries) {
     const date = e?.entry_date;
-    if (typeof date !== 'string' || !ISO.test(date)) problems.push('a day with a malformed date');
-    else if (seen.has(date)) problems.push(`${date} appears twice`);
+    if (typeof date !== 'string' || !ISO.test(date)) problems.push(t('backup.err.badDate'));
+    else if (seen.has(date)) problems.push(t('backup.err.twice', { date }));
     else seen.add(date);
     if (e?.status === 'clear' ? e.amount != null : !(e?.status === 'drinking' && AMOUNTS.has(e.amount as string))) {
-      problems.push(`${typeof date === 'string' ? date : 'a day'}: unknown level`);
+      problems.push(t('backup.err.unknownLevel', { day: typeof date === 'string' ? date : t('backup.err.aDay') }));
     }
   }
   for (const i of d.intentions) {
     if (!Number.isInteger(i?.weekly_target) || i.weekly_target < 1 || i.weekly_target > 7 || !ISO.test(i?.effective_date ?? '')) {
-      problems.push('an intention that is out of range');
+      problems.push(t('backup.err.badIntention'));
     }
   }
   if (problems.length) {
-    const more = problems.length > 3 ? ` (and ${problems.length - 3} more)` : '';
-    throw new BackupError('invalid-contents', `This backup can't be restored: ${problems.slice(0, 3).join('; ')}${more}.`);
+    const more = problems.length > 3 ? t('backup.err.andMore', { n: problems.length - 3 }) : '';
+    throw new BackupError('invalid-contents', t('backup.err.cantRestore', { problems: problems.slice(0, 3).join('; '), more }));
   }
   return {
     app: 'clear-tracker',

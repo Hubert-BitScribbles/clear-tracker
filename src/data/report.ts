@@ -12,6 +12,8 @@ import { monthChallenge, type ChallengeSettings } from './challenges';
 import { estimate, MIN_LOGGED_MONTH, rate, type DrinksEstimate } from './trend';
 import { earnedMilestones } from './timeline';
 import { backOnTrackWeeks } from './milestones';
+import { monthTitle } from '../lib/challengeText';
+import { t } from '../i18n';
 
 export interface Period {
   year: number;
@@ -195,15 +197,15 @@ export function buildReport(
       return now.logged >= MIN_LOGGED_MONTH && before.logged >= MIN_LOGGED_MONTH ? { diff: now.perWeek - before.perWeek } : null;
     })(),
     challenges: [
-      ...milestonesInPeriod(d, today, start, end, challenges).filter((m) => m.kind === 'challenge').map((m) => ({ title: m.title, date: m.date as Iso | null, note: 'earned' })),
+      ...milestonesInPeriod(d, today, start, end, challenges).filter((m) => m.kind === 'challenge').map((m) => ({ title: m.title, date: m.date as Iso | null, note: t('report.note.earned') })),
       ...(challenges?.months ?? [])
         .filter((ym) => ym.startsWith(String(p.year)) && (!p.month || Number(ym.slice(5, 7)) === p.month))
         .map((ym) => ({ ym, s: monthChallenge(d, today, ym) }))
         .filter(({ s }) => s.state === 'under-way' || s.state === 'to-log' || s.state === 'ended')
         .map(({ ym, s }) => ({
-          title: `Clear ${MONTH_NAMES[Number(ym.slice(5, 7)) - 1]} ${ym.slice(0, 4)}`,
+          title: monthTitle(ym),
           date: null,
-          note: s.state === 'ended' ? 'chosen; not this time' : s.state === 'to-log' ? 'chosen; days still to log' : 'chosen; under way',
+          note: s.state === 'ended' ? t('report.note.notThisTime') : s.state === 'to-log' ? t('report.note.toLog') : t('report.note.underWay'),
         })),
     ],
   };
@@ -221,8 +223,6 @@ export function milestonesInPeriod(
     .filter((m) => m.date >= start && m.date <= end)
     .map(({ title, date, kind }) => ({ title, date, kind }));
 }
-
-const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 /** The default report: the last complete month (or this one, if there's no earlier data). */
 export function defaultPeriod(today: Iso): Period {

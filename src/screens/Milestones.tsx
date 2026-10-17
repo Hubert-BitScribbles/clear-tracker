@@ -8,6 +8,8 @@ import {
 } from '../data/database';
 import { todayIso, yearOf } from '../data/dates';
 import './Milestones.css';
+import { t } from '../i18n';
+import { dayMonth, monthYear } from '../i18n/format';
 
 // Milestones, organised around time (October 2026 redesign):
 // - a year selector (each year with data, plus All time), as in Trends;
@@ -16,8 +18,6 @@ import './Milestones.css';
 // Every milestone by category, with all tiers, is on All milestones; challenges
 // have their own page (the Milestones | Challenges switch).
 
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const SHORT = MONTHS.map((m) => m.slice(0, 3));
 
 interface Data {
   earned: Earned[];
@@ -34,14 +34,14 @@ export function Milestones() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const [t, dsOn, ds, lds] = await Promise.all([
+      const [tl, dsOn, ds, lds] = await Promise.all([
         getTimeline(),
         getSetting('day_streak_enabled', 'false'),
         getCurrentClearDayStreak(),
         getLongestClearDayStreak(),
       ]);
       if (cancelled) return;
-      setData({ earned: t.earned, next: t.next, years: t.years, dayStreak: { on: dsOn === 'true', now: ds, best: Math.max(ds, lds) } });
+      setData({ earned: tl.earned, next: tl.next, years: tl.years, dayStreak: { on: dsOn === 'true', now: ds, best: Math.max(ds, lds) } });
     })();
     return () => {
       cancelled = true;
@@ -58,31 +58,28 @@ export function Milestones() {
     const key = m.date.slice(0, 7);
     let g = groups[groups.length - 1];
     if (!g || g.key !== key) {
-      g = { key, label: `${MONTHS[Number(key.slice(5, 7)) - 1]} ${key.slice(0, 4)}`, items: [] };
+      g = { key, label: monthYear(Number(key.slice(5, 7)), Number(key.slice(0, 4))), items: [] };
       groups.push(g);
     }
     g.items.push(m);
   }
-  const scopeLabel = scope === 'all' ? 'all time' : String(scope);
+  const scopeLabel = scope === 'all' ? t('milestones.allTimeLower') : String(scope);
 
   return (
     <main className="milestones">
-      <h1 className="ms-title">Milestones</h1>
+      <h1 className="ms-title">{t('milestones.title')}</h1>
       <MilestonesNav active="milestones" />
-      <p className="ms-lede">A record of what you've done, not a score. Drinking days don't undo anything here.</p>
+      <p className="ms-lede">{t('milestones.lede')}</p>
 
       {!hasData ? (
         <div className="ms-empty">
-          <h2 className="ms-empty-title">Nothing here yet</h2>
-          <p className="ms-empty-body">
-            Milestones appear as you log days. Start with today on the Check-in tab — a drinking day counts just as much
-            as a clear one.
-          </p>
+          <h2 className="ms-empty-title">{t('milestones.emptyTitle')}</h2>
+          <p className="ms-empty-body">{t('milestones.emptyBody')}</p>
         </div>
       ) : (
         <>
-          <div className="ms-scope" role="radiogroup" aria-label="Period">
-            {[...years.map((y) => [y, String(y)] as const), ['all', 'All time'] as const].map(([v, l]) => (
+          <div className="ms-scope" role="radiogroup" aria-label={t('milestones.period')}>
+            {[...years.map((y) => [y, String(y)] as const), ['all', t('milestones.allTime')] as const].map(([v, l]) => (
               <button key={l} type="button" role="radio" aria-checked={scope === v} className="ms-scope-pill" onClick={() => setScope(v)}>
                 {l}
               </button>
@@ -91,12 +88,12 @@ export function Milestones() {
 
           {(scope === thisYear || scope === 'all') && (
             <>
-              <h2 className="ms-sec">Up next</h2>
+              <h2 className="ms-sec">{t('milestones.upNext')}</h2>
               {data.dayStreak.on && (
                 <Badge
                   glyph="●"
-                  title={data.dayStreak.now > 0 ? `Clear day streak: ${data.dayStreak.now} days` : 'No clear day streak right now'}
-                  sub={`Longest ${data.dayStreak.best}`}
+                  title={data.dayStreak.now > 0 ? t('milestones.dayStreak', { n: data.dayStreak.now }) : t('milestones.noDayStreak')}
+                  sub={t('milestones.longest', { n: data.dayStreak.best })}
                   earned={data.dayStreak.now > 0}
                 />
               )}
@@ -106,12 +103,12 @@ export function Milestones() {
             </>
           )}
 
-          <h2 className="ms-sec">Earned · {scopeLabel}</h2>
+          <h2 className="ms-sec">{t('milestones.earned', { scope: scopeLabel })}</h2>
           {groups.length === 0 ? (
-            <p className="ms-note">Nothing earned in {scopeLabel} yet.</p>
+            <p className="ms-note">{t('milestones.nothingEarned', { scope: scopeLabel })}</p>
           ) : (
             groups.map((g) => (
-              <section key={g.key} className="ms-month" aria-label={`${g.label}: ${g.items.length} milestone${g.items.length === 1 ? '' : 's'}`}>
+              <section key={g.key} className="ms-month" aria-label={t('milestones.monthLabel', { month: g.label, count: g.items.length })}>
                 <h3 className="ms-month-title">
                   {g.label} <span className="ms-month-count">· {g.items.length}</span>
                 </h3>
@@ -120,7 +117,7 @@ export function Milestones() {
                     <li key={m.title + m.date} className="ms-item">
                       <span className="ms-item-glyph" aria-hidden="true">{GLYPH[m.kind]}</span>
                       <span className="ms-item-title">{m.title}</span>
-                      <span className="ms-item-date">{SHORT[Number(m.date.slice(5, 7)) - 1]} {Number(m.date.slice(8, 10))}</span>
+                      <span className="ms-item-date">{dayMonth(m.date)}</span>
                     </li>
                   ))}
                 </ul>
@@ -131,9 +128,9 @@ export function Milestones() {
       )}
 
       <Link className="ms-view-all" to="/milestones/all">
-        All milestones, by category →
+        {t('milestones.viewAll')}
       </Link>
-      <HelpLinks topic="milestones">How milestones work</HelpLinks>
+      <HelpLinks topic="milestones">{t('milestones.howTheyWork')}</HelpLinks>
     </main>
   );
 }

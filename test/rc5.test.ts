@@ -56,7 +56,24 @@ describe('the new-milestone line on Check-in', () => {
     const fresh = await P.getNewMilestones('2026-09-14');
     expect(fresh.map((m) => m.title)).toContain('14 clear days');
     expect(fresh[0].date >= fresh[fresh.length - 1].date).toBe(true); // newest first
-    await P.markMilestonesSeen(fresh.map((m) => m.title));
+    await P.markMilestonesSeen(fresh.map((m) => m.id));
     expect(await P.getNewMilestones('2026-09-14')).toEqual([]);
+  });
+  it('milestones are remembered by an id that doesn\'t depend on the wording', async () => {
+    const P = await import('../src/data/database');
+    await P.resetDatabase();
+    await P.restoreFromBackup(days('2026-01-01', 270, 'clear') as never, []);
+    await P.setChallenges({ weekendRuns: [{ from: '2026-01-02' }], weekRuns: [{ from: '2026-01-05' }], months: ['2026-03'] });
+    await P.setSetting('milestones_seen_ids', '[]');
+    const all = await P.getNewMilestones('2026-09-27');
+    const ids = all.map((m) => m.id);
+    expect(new Set(ids).size).toBe(ids.length); // one id per milestone
+    for (const id of ids) expect(id).toMatch(/^[a-z-]+(:[\w-]+)?$/);
+    expect(ids).toEqual(expect.arrayContaining(['first-clear', 'clear-days:30', 'clear-weekends:5', 'clear-month:2026-03', 'fully-logged:2026-08']));
+    // The seen list holds ids, never titles.
+    await P.markMilestonesSeen(ids);
+    const stored: string[] = JSON.parse(await P.getSetting('milestones_seen_ids', '[]'));
+    expect(stored).not.toContain(all[0].title);
+    expect(await P.getNewMilestones('2026-09-27')).toEqual([]);
   });
 });

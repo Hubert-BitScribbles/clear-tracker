@@ -4,6 +4,13 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.1.3 — 16 October 2026
+
+- Milestones already shown on Check-in are remembered by a fixed id instead
+  of their title, which will change with the language. Nothing looks
+  different: on first open, everything already earned counts as shown, as it
+  did when the new-milestone line arrived in rc.5.
+
 ## 1.1.2 — 16 October 2026
 
 Groundwork for German. Nothing looks different (screenshots and the page

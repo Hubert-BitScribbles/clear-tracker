@@ -27,6 +27,8 @@ export const GLYPH: Record<Kind, string> = {
 };
 
 export interface Earned {
+  /** Stays the same in every language ("clear-days:30"), for remembering which have been shown. */
+  id: string;
   title: string;
   date: Iso;
   kind: Kind;
@@ -39,54 +41,55 @@ export interface TimelineOptions {
 /** Every milestone earned up to today, oldest first. */
 export function earnedMilestones(d: Data, today: Iso, opts: TimelineOptions = {}): Earned[] {
   const out: Earned[] = [];
-  const add = (title: string, date: Iso | null | undefined, kind: Kind) => {
-    if (date && date <= today) out.push({ title, date, kind });
+  const add = (id: string, title: string, date: Iso | null | undefined, kind: Kind) => {
+    if (date && date <= today) out.push({ id, title, date, kind });
   };
+  const monthKey = (year: number, month: number) => `${year}-${String(month).padStart(2, '0')}`;
   const base = baseMilestones(d, today);
 
-  add(t('ms.firstClear'), base.firstClearDate, 'first');
+  add('first-clear', t('ms.firstClear'), base.firstClearDate, 'first');
   const firstIntention = [...d.snap.intentions].sort((a, b) => a.created_at.localeCompare(b.created_at))[0];
-  add(t('ms.firstIntention'), firstIntention?.effective_date && firstIntention.effective_date <= today ? firstIntention.effective_date : null, 'deciding');
-  add(t('ms.firstWeekMet'), base.firstClearWeekEndIso, 'first');
+  add('first-intention', t('ms.firstIntention'), firstIntention?.effective_date && firstIntention.effective_date <= today ? firstIntention.effective_date : null, 'deciding');
+  add('first-week-met', t('ms.firstWeekMet'), base.firstClearWeekEndIso, 'first');
 
   const firstLogging = new Map<number, Iso>();
   for (const e of loggingTierEarnings(d)) if (!firstLogging.has(e.tierDays)) firstLogging.set(e.tierDays, e.reachedDateIso);
-  for (const n of LOGGING_TIERS) add(t('ms.loggedInARow', { n }), firstLogging.get(n), 'logging');
-  for (const e of clearTierEarnings(d)) add(t('ms.clearDays', { n: e.threshold }), e.reachedDateIso, 'clear');
+  for (const n of LOGGING_TIERS) add(`logged-in-a-row:${n}`, t('ms.loggedInARow', { n }), firstLogging.get(n), 'logging');
+  for (const e of clearTierEarnings(d)) add(`clear-days:${e.threshold}`, t('ms.clearDays', { n: e.threshold }), e.reachedDateIso, 'clear');
 
   for (const e of tiersFrom(honestLoggingDates(d), HONEST_LOGGING_TIERS)) {
-    add(e.tier === 1 ? t('ms.sameDay1') : t('ms.sameDayN', { n: e.tier }), e.reachedIso, 'deciding');
+    add(`same-day:${e.tier}`, e.tier === 1 ? t('ms.sameDay1') : t('ms.sameDayN', { n: e.tier }), e.reachedIso, 'deciding');
   }
   for (const e of tiersFrom(keptToAFewWeeks(d, today), KEPT_TO_A_FEW_TIERS)) {
-    add(e.tier === 1 ? t('ms.fewWeek1') : t('ms.fewWeekN', { n: e.tier }), e.reachedIso, 'deciding');
+    add(`few-week:${e.tier}`, e.tier === 1 ? t('ms.fewWeek1') : t('ms.fewWeekN', { n: e.tier }), e.reachedIso, 'deciding');
   }
   for (const e of tiersFrom(backOnTrackWeeks(d, today), BACK_ON_TRACK_TIERS)) {
-    add(e.tier === 1 ? t('ms.back1') : t('ms.backN', { n: e.tier }), e.reachedIso, 'back');
+    add(`back-on-track:${e.tier}`, e.tier === 1 ? t('ms.back1') : t('ms.backN', { n: e.tier }), e.reachedIso, 'back');
   }
   const beyond = [...base.beyondTargetInstances].reverse().map((b) => b.weekEndIso);
-  for (const e of tiersFrom(beyond, BEYOND_TARGET_TIERS)) add(e.tier === 1 ? t('ms.beyond1') : t('ms.beyondN', { n: e.tier }), e.reachedIso, 'growth');
+  for (const e of tiersFrom(beyond, BEYOND_TARGET_TIERS)) add(`beyond:${e.tier}`, e.tier === 1 ? t('ms.beyond1') : t('ms.beyondN', { n: e.tier }), e.reachedIso, 'growth');
 
-  for (const b of bestMonths(d)) add(t('ms.bestMonth', { month: monthYear(b.month, b.year, 'short') }), b.reachedIso, 'best');
+  for (const b of bestMonths(d)) add(`best-month:${monthKey(b.year, b.month)}`, t('ms.bestMonth', { month: monthYear(b.month, b.year, 'short') }), b.reachedIso, 'best');
   // Fully logged months count once the month is over.
   for (const f of fullyLoggedMonths(d, today)) {
     const end = isoOf(f.year, f.month, daysInMonth(f.year, f.month));
-    if (end < today) add(t('ms.fullyLogged', { month: monthYear(f.month, f.year) }), end, 'months');
+    if (end < today) add(`fully-logged:${monthKey(f.year, f.month)}`, t('ms.fullyLogged', { month: monthYear(f.month, f.year) }), end, 'months');
   }
-  for (const a of trackingAnniversaries(d, today)) if (a.reached) add(t('ms.years', { count: a.years }), a.reachedIso, 'anniversary');
+  for (const a of trackingAnniversaries(d, today)) if (a.reached) add(`years:${a.years}`, t('ms.years', { count: a.years }), a.reachedIso, 'anniversary');
   // Weeks in a row meeting the intention: for everyone (unlike clear-day
   // streaks, they never punish a chosen drinking day).
-  for (const e of streakTierFirsts(d, today)) add(t('ms.streak', { n: e.tierWeeks }), e.reachedWeekEndIso, 'streak');
+  for (const e of streakTierFirsts(d, today)) add(`week-streak:${e.tierWeeks}`, t('ms.streak', { n: e.tierWeeks }), e.reachedWeekEndIso, 'streak');
   const c = opts.challenges;
   if (c) {
     for (const e of tiersFrom(clearWeekends(d, today, c.weekendRuns), WEEKEND_TIERS)) {
-      add(e.tier === 1 ? t('ms.clearWeekend1') : t('ms.clearWeekendN', { n: e.tier }), e.reachedIso, 'challenge');
+      add(`clear-weekends:${e.tier}`, e.tier === 1 ? t('ms.clearWeekend1') : t('ms.clearWeekendN', { n: e.tier }), e.reachedIso, 'challenge');
     }
     for (const e of tiersFrom(clearWeeks(d, today, c.weekRuns), WEEK_TIERS)) {
-      add(e.tier === 1 ? t('ms.clearWeek1') : t('ms.clearWeekN', { n: e.tier }), e.reachedIso, 'challenge');
+      add(`clear-weeks:${e.tier}`, e.tier === 1 ? t('ms.clearWeek1') : t('ms.clearWeekN', { n: e.tier }), e.reachedIso, 'challenge');
     }
     for (const ym of c.months) {
       const s = monthChallenge(d, today, ym);
-      if (s.state === 'earned') add(monthTitle(ym), s.date, 'challenge');
+      if (s.state === 'earned') add(`clear-month:${ym}`, monthTitle(ym), s.date, 'challenge');
     }
   }
   return out.sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title));

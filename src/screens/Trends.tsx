@@ -289,7 +289,7 @@ export function Trends() {
                 if (!r.logged) return <p className="mc-detail-line">{t('trends.noDaysLogged')}</p>;
                 return (
                   <>
-                    <p className="mc-detail-line mc-detail-strong">{t('trends.monthClear', { count: r.levels.clear, logged: r.logged })}</p>
+                    <p className="mc-detail-line mc-detail-strong">{t('trends.monthClear', { count: r.levels.clear, logged: t('trends.loggedCount', { count: r.logged }) })}</p>
                     <p className="mc-detail-line">{t('trends.levelsLine', { aFew: r.levels['a-few'], moderate: r.levels.moderate, aLot: r.levels['a-lot'] })}</p>
                     {p.perWeek !== null && <p className="mc-detail-line mc-detail-quiet">{t('trends.estimated', { count: wholeDrinks(p.perWeek) })}</p>}
                     <div className="mc-detail-links">
@@ -435,7 +435,7 @@ export function Trends() {
                       return c && <p className="mc-detail-line">{drinksChangeText(null, c.diff, c.vs)}</p>;
                     })()}
                     <p className="mc-detail-line">
-                      {t('trends.monthLevels', { clear: r.levels.clear, aFew: r.levels['a-few'], moderate: r.levels.moderate, aLot: r.levels['a-lot'], logged: p.logged })}
+                      {t('trends.monthLevels', { clear: r.levels.clear, aFew: r.levels['a-few'], moderate: r.levels.moderate, aLot: r.levels['a-lot'], logged: t('trends.loggedCount', { count: p.logged }) })}
                     </p>
                     <div className="mc-detail-links">
                       <Link className="mc-detail-link" to={`/trends/review?year=${p.year}&month=${p.month}`}>{t('trends.inReview', { month: monthYear(p.month, p.year) })}</Link>

@@ -4,6 +4,12 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.1.1 — 16 October 2026
+
+- Savings show the region's currency everywhere. In 1.1.0 the monthly savings
+  chart, its month details and the "saving about … more a week" lines still
+  showed $ in the UK, Ireland, Germany and Austria.
+
 ## 1.1.0 — 16 October 2026
 
 More countries, tested on a preview by testers in Austria and the UK.

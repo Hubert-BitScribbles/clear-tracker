@@ -3,6 +3,7 @@
 
 import type { Change, MonthPoint } from '../data/trend';
 import { monthPhrase } from './challengeText';
+import { money } from './savings';
 
 /** The drinks trend for the Trends screen, shared with the savings card. */
 export interface DrinksTrend {
@@ -18,7 +19,6 @@ export const ML = ['January', 'February', 'March', 'April', 'May', 'June', 'July
 export const challengeNote = (yms: string[]) => (yms.length ? ` (the comparison includes ${yms.map(monthPhrase).join(' and ')})` : '');
 
 const n1 = (x: number) => Math.max(1, Math.round(Math.abs(x)));
-const money = (x: number) => `$${Math.round(Math.abs(x)).toLocaleString('en-CA')}`;
 
 /** "Last 3 months: …" — or, with no lead (under a heading that already names the period), "About …". */
 const led = (lead: string | null, text: string) => (lead ? `${lead}: ${text}` : text.charAt(0).toUpperCase() + text.slice(1));

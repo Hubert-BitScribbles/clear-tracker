@@ -97,3 +97,14 @@ describe('typed amounts', () => {
   ])('%s → %s', (text, n) => expect(parseAmount(text)).toBe(n));
   it.each(['', 'abc', '1.2.3'])('%s is not a number', (text) => expect(parseAmount(text)).toBeNaN());
 });
+
+describe('every savings line follows the region', () => {
+  afterEach(() => setMoneyCountry('ca'));
+  it('the comparison lines use the region currency', async () => {
+    const { savingsChangeText } = await import('../src/lib/trendText');
+    setMoneyCountry('de');
+    expect(savingsChangeText(null, -1, 10, 'August')).toBe('Saving about €10 more a week than August');
+    setMoneyCountry('uk');
+    expect(savingsChangeText('Last 3 months', 1, 10, 'the 3 before')).toBe('Last 3 months: saving about £10 less a week than the 3 before');
+  });
+});

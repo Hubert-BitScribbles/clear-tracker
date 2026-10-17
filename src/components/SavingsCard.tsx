@@ -1,7 +1,7 @@
 import { useEffect, useId, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getSavingsEstimate, getSavingsSettings, type FirstThreeMonths, type SavingsEstimate, type SavingsSettings } from '../data/database';
-import { currencySymbol, describeSavings, parseAmount, priceText } from '../lib/savings';
+import { currencySymbol, describeSavings, money, parseAmount, priceText } from '../lib/savings';
 import { monthPhrase } from '../lib/challengeText';
 import { MonthlyChart } from './MonthlyChart';
 import { wholeDrinks } from '../lib/reportText';
@@ -92,7 +92,7 @@ export function SavingsCard({ scope, scopeLabel, trend }: Props) {
           <MonthlyChart
             kind="bars"
             name={`Months of ${scopeLabel}: estimated amount saved`}
-            format={(v) => `${v < 0 ? '−' : ''}$${Math.round(Math.abs(v)).toLocaleString('en-CA')}`}
+            format={(v) => `${v < 0 ? '−' : ''}${money(v)}`}
             points={trend.points.map((p) => ({
               label: ML[p.month - 1].slice(0, 3),
               full: `${ML[p.month - 1]} ${p.year}`,
@@ -105,13 +105,12 @@ export function SavingsCard({ scope, scopeLabel, trend }: Props) {
               if (pt.value === null) {
                 return <p className="mc-detail-line">Not enough logged days for an estimate ({p.logged} logged; 7 needed).</p>;
               }
-              const d = (n: number) => `$${Math.round(Math.abs(n)).toLocaleString('en-CA')}`;
               const weekly = pt.value / (p.logged / 7);
               return (
                 <>
-                  <p className="mc-detail-line">{pt.value >= 0 ? `About ${d(pt.value)} saved` : `About ${d(pt.value)} over baseline`}</p>
+                  <p className="mc-detail-line">{pt.value >= 0 ? `About ${money(pt.value)} saved` : `About ${money(pt.value)} over baseline`}</p>
                   <p className="mc-detail-line">
-                    {weekly >= 0 ? `About ${d(weekly)} a week` : `About ${d(weekly)} a week over baseline`} · {p.logged} days logged
+                    {weekly >= 0 ? `About ${money(weekly)} a week` : `About ${money(weekly)} a week over baseline`} · {p.logged} days logged
                   </p>
                   {(() => {
                     const c = monthVsPrevious(p);

@@ -48,7 +48,7 @@ with sync_playwright() as p:
     ctx = b.new_context(viewport={"width": 390, "height": 844}, timezone_id="America/Vancouver")
     pg = ctx.new_page(); pg.clock.install(time=NOW)
     pg.goto(BASE + "/settings"); pg.wait_for_timeout(500)
-    seed(pg, "await db.setSetting('milestones_seen', JSON.stringify(['First clear day']));")
+    seed(pg, "await db.setSetting('milestones_seen_ids', JSON.stringify(['first-clear']));")
     pg.goto(BASE + "/"); pg.reload(); pg.wait_for_timeout(1200)
     line = pg.locator('.ci-milestone')
     newest = pg.evaluate("async () => (await (await import('/src/data/database.ts')).getNewMilestones('2026-09-30'))[0].title")

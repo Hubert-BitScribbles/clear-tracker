@@ -94,7 +94,7 @@ export function CheckIn() {
     setNewMilestone(fresh[0] ?? null);
   }, []);
   const seeMilestone = async (m: Earned) => {
-    await markMilestonesSeen([m.title]);
+    await markMilestonesSeen([m.id]);
     refreshMilestone();
   };
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -328,7 +328,7 @@ export function CheckIn() {
       {challengeLine && <p className="ci-challenge">{challengeLine}</p>}
       {newMilestone && (
         <div className="ci-milestone" role="status">
-          <Link className="ci-milestone-link" to="/milestones" onClick={() => markMilestonesSeen([newMilestone.title])}>
+          <Link className="ci-milestone-link" to="/milestones" onClick={() => markMilestonesSeen([newMilestone.id])}>
             <span className="ci-milestone-glyph" aria-hidden="true">{GLYPH[newMilestone.kind]}</span> {newMilestone.title}
           </Link>
           <button type="button" className="ci-milestone-x" aria-label={t('checkin.dismiss', { title: newMilestone.title })} onClick={() => seeMilestone(newMilestone)}>

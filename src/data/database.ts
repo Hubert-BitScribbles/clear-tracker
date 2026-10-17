@@ -341,22 +341,25 @@ export async function getTimeline(today = todayIso()) {
  * time this runs (a new install, or a restore without it), everything already
  * earned counts as seen, so a long history doesn't arrive as a flood.
  */
-const SEEN_KEY = 'milestones_seen';
+// Milestones already shown on Check-in, by id (1.1.3; before that by title,
+// under 'milestones_seen', which changed with the language). The first run
+// marks everything already earned as shown.
+const SEEN_KEY = 'milestones_seen_ids';
 export async function getNewMilestones(today = todayIso()): Promise<T.Earned[]> {
   const earned = T.earnedMilestones(await data(), today, { challenges: await getChallenges() });
   const raw = await getSetting(SEEN_KEY, '');
   if (raw === '') {
-    await setSetting(SEEN_KEY, JSON.stringify(earned.map((m) => m.title)));
+    await setSetting(SEEN_KEY, JSON.stringify(earned.map((m) => m.id)));
     return [];
   }
   const seen = new Set<string>(JSON.parse(raw));
-  return earned.filter((m) => !seen.has(m.title)).reverse();
+  return earned.filter((m) => !seen.has(m.id)).reverse();
 }
 /** Marks milestones as shown (opened or dismissed on Check-in). */
-export async function markMilestonesSeen(titles: string[]): Promise<void> {
+export async function markMilestonesSeen(ids: string[]): Promise<void> {
   const raw = await getSetting(SEEN_KEY, '');
   const seen = new Set<string>(raw ? JSON.parse(raw) : []);
-  titles.forEach((t) => seen.add(t));
+  ids.forEach((id) => seen.add(id));
   await setSetting(SEEN_KEY, JSON.stringify([...seen]));
 }
 

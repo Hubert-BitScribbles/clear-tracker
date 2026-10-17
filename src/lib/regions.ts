@@ -10,7 +10,7 @@ import { t, type Key } from '../i18n';
 const named = (prefix: string, keys: string[]) =>
   keys.map((key) => ({ key, get label() { return t(`${prefix}.${key}` as Key); } }));
 
-export const COUNTRIES = named('country', ['us', 'uk', 'au', 'ca', 'de', 'at', 'ie', 'nz']);
+export const COUNTRIES = named('country', ['us', 'uk', 'au', 'ca', 'de', 'at', 'fr', 'ie', 'nz']);
 export const PROVINCES = named('province', [
   'ca_ab', 'ca_bc', 'ca_mb', 'ca_nb', 'ca_nl', 'ca_nt', 'ca_ns', 'ca_nu', 'ca_on', 'ca_pe', 'ca_qc', 'ca_sk', 'ca_yt',
 ]);
@@ -32,6 +32,7 @@ export function regionFromTimeZone(tz: string): Region {
   if (tz.startsWith('Australia/')) return { country: 'au', province: 'ca_ab' };
   if (tz === 'Europe/Berlin' || tz === 'Europe/Busingen') return { country: 'de', province: 'ca_ab' };
   if (tz === 'Europe/Vienna') return { country: 'at', province: 'ca_ab' };
+  if (tz === 'Europe/Paris') return { country: 'fr', province: 'ca_ab' };
   if (tz === 'Europe/Dublin') return { country: 'ie', province: 'ca_ab' };
   if (tz === 'Pacific/Auckland' || tz === 'Pacific/Chatham') return { country: 'nz', province: 'ca_ab' };
   return { country: 'us', province: 'ca_ab' };
@@ -39,7 +40,7 @@ export function regionFromTimeZone(tz: string): Region {
 
 
 export interface Region {
-  country: string; // 'us' | 'uk' | 'au' | 'ca' | 'de' | 'at' | 'ie' | 'nz'
+  country: string; // 'us' | 'uk' | 'au' | 'ca' | 'de' | 'at' | 'fr' | 'ie' | 'nz'
   province: string; // used when country is 'ca'
   nation?: string; // used when country is 'uk'; missing (saved before 1.1) means England
 }

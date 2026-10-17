@@ -27,14 +27,14 @@ STATES=[
  ('All milestones','/milestones/all',None),
  ('Challenges','/milestones/challenges',None),
  ('Settings','/settings',None),
- ('Settings: savings form','/settings',"[...document.querySelectorAll('.st-link')].find(b=>/Change|Ändern/.test(b.textContent)).click()"),
- ('Settings: erase dialog','/settings',"[...document.querySelectorAll('button')].find(b=>/Erase all data|Alle Daten löschen/.test(b.textContent)).click()"),
+ ('Settings: savings form','/settings',"[...document.querySelectorAll('.st-link')].find(b=>/Change|Ändern|Modifier/.test(b.textContent)).click()"),
+ ('Settings: erase dialog','/settings',"[...document.querySelectorAll('button')].find(b=>/Erase all data|Alle Daten löschen|Effacer toutes les données/.test(b.textContent)).click()"),
  ('About','/settings/about',None),
  ('Help','/settings/help?topic=contact',None),
  ('Help: sounds','/settings/help?topic=sounds',None),
  ('Resources','/settings/resources',None),
  ('Intention','/intention',None),
- ('Backup: passphrase','/settings/backup',"[...document.querySelectorAll('button')].find(b=>/^(Continue|Weiter)$/.test(b.textContent)).click()"),
+ ('Backup: passphrase','/settings/backup',"[...document.querySelectorAll('button')].find(b=>/^(Continue|Weiter|Continuer)$/.test(b.textContent)).click()"),
  ('Restore','/settings/restore',None),
 ]
 only=sys.argv[1:]  # optional filter

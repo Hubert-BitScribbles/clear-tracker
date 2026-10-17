@@ -57,5 +57,24 @@ with sync_playwright() as p:
     check('Language: Automatisch (Deutsch)', 'Automatisch (Deutsch)' in sel.inner_text(), sel.inner_text())
     check('no page errors (German device)', not errors, errors[:2])
     ctx.close()
+
+    # A French-language device in Montreal: French with Quebec's words.
+    ctx, pg, errors = fresh(b, 'fr-CA', 'America/Montreal')
+    pg.goto(BASE + "/milestones/challenges"); pg.reload(); pg.wait_for_timeout(900)
+    check('French device: French without choosing', pg.locator('h1').inner_text() == 'Défis', pg.locator('h1').inner_text())
+    check('Quebec: page language fr-CA, and « fins de semaine »', pg.evaluate("document.documentElement.lang") == 'fr-CA' and 'Fins de semaine sans alcool' in pg.inner_text('main'), pg.inner_text('main')[:300])
+    pg.goto(BASE + "/settings/about"); pg.wait_for_timeout(900)
+    check('About links to the French privacy page', pg.locator('a[href$="privacy-fr.html"]').count() == 1)
+    check('no page errors (French device)', not errors, errors[:2])
+    ctx.close()
+
+    # A French-language device in Paris: France's lines and « week-end ».
+    ctx, pg, errors = fresh(b, 'fr-FR', 'Europe/Paris')
+    pg.goto(BASE + "/settings/resources"); pg.reload(); pg.wait_for_timeout(900)
+    check('Paris: France guessed, the 15 and the 3114', 'Appeler le 15' in pg.inner_text('main') and '3114' in pg.inner_text('main'), pg.inner_text('main')[:300])
+    pg.goto(BASE + "/milestones/challenges"); pg.wait_for_timeout(900)
+    check('France: « Week-ends sans alcool »', 'Week-ends sans alcool' in pg.inner_text('main'))
+    check('no page errors (France)', not errors, errors[:2])
+    ctx.close()
     b.close()
 print(f'{sum(results)} / {len(results)} passed')

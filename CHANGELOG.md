@@ -4,7 +4,22 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
-## 1.2.0 — 17 October 2026 (in review)
+## 1.3.0 — 17 October 2026 (in review)
+
+- **French**, addressing people as « vous », including Help and the privacy
+  statement. A device set to French gets it straight away; anyone can choose
+  it in Settings → Language. With Canada as the region it uses Quebec's
+  words where they differ (« fin de semaine », « courriel », « signets »)
+  and Canadian formats (« 12 $ »); elsewhere, France's (« 12 € »).
+- **France** as a country: 15 (SAMU), the 3114 national suicide prevention
+  line, Alcool Info Service and Alcooliques anonymes, Alcool Info Service's
+  site and local help finder, and its « repères de consommation » (10 g),
+  checked 17 October 2026. A device on Paris time starts on France.
+- Canadian links open their French versions for French readers (Boire moins,
+  c'est mieux; the CCSA's standard-drink poster).
+- `src/i18n/glossary-fr.md` records the key terms, for review.
+
+## 1.2.0 — 17 October 2026
 
 - **German**, addressing people as „Sie“. A device set to German gets it
   straight away; anyone can choose in **Settings → Language** (Automatic,

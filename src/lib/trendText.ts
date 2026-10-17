@@ -49,5 +49,5 @@ export function savingsChangeText(lead: string | null, drinksDiff: number, price
  */
 export function monthVsPrevious(p: MonthPoint): { lead: string; diff: number; vs: string } | null {
   if (p.perWeek === null || p.prev.perWeek === null) return null;
-  return { lead: p.soFar ? t('trend.monthSoFar', { month: monthName(p.month) }) : monthName(p.month), diff: p.perWeek - p.prev.perWeek, vs: monthName(p.prev.month) };
+  return { lead: p.soFar ? t('trend.monthSoFar', { month: monthName(p.month) }) : monthName(p.month), diff: p.perWeek - p.prev.perWeek, vs: t('report.vsMonth', { month: monthName(p.prev.month) }) };
 }

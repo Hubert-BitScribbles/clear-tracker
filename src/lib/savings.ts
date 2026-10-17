@@ -1,4 +1,4 @@
-import { t } from '../i18n';
+import { language, locale, setFormatCountry, t } from '../i18n';
 
 export const BASELINE_KEY = 'savings_baseline_per_week';
 export const PRICE_KEY = 'savings_price_per_drink';
@@ -9,7 +9,8 @@ export const PRICE_KEY = 'savings_price_per_drink';
 
 // Currency follows the region (set in onboarding or Settings). The amounts
 // themselves are whatever the user typed as a price; nothing is converted.
-// English formatting throughout: €1,234 in Ireland, Germany and Austria (en-IE).
+// In English, €1,234 in Ireland, Germany and Austria (en-IE); in German, the
+// language's own style (1.234 €) whatever the currency.
 const CURRENCIES: Record<string, { locale: string; currency: string }> = {
   ca: { locale: 'en-CA', currency: 'CAD' },
   us: { locale: 'en-US', currency: 'USD' },
@@ -25,7 +26,9 @@ let current = CURRENCIES.ca;
 /** Set at start-up and whenever the region changes (see main.tsx, App.tsx). */
 export function setMoneyCountry(country: string): void {
   current = CURRENCIES[country] ?? CURRENCIES.ca;
+  setFormatCountry(country); // dates follow the region too (de-AT: "Jänner")
 }
+const moneyLocale = () => (language() === 'en' ? current.locale : locale());
 
 /**
  * A typed amount as a number: "8.50", "8,50" (a comma decimal, as German and
@@ -43,18 +46,18 @@ export function parseAmount(text: string): number {
 
 /** "$", "£", "€" — for labels such as "Price per drink (€)". */
 export function currencySymbol(): string {
-  const parts = new Intl.NumberFormat(current.locale, { style: 'currency', currency: current.currency }).formatToParts(0);
+  const parts = new Intl.NumberFormat(moneyLocale(), { style: 'currency', currency: current.currency }).formatToParts(0);
   return parts.find((x) => x.type === 'currency')?.value ?? current.currency;
 }
 
 export const money = (n: number) =>
-  new Intl.NumberFormat(current.locale, { style: 'currency', currency: current.currency, maximumFractionDigits: 0 }).format(
+  new Intl.NumberFormat(moneyLocale(), { style: 'currency', currency: current.currency, maximumFractionDigits: 0 }).format(
     Math.round(Math.abs(n)),
   );
 
 /** A price, with cents when it has them: $9, $8.50, €8.50. */
 export const priceText = (n: number) =>
-  new Intl.NumberFormat(current.locale, {
+  new Intl.NumberFormat(moneyLocale(), {
     style: 'currency',
     currency: current.currency,
     minimumFractionDigits: n % 1 ? 2 : 0,

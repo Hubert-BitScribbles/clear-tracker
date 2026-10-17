@@ -4,6 +4,17 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.2.0 — 17 October 2026 (in review)
+
+- **German**, addressing people as „Sie“. A device set to German gets it
+  straight away; anyone can choose in **Settings → Language** (Automatic,
+  English, Deutsch). Dates, numbers and money follow German style, and in
+  Austria the months too („Jänner“). Help lines keep their own names, with
+  hours and notes in German. Help and the privacy page are still in English,
+  and Help says so.
+- The German wording was written for review by a German speaker before
+  release; `src/i18n/glossary-de.md` records the key terms.
+
 ## 1.1.3 — 16 October 2026
 
 - Milestones already shown on Check-in are remembered by a fixed id instead

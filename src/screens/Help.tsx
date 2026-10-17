@@ -7,6 +7,7 @@ import { BROWSER_NAMES, canPromptInstall, installKeepsOwnRecord, isIos, OS_NAMES
 import { diagnostics, mailto, SUPPORT_EMAIL } from '../lib/support';
 import { HelpNav } from './Resources';
 import './Support.css';
+import { language, t } from '../i18n';
 
 // Help: short articles, the first half of Help | Resources. Each has an id,
 // so other screens can link straight to one (/settings/help?topic=estimates).
@@ -239,12 +240,14 @@ export function Help() {
 
   return (
     <main className="support">
-      <h1 className="sp-title">Help</h1>
+      <h1 className="sp-title">{t('helpNav.help')}</h1>
       <HelpNav active="help" />
+      {/* Help is a whole page per language; until it's translated, say so and mark it as English. */}
+      {language() !== 'en' && <p className="sp-lede">{t('help.englishOnly')}</p>}
       <label className="sr-only" htmlFor="help-search">Search help</label>
       <input id="help-search" className="sp-search" type="search" placeholder="Search help" value={query} onChange={(e) => setQuery(e.target.value)} />
       {q && <p className="sp-lede" role="status">{shown.length ? `${shown.length} article${shown.length === 1 ? '' : 's'}` : 'No articles match. Try a different word, or contact us below.'}</p>}
-      <div className="card sp-articles">
+      <div className="card sp-articles" lang={language() !== 'en' ? 'en' : undefined}>
         {(shown.length ? shown : ARTICLES.filter((a) => a.id === 'contact')).map((a) => (
           <details key={a.id} id={`help-${a.id}`} className="sp-article">
             <summary>{a.title}</summary>

@@ -44,3 +44,10 @@ Both load test data from `test/helpers.ts`, so they never touch real data.
   more than six months ago (`--months 3` for sooner, `--all` for every
   entry, oldest first). Needs no server. Exits 1 when something is due, so
   run it before a release.
+- `python3 checks/language.py` — the Language setting: an English device
+  stays English until Deutsch is chosen, the switch and back, Help's
+  English-only note, and a German device in Vienna getting German and
+  „Jänner“ without choosing.
+- In German: `SNAP_LANG=de` for `snapshots.py` (add `SNAP_WIDTH=320` for the
+  narrowest phones; it lists any screen wider than the window) and
+  `AUDIT_LANG=de` for `a11y_audit.py`.

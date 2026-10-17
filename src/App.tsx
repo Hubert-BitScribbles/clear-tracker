@@ -10,6 +10,7 @@ import { Trends } from './screens/Trends';
 import { AppearanceProvider } from './theme/AppearanceContext';
 import { onRemoteChange } from './data/changes';
 import { loadMoneyCountry } from './lib/moneyRegion';
+import { loadLanguage } from './lib/language';
 
 // HashRouter (#/trends) so any static host works with no server rewrite
 // rules, and a reminder link to the bare site URL always lands on Check-in.
@@ -83,8 +84,8 @@ function ReloadOnRemoteChange({ children }: { children: ReactNode }) {
   useEffect(
     () =>
       onRemoteChange(() => {
-        // The region (and so the currency) may be what changed.
-        loadMoneyCountry().finally(() => {
+        // The region (and so the currency) or the language may be what changed.
+        Promise.all([loadMoneyCountry(), loadLanguage()]).finally(() => {
           if (KEEP.includes(pathRef.current)) missed.current = true;
           else setVersion((v) => v + 1);
         });

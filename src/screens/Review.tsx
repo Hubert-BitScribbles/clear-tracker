@@ -97,7 +97,9 @@ export function Review() {
   const r = report;
   const prev = previousPeriod(period);
   // "August" within the same year, "December 2025" or "2025" across years.
-  const prevLabel = prev.month && prev.year === period.year ? monthName(prev.month) : periodLabel(prev);
+  const prevLabel = prev.month
+    ? t('report.vsMonth', { month: prev.year === period.year ? monthName(prev.month) : monthYear(prev.month, prev.year) })
+    : t('report.vsYear', { year: prev.year });
   const label = periodLabel(period);
 
   return (

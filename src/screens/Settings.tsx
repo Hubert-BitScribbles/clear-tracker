@@ -15,7 +15,8 @@ import { SettingsNav } from './About';
 import { deviceTimeZone, parseRegion, regionLabel, type Region } from '../lib/regions';
 import { RegionFields } from '../components/RegionFields';
 import './Settings.css';
-import { rich, t, type Key } from '../i18n';
+import { LANGUAGES, pickLanguage, rich, t, type Key } from '../i18n';
+import { LANGUAGE_KEY } from '../lib/language';
 
 // Port of the native app/(tabs)/settings.tsx, adapted for the web:
 // - Reminders: instructions for a repeating reminder in the phone's own
@@ -94,6 +95,9 @@ export function Settings() {
     <main className="settings">
       <h1 className="st-title">{t('settings.title')}</h1>
       <SettingsNav active="settings" />
+
+      <h2 className="st-sec" id="language">{t('settings.language')}</h2>
+      <LanguageCard />
 
       <h2 className="st-sec">{t('settings.appearance')}</h2>
       <section className="card st-card">
@@ -353,6 +357,39 @@ function RegionCard({ onChange }: { onChange: () => void }) {
         {isSet ? '' : t('regionCard.guessed', { region: regionLabel(region) })}
       </p>
       <RegionFields region={region} onChange={save} />
+    </section>
+  );
+}
+
+/**
+ * Language: the device's (when we have it) or one chosen here. Changing it
+ * reloads the app, so every screen picks up the new words at once.
+ */
+function LanguageCard() {
+  const [chosen, setChosen] = useState<string | null>(null);
+  useEffect(() => {
+    getSetting(LANGUAGE_KEY, 'auto').then(setChosen);
+  }, []);
+  if (chosen === null) return null;
+  const device = navigator.languages?.length ? navigator.languages : [navigator.language];
+  const auto = LANGUAGES.find((l) => l.code === pickLanguage('auto', device))!;
+  return (
+    <section className="card st-card st-block">
+      <label className="st-field">
+        <select
+          aria-label={t('settings.languageLabel')}
+          className="st-select"
+          lang={chosen === 'auto' ? undefined : chosen}
+          value={chosen}
+          onChange={async (e) => {
+            await setSetting(LANGUAGE_KEY, e.target.value); // other windows switch too
+            window.location.reload();
+          }}
+        >
+          <option value="auto">{t('settings.languageAuto', { language: auto.name })}</option>
+          {LANGUAGES.map((l) => <option key={l.code} value={l.code} lang={l.code}>{l.name}</option>)}
+        </select>
+      </label>
     </section>
   );
 }

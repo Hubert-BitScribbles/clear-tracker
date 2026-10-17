@@ -1,6 +1,6 @@
 # Wording and languages
 
-Every word the app shows is in `en.json`, except Help and the privacy page,
+Every word the app shows is in `en.json` (and `de.json` for German), except Help and the privacy page,
 which are whole pages (each language will get its own) and the problem
 report's device details, which stay in English for us to read.
 
@@ -22,7 +22,13 @@ translation tools such as Weblate and Crowdin read.
 
 1. Copy `en.json` to `<lang>.json` and translate the values. A key left out
    falls back to English.
-2. Add it to `Lang` and `MESSAGES` in `index.ts`.
-3. Choose it with `setLanguage`, from a Language setting in Settings. That
-   setting isn't built yet: with one language there's nothing to choose, so
-   it comes with the second.
+2. Add it to `Lang` in `index.ts`.
+3. Add it to `LANGUAGES` and `LOADERS` in `index.ts`; the Language setting in
+   Settings lists it, and a device in that language gets it automatically.
+4. Check every line keeps its blanks and markup (`test/i18n.test.ts` does this
+   for German), and look at every screen in it:
+   `SNAP_LANG=<lang> SNAP_WIDTH=320 python3 checks/snapshots.py <dir>`.
+
+German: `de.json`, with its key terms in `glossary-de.md`. Austria gets
+Austrian dates and money (`de-AT`) from the region; a `de-AT` word list can
+be added if Austrian wording ever needs to differ.

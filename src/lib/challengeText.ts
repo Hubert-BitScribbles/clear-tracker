@@ -26,7 +26,7 @@ export const dayText = weekdayDayMonth;
 export function spanText(first: string, last: string): string {
   const start = dayMonth(first);
   return first.slice(5, 7) === last.slice(5, 7)
-    ? t('challenge.spanSameMonth', { start, endDay: Number(last.slice(8, 10)) })
+    ? t('challenge.spanSameMonth', { start, endDay: Number(last.slice(8, 10)), startDay: Number(first.slice(8, 10)), end: dayMonth(last) })
     : t('challenge.spanTwoMonths', { start, end: dayMonth(last) });
 }
 

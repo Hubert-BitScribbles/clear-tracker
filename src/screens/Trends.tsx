@@ -140,7 +140,7 @@ export function Trends() {
       } else {
         const r = buildReport(d, { year: scope, month: null }, today, null);
         let compare: Data['compare'] = null;
-        if (r.complete && r.previous) compare = { before: r.previous.clear, label: String(scope - 1) };
+        if (r.complete && r.previous) compare = { before: r.previous.clear, label: t('report.vsYear', { year: scope - 1 }) };
         if (!r.complete) {
           const last = sameStretchLastYear(r.start, r.end);
           const prev = summarizeRange(d, last.start, last.end);

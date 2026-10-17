@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { t } from '../i18n';
 
 /** Topics are Help article ids (see screens/Help.tsx). */
 export type HelpTopic =
@@ -14,9 +15,9 @@ export function HelpLink({ topic, children }: { topic: HelpTopic; children: Reac
 /** Help and Resources together, for the foot of a screen. */
 export function HelpLinks({ topic, children }: { topic: HelpTopic; children: ReactNode }) {
   return (
-    <nav className="help-links" aria-label="Help and resources">
+    <nav className="help-links" aria-label={t('helpLinks.label')}>
       <HelpLink topic={topic}>{children}</HelpLink>
-      <Link className="help-link" to="/settings/resources">Support resources</Link>
+      <Link className="help-link" to="/settings/resources">{t('helpLinks.resources')}</Link>
     </nav>
   );
 }

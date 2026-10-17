@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import './ConfirmDialog.css';
+import { t } from '../i18n';
 
 type Props = {
   open: boolean;
@@ -36,7 +37,7 @@ export function ConfirmDialog({ open, title, body, confirmLabel, danger, onConfi
         <p className="confirm-body">{body}</p>
         <div className="confirm-actions">
           <button type="button" className="confirm-btn" onClick={onCancel} autoFocus>
-            Cancel
+            {t('dialog.cancel')}
           </button>
           <button type="button" className={`confirm-btn ${danger ? 'confirm-danger' : 'confirm-primary'}`} onClick={onConfirm}>
             {confirmLabel}

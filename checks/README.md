@@ -32,3 +32,15 @@ Both load test data from `test/helpers.ts`, so they never touch real data.
 - `python3 checks/checkin.py` — the Intention card (wording, weeks before
   the first intention), month swipes, and Trends' Intention chart starting
   at the first intention.
+- `python3 checks/snapshots.py <dir>` — a full-page screenshot of every
+  screen and state (light and dark, plus the regions whose wording or
+  currency differs). Take one set before a change and one after, then
+  `python3 checks/snapshots.py --compare <before> <after>` lists any screen
+  whose pixels differ. Set `SNAP_URL` to screenshot another server, e.g. an
+  older copy on port 5174. Joining text that was split in the code can move
+  a glyph by a fraction of a pixel; compare the page text before treating
+  that as a change.
+- `python3 checks/stale_resources.py` — help lines and links last checked
+  more than six months ago (`--months 3` for sooner, `--all` for every
+  entry, oldest first). Needs no server. Exits 1 when something is due, so
+  run it before a release.

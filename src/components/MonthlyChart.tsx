@@ -1,5 +1,6 @@
 import { useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react';
 import './MonthlyChart.css';
+import { t } from '../i18n';
 
 export interface Point {
   label: string; // "Sep"
@@ -61,7 +62,7 @@ export function MonthlyChart({ points, kind, format, name, detail }: Props) {
       go(moves[e.key]);
     }
   }
-  const spoken = (p: Point) => `${p.full}${p.soFar ? ', so far' : ''}: ${p.value === null ? 'not enough logged days' : format(p.value)}`;
+  const spoken = (p: Point) => t('chart.spoken', { month: p.full, soFar: p.soFar ? t('chart.spokenSoFar') : '', value: p.value === null ? t('chart.notEnough') : format(p.value) });
 
   const segs: string[] = [];
   points.forEach((p, i) => {
@@ -123,19 +124,19 @@ export function MonthlyChart({ points, kind, format, name, detail }: Props) {
           <tbody>
             {points.map((p) => (
               <tr key={p.full}>
-                <th scope="row">{p.full}{p.soFar ? ' (so far)' : ''}</th>
-                <td>{p.value === null ? 'not enough logged days' : format(p.value)}</td>
+                <th scope="row">{p.full}{p.soFar ? t('chart.soFar') : ''}</th>
+                <td>{p.value === null ? t('chart.notEnough') : format(p.value)}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <p className="mc-hint" aria-hidden="true">Tap a month for its details.</p>
+      <p className="mc-hint" aria-hidden="true">{t('chart.hint')}</p>
       <div className="mc-detail" aria-live="polite">
         <div className="mc-detail-nav">
-          <button type="button" className="mc-step" aria-label="Previous month" disabled={idx === 0} onClick={() => go(idx - 1)}>‹</button>
-          <p className="mc-detail-title">{cur.full}{cur.soFar ? ' (so far)' : ''}</p>
-          <button type="button" className="mc-step" aria-label="Next month" disabled={idx === points.length - 1} onClick={() => go(idx + 1)}>›</button>
+          <button type="button" className="mc-step" aria-label={t('chart.previousMonth')} disabled={idx === 0} onClick={() => go(idx - 1)}>‹</button>
+          <p className="mc-detail-title">{cur.full}{cur.soFar ? t('chart.soFar') : ''}</p>
+          <button type="button" className="mc-step" aria-label={t('chart.nextMonth')} disabled={idx === points.length - 1} onClick={() => go(idx + 1)}>›</button>
         </div>
         {detail(cur, idx)}
       </div>

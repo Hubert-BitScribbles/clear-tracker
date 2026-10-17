@@ -1,4 +1,5 @@
 import { Badge } from './Badge';
+import { t } from '../i18n';
 
 type Earn = { tier: number; reachedIso: string };
 
@@ -26,19 +27,19 @@ export function TierBadges({ glyph, tiers, earned, progress, title, formatDate, 
   const shown = mode === 'all' ? tiers : [...earned.slice(-1).map((e) => e.tier), ...(next !== undefined ? [next] : [])];
   return (
     <>
-      {shown.map((t) => {
-        const e = byTier.get(t);
+      {shown.map((tier) => {
+        const e = byTier.get(tier);
         return e ? (
-          <Badge key={t} size={size} glyph={glyph} title={title(t)} sub={`Reached ${formatDate(e.reachedIso)}`} earned />
+          <Badge key={tier} size={size} glyph={glyph} title={title(tier)} sub={t('tier.reached', { date: formatDate(e.reachedIso) })} earned />
         ) : (
           <Badge
-            key={t}
+            key={tier}
             size={size}
             glyph={glyph}
-            title={title(t)}
-            sub={`${u(Math.floor(progress))} of ${u(t)}`}
+            title={title(tier)}
+            sub={t('tier.progress', { done: u(Math.floor(progress)), target: u(tier) })}
             earned={false}
-            progress={pct(t)}
+            progress={pct(tier)}
           />
         );
       })}

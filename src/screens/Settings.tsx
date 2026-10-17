@@ -15,6 +15,7 @@ import { SettingsNav } from './About';
 import { deviceTimeZone, parseRegion, regionLabel, type Region } from '../lib/regions';
 import { RegionFields } from '../components/RegionFields';
 import './Settings.css';
+import { rich, t, type Key } from '../i18n';
 
 // Port of the native app/(tabs)/settings.tsx, adapted for the web:
 // - Reminders: instructions for a repeating reminder in the phone's own
@@ -24,14 +25,13 @@ import './Settings.css';
 // - Descriptions updated to match what high contrast and sounds now do.
 // - Erase also resets settings (as native did); the message says so.
 
-const THEMES: { key: ThemePref; label: string }[] = [
-  { key: 'light', label: 'Light' },
-  { key: 'dark', label: 'Dark' },
-  { key: 'system', label: 'System' },
+const THEMES: { key: ThemePref; label: Key }[] = [
+  { key: 'light', label: 'settings.themeLight' },
+  { key: 'dark', label: 'settings.themeDark' },
+  { key: 'system', label: 'settings.themeSystem' },
 ];
 
-function Toggle({ label, sub, value, onChange }: { label: string; sub?: string; value: boolean; onChange: (v: boolean) => void }) {
-  const id = label.replace(/\W+/g, '-').toLowerCase();
+function Toggle({ id, label, sub, value, onChange }: { id: string; label: string; sub?: string; value: boolean; onChange: (v: boolean) => void }) {
   return (
     <div className="st-row">
       <div className="st-row-text">
@@ -92,69 +92,72 @@ export function Settings() {
 
   return (
     <main className="settings">
-      <h1 className="st-title">Settings</h1>
+      <h1 className="st-title">{t('settings.title')}</h1>
       <SettingsNav active="settings" />
 
-      <h2 className="st-sec">Appearance</h2>
+      <h2 className="st-sec">{t('settings.appearance')}</h2>
       <section className="card st-card">
         <div className="st-block">
-          <span id="theme-label" className="st-label">Theme</span>
+          <span id="theme-label" className="st-label">{t('settings.theme')}</span>
           <div className="st-pills" role="radiogroup" aria-labelledby="theme-label">
             {THEMES.map((o) => (
               <button key={o.key} type="button" role="radio" aria-checked={theme === o.key} className="st-pill" onClick={() => setAppearance({ theme: o.key })}>
-                {o.label}
+                {t(o.label)}
               </button>
             ))}
           </div>
         </div>
         <div className="st-divider" />
         <Toggle
-          label="High contrast mode"
-          sub="Stronger text, borders and calendar fills"
+          id="high-contrast-mode"
+          label={t('settings.highContrast')}
+          sub={t('settings.highContrastSub')}
           value={highContrast}
           onChange={(v) => setAppearance({ highContrast: v })}
         />
       </section>
 
-      <h2 className="st-sec">Sound</h2>
+      <h2 className="st-sec">{t('settings.sound')}</h2>
       <section className="card st-card">
         <Toggle
-          label="Audio cues"
-          sub="A tone for each level when you log a day"
+          id="audio-cues"
+          label={t('settings.audioCues')}
+          sub={t('settings.audioCuesSub')}
           value={audioCues}
           onChange={toggle('audio_cues_enabled', setAudioCues)}
         />
       </section>
 
-      <h2 className="st-sec">Milestones</h2>
+      <h2 className="st-sec">{t('settings.milestones')}</h2>
       <section className="card st-card">
         <Toggle
-          label="Show clear day streak"
-          sub="Counts consecutive clear days. A drinking day resets it to zero, which suits a full break better than moderation."
+          id="show-clear-day-streak"
+          label={t('settings.dayStreak')}
+          sub={t('settings.dayStreakSub')}
           value={dayStreak}
           onChange={toggle('day_streak_enabled', setDayStreak)}
         />
       </section>
 
-      <h2 className="st-sec" id="savings">Savings estimate</h2>
+      <h2 className="st-sec" id="savings">{t('settings.savings')}</h2>
       {savingsSet && !editingSavings ? (
         <section className="card st-card">
           <div className="st-row">
             <div className="st-row-text">
               <span className="st-label">
                 {savings.effective
-                  ? `About ${wholeDrinks(savings.effective.baselinePerWeek)} drinks a week, at ${priceText(savings.effective.price)} a drink`
-                  : `First 3 months, at ${priceText(savings.price!)} a drink`}
+                  ? t('settings.savingsSummary', { n: wholeDrinks(savings.effective.baselinePerWeek), price: priceText(savings.effective.price) })
+                  : t('settings.savingsFirst3', { price: priceText(savings.price!) })}
               </span>
               <p className="st-sub">
-                {savings.effective ? `Baseline: ${baselineText(savings)}.` : 'Your first 3 months aren’t measured yet; savings will appear once they are.'}{' '}
-                Used by the savings estimate in Trends.
+                {savings.effective ? t('settings.baseline', { baseline: baselineText(savings) }) : t('settings.first3NotYet')}{' '}
+                {t('settings.usedBy')}
               </p>
             </div>
           </div>
           <div className="st-divider" />
           <button type="button" className="st-link" onClick={() => setEditingSavings(true)}>
-            <span className="st-label">Change</span>
+            <span className="st-label">{t('settings.change')}</span>
             <span className="st-chevron" aria-hidden="true">›</span>
           </button>
         </section>
@@ -178,41 +181,41 @@ export function Settings() {
         />
       )}
 
-      <h2 className="st-sec" id="region">Region</h2>
+      <h2 className="st-sec" id="region">{t('settings.region')}</h2>
       <RegionCard key={version} onChange={() => setCurrencyShown((n) => n + 1)} />
 
-      <h2 className="st-sec" id="device">This device</h2>
+      <h2 className="st-sec" id="device">{t('settings.device')}</h2>
       <section className="card st-card st-block">
-        <DeviceFields intro="Clear Tracker's guidance here is for" />
-        <p className="st-sub">Installing, reminders and backups work differently on each device and browser. Each device keeps its own record.</p>
+        <DeviceFields intro={t('settings.deviceIntro')} />
+        <p className="st-sub">{t('settings.deviceNote')}</p>
       </section>
 
-      <h2 className="st-sec">Reminder</h2>
+      <h2 className="st-sec">{t('settings.reminder')}</h2>
       <ReminderCard />
 
-      <h2 className="st-sec">Data</h2>
+      <h2 className="st-sec">{t('settings.data')}</h2>
       <section className="card st-card">
         <div className="st-row">
           <div className="st-row-text">
             <span className="st-label">
-              {lastBackup ? `Last backup: ${daysAgoText(daysBetween(localDateOf(lastBackup), todayIso()))}` : 'No backup yet'}
+              {lastBackup ? t('settings.lastBackup', { when: daysAgoText(daysBetween(localDateOf(lastBackup), todayIso())) }) : t('settings.noBackup')}
             </span>
-            <p className="st-sub">A backup is the only copy of your record outside this browser.</p>
+            <p className="st-sub">{t('settings.backupNote')}</p>
           </div>
         </div>
         <div className="st-divider" />
         <Link className="st-link" to="/settings/backup">
-          <span className="st-label">Back up</span>
+          <span className="st-label">{t('settings.backUp')}</span>
           <span className="st-chevron" aria-hidden="true">›</span>
         </Link>
         <div className="st-divider" />
         <Link className="st-link" to="/settings/restore">
-          <span className="st-label">Restore from a backup</span>
+          <span className="st-label">{t('settings.restore')}</span>
           <span className="st-chevron" aria-hidden="true">›</span>
         </Link>
         <div className="st-divider" />
         <button type="button" className="st-link" onClick={async () => setEraseCount(await getEntryCount())}>
-          <span className="st-label st-danger">Erase all data</span>
+          <span className="st-label st-danger">{t('settings.erase')}</span>
         </button>
       </section>
       {notice && (
@@ -221,36 +224,36 @@ export function Settings() {
         </p>
       )}
 
-      <h2 className="st-sec">Help and resources</h2>
+      <h2 className="st-sec">{t('settings.helpResources')}</h2>
       <section className="card st-card">
         <Link className="st-link" to="/settings/help">
-          <span className="st-label">Help</span>
+          <span className="st-label">{t('settings.help')}</span>
           <span className="st-chevron" aria-hidden="true">›</span>
         </Link>
         <div className="st-divider" />
         <Link className="st-link" to="/settings/resources">
-          <span className="st-label">Resources</span>
+          <span className="st-label">{t('settings.resources')}</span>
           <span className="st-chevron" aria-hidden="true">›</span>
         </Link>
       </section>
 
       {import.meta.env.DEV && (
         <p className="st-dev">
-          <Link to="/dev/colours">Colour reference</Link> <span className="text-muted">(development only)</span>
+          <Link to="/dev/colours">{t('settings.colourRef')}</Link> <span className="text-muted">{t('settings.devOnly')}</span>
         </p>
       )}
 
       <ConfirmDialog
         open={eraseCount !== null}
-        title="Erase all data"
-        body={`This will permanently delete all ${eraseCount ?? 0} logged day${eraseCount === 1 ? '' : 's'}, your intention history, and your settings. This can't be undone.`}
-        confirmLabel="Erase"
+        title={t('settings.erase')}
+        body={t('settings.eraseBody', { count: eraseCount ?? 0 })}
+        confirmLabel={t('settings.eraseConfirm')}
         danger
         onCancel={() => setEraseCount(null)}
         onConfirm={async () => {
           await resetDatabase();
           setEraseCount(null);
-          setNotice('All data has been erased.');
+          setNotice(t('settings.erased'));
           await load();
           setVersion((v) => v + 1);
         }}
@@ -273,40 +276,39 @@ function ReminderCard() {
   async function copy() {
     try {
       await navigator.clipboard.writeText(link);
-      setCopied('Link copied.');
+      setCopied(t('reminder.copied'));
     } catch {
       // Clipboard needs a secure page; select the text for a manual copy instead.
       const el = document.getElementById('reminder-link');
       if (el) window.getSelection()?.selectAllChildren(el);
-      setCopied('Selected — copy it from the menu.');
+      setCopied(t('reminder.selected'));
     }
   }
   const withLink = linksOpenApp(dev);
   return (
     <section className="card st-card st-block">
       <p className="st-sub st-sub-first">
-        Clear Tracker doesn't send notifications. For a daily nudge, set a repeating reminder on your{' '}
-        {isIos(dev) || isAndroid(dev) ? 'phone' : 'computer'} — it's more reliable, and it's yours:
+        {t('reminder.intro', { device: isIos(dev) || isAndroid(dev) ? t('reminder.phone') : t('reminder.computer') })}
       </p>
       {isAndroid(dev) ? (
         <ol className="st-steps">
-          <li>In Google Calendar, add an event “Log today in Clear Tracker” at a time that suits you.</li>
-          <li>Set it to repeat <em>Every day</em>, with a notification at the time of the event.</li>
-          {withLink && <li>Paste this link in the <em>description</em>, so tapping it opens the app.</li>}
+          <li>{t('reminder.android1')}</li>
+          <li>{rich('reminder.android2', { i: (c) => <em>{c}</em> })}</li>
+          {withLink && <li>{rich('reminder.android3', { i: (c) => <em>{c}</em> })}</li>}
         </ol>
       ) : isIos(dev) ? (
         <ol className="st-steps">
-          <li>In Reminders, add “Log today in Clear Tracker”.</li>
-          <li>Open its details: turn on <em>Date</em> and <em>Time</em>, pick a time, and set <em>Repeat</em> to Daily.</li>
-          <li>When it goes off, open Clear Tracker from your Home Screen.</li>
+          <li>{t('reminder.ios1')}</li>
+          <li>{rich('reminder.ios2', { i: (c) => <em>{c}</em> })}</li>
+          <li>{t('reminder.ios3')}</li>
         </ol>
       ) : (
         <ol className="st-steps">
-          <li>In your {dev.os === 'mac' ? 'Reminders or Calendar app' : 'calendar'}, add “Log today in Clear Tracker”, repeating every day at a time that suits you.</li>
+          <li>{t('reminder.computer1', { app: dev.os === 'mac' ? t('reminder.appMac') : t('reminder.appOther') })}</li>
           {withLink ? (
-            <li>Paste this link in its <em>URL</em> or notes, so clicking it opens the app (when {dev.browser === 'edge' ? 'Edge' : 'Chrome'} is your default browser).</li>
+            <li>{rich('reminder.computerLink', { browser: dev.browser === 'edge' ? 'Edge' : 'Chrome', i: (c) => <em>{c}</em> })}</li>
           ) : (
-            <li>When it goes off, open Clear Tracker from your {installKeepsOwnRecord(dev) ? 'Dock' : 'bookmarks or app list'}.</li>
+            <li>{t('reminder.computerOpen', { place: installKeepsOwnRecord(dev) ? t('reminder.placeDock') : t('reminder.placeOther') })}</li>
           )}
         </ol>
       )}
@@ -314,13 +316,13 @@ function ReminderCard() {
         <>
           <div className="st-link-row">
             <code id="reminder-link" className="st-code">{link}</code>
-            <button type="button" className="st-copy" onClick={copy}>Copy link</button>
+            <button type="button" className="st-copy" onClick={copy}>{t('reminder.copy')}</button>
           </div>
           {copied && <p className="st-sub" role="status">{copied}</p>}
         </>
       )}
       {!withLink && isIos(dev) && (
-        <p className="st-sub">There's no link to add: on iPhone and iPad, links open the browser, which keeps a separate record from the Home Screen app.</p>
+        <p className="st-sub">{t('reminder.iosNoLink')}</p>
       )}
     </section>
   );
@@ -347,8 +349,8 @@ function RegionCard({ onChange }: { onChange: () => void }) {
   return (
     <section className="card st-card st-block">
       <p className="st-sub st-sub-first">
-        Decides which help lines and programmes <Link to="/settings/resources">Resources</Link> shows, and the currency for savings.{' '}
-        {isSet ? '' : `Guessed from this device's time zone: ${regionLabel(region)}.`}
+        {rich('regionCard.decides', { link: (c) => <Link to="/settings/resources">{c}</Link> })}{' '}
+        {isSet ? '' : t('regionCard.guessed', { region: regionLabel(region) })}
       </p>
       <RegionFields region={region} onChange={save} />
     </section>

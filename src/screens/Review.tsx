@@ -14,31 +14,29 @@ import { comparisonText, drinksText } from '../lib/reportText';
 import { drinksChangeText } from '../lib/trendText';
 import { describeSavings } from '../lib/savings';
 import './Review.css';
+import { t, type Key } from '../i18n';
+import { dayMonth, dayMonthYear, monthName, monthYear, weekdayLetter, weekdayName } from '../i18n/format';
 
 // Month in review / Year in review. For the user first; print-ready, so it
 // can be saved as a PDF or shared (on iPhone: Share → Print → Save to Files,
 // or straight to Mail/Messages). Sections can be left out before sharing.
 
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const SHORT = MONTHS.map((m) => m.slice(0, 3));
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const fmt = (iso: string) => `${SHORT[Number(iso.slice(5, 7)) - 1]} ${Number(iso.slice(8, 10))}`;
+const fmt = dayMonth;
 
 const SECTIONS = [
-  ['days', 'The days'],
-  ['intention', 'Weeks by intention'],
-  ['patterns', 'By day of week'],
-  ['drinks', 'Estimated drinks'],
-  ['savings', 'Estimated savings'],
-  ['milestones', 'Milestones'],
-  ['challenges', 'Challenges'],
-] as const;
+  ['days', 'review.sec.days'],
+  ['intention', 'review.sec.intention'],
+  ['patterns', 'review.sec.patterns'],
+  ['drinks', 'review.sec.drinks'],
+  ['savings', 'review.sec.savings'],
+  ['milestones', 'review.sec.milestones'],
+  ['challenges', 'review.sec.challenges'],
+] as const satisfies readonly (readonly [string, Key])[];
 type Section = (typeof SECTIONS)[number][0];
 // For you more than for a reader: left out until ticked (rc.7).
 const OFF_BY_DEFAULT: Section[] = ['savings', 'milestones', 'challenges'];
 
-export const periodLabel = (p: Period) => (p.month ? `${MONTHS[p.month - 1]} ${p.year}` : String(p.year));
-const plural = (n: number, unit: string) => `${n} ${unit}${n === 1 ? '' : 's'}`;
+export const periodLabel = (p: Period) => (p.month ? monthYear(p.month, p.year) : String(p.year));
 
 export function Review() {
   const P = platform(useDevice());
@@ -97,46 +95,51 @@ export function Review() {
 
   if (!report) return <main className="review" />;
   const r = report;
-  const prevLabel = periodLabel(previousPeriod(period)).replace(` ${period.year}`, '');
+  const prev = previousPeriod(period);
+  // "August" within the same year, "December 2025" or "2025" across years.
+  const prevLabel = prev.month && prev.year === period.year ? monthName(prev.month) : periodLabel(prev);
   const label = periodLabel(period);
 
   return (
     <main className="review">
-      <h1 className="rv-page-title rv-noprint">Reports</h1>
+      <h1 className="rv-page-title rv-noprint">{t('review.title')}</h1>
       <TrendsNav active="reports" />
       <div className="rv-header rv-noprint">
-        <div className="rv-kind" role="radiogroup" aria-label="Report period">
+        <div className="rv-kind" role="radiogroup" aria-label={t('review.periodLabel')}>
           <button type="button" role="radio" aria-checked={!!period.month} className="rv-kind-pill"
             onClick={() => go(period.month ? period : { year: period.year, month: period.year === Number(today.slice(0, 4)) ? Number(today.slice(5, 7)) : 12 })}>
-            Month
+            {t('review.month')}
           </button>
           <button type="button" role="radio" aria-checked={!period.month} className="rv-kind-pill" onClick={() => go({ year: period.year, month: null })}>
-            Year
+            {t('review.year')}
           </button>
         </div>
       </div>
 
       <div className="rv-title-row">
-        <button type="button" className="rv-arrow rv-noprint" onClick={() => go(previousPeriod(period))} aria-label="Previous">‹</button>
-        <h2 className="rv-title">{label} in review</h2>
-        <button type="button" className="rv-arrow rv-noprint" onClick={() => go(next)} disabled={!canNext} aria-label="Next">›</button>
+        <button type="button" className="rv-arrow rv-noprint" onClick={() => go(previousPeriod(period))} aria-label={t('review.previous')}>‹</button>
+        <h2 className="rv-title">{t('review.inReview', { period: label })}</h2>
+        <button type="button" className="rv-arrow rv-noprint" onClick={() => go(next)} disabled={!canNext} aria-label={t('review.next')}>›</button>
       </div>
       <p className="rv-sub">
-        {fmt(r.start)}–{fmt(r.end)}{r.end.slice(0, 4) !== r.start.slice(0, 4) ? '' : `, ${period.year}`}
-        {r.complete ? '' : ' (so far)'} · {r.logged} of {plural(r.daysInPeriod, 'day')} logged
+        {t('review.range', {
+          start: fmt(r.start), end: fmt(r.end),
+          year: r.end.slice(0, 4) !== r.start.slice(0, 4) ? '' : t('review.yearSuffix', { year: period.year }),
+          soFar: r.complete ? '' : t('chart.soFar'), logged: r.logged, days: t('review.days', { count: r.daysInPeriod }),
+        })}
       </p>
 
       {r.logged === 0 ? (
-        <div className="card rv-card"><p className="rv-muted">No days were logged in {label}.</p></div>
+        <div className="card rv-card"><p className="rv-muted">{t('review.noneLogged', { period: label })}</p></div>
       ) : (
         <>
           <section className="card rv-card">
             <div className="rv-stats">
-              <div><p className="rv-stat-value">{r.levels.clear}</p><p className="rv-stat-label">clear days</p></div>
-              <div><p className="rv-stat-value">{r.logged}<span className="rv-of"> / {r.daysInPeriod}</span></p><p className="rv-stat-label">days logged</p></div>
+              <div><p className="rv-stat-value">{r.levels.clear}</p><p className="rv-stat-label">{t('review.clearDays')}</p></div>
+              <div><p className="rv-stat-value">{r.logged}<span className="rv-of"> / {r.daysInPeriod}</span></p><p className="rv-stat-label">{t('review.daysLogged')}</p></div>
               {/* Follows the sections chosen: no intention figures if Intention is left out. */}
               {show('intention') && (
-                <div><p className="rv-stat-value">{r.weeks.met}<span className="rv-of"> / {r.weeks.counted}</span></p><p className="rv-stat-label">weeks met intention</p></div>
+                <div><p className="rv-stat-value">{r.weeks.met}<span className="rv-of"> / {r.weeks.counted}</span></p><p className="rv-stat-label">{t('review.weeksMet')}</p></div>
               )}
             </div>
             {r.previous && <p className="rv-muted rv-compare">{comparisonText(r.levels.clear, r.previous.clear, prevLabel)}</p>}
@@ -146,12 +149,12 @@ export function Review() {
 
           {show('days') && (
             <section className="rv-section">
-              <h2 className="rv-sec">The days</h2>
+              <h2 className="rv-sec">{t('review.sec.days')}</h2>
               <div className="card rv-card">
                 <LevelLegend />
                 {period.month ? (
-                  <div className="rv-cal" aria-label={`Calendar for ${label}`}>
-                    {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => <span key={i} className="rv-wd" aria-hidden="true">{d}</span>)}
+                  <div className="rv-cal" aria-label={t('review.calendarFor', { period: label })}>
+                    {[1, 2, 3, 4, 5, 6, 0].map((d) => <span key={d} className="rv-wd" aria-hidden="true">{weekdayLetter(d)}</span>)}
                     {cal.map((iso, i) => iso
                       ? <DayCell key={iso} day={Number(iso.slice(8, 10))} level={r.calendar[iso] ?? null} future={iso > today} />
                       : <div key={`p${i}`} />)}
@@ -159,8 +162,8 @@ export function Review() {
                 ) : (
                   <ul className="rv-months">
                     {r.months.map((m) => (
-                      <li key={m.month} aria-label={`${MONTHS[m.month - 1]}: ${m.clear} clear, ${m.aFew} a few, ${m.more - m.aLot} moderate, ${m.aLot} a lot`}>
-                        <span className="rv-m-name" aria-hidden="true">{SHORT[m.month - 1]}</span>
+                      <li key={m.month} aria-label={t('review.levelsLabel', { name: monthName(m.month), clear: m.clear, few: m.aFew, moderate: m.more - m.aLot, lot: m.aLot })}>
+                        <span className="rv-m-name" aria-hidden="true">{monthName(m.month, 'short')}</span>
                         <span className="rv-m-bar" aria-hidden="true">
                           {m.clear > 0 && <span className="rv-seg rv-seg-clear" style={{ flex: m.clear }} />}
                           {m.aFew > 0 && <span className="rv-seg rv-seg-few" style={{ flex: m.aFew }} />}
@@ -178,22 +181,24 @@ export function Review() {
 
           {show('intention') && (
             <section className="rv-section">
-              <h2 className="rv-sec">Weeks by intention</h2>
+              <h2 className="rv-sec">{t('review.sec.intention')}</h2>
               <div className="card rv-card rv-text">
                 <p>
                   {r.targets.length === 0
                     ? r.weeks.before > 0
-                      ? 'These weeks came before your first intention, so they aren’t measured'
-                      : 'No completed weeks in this period yet'
-                    : r.targets.map((t, i) => `${i ? `, then ${t.target} from ${fmt(t.from)}` : `Aiming for ${t.target} clear days a week`}`).join('')}
-                  .{r.targets.length > 0 && r.weeks.before > 0 ? ` Weeks before your first intention aren’t counted.` : ''}
+                      ? t('review.weeksBefore')
+                      : t('review.weeksNone')
+                    : r.targets.map((x, i) => (i ? t('review.then', { n: x.target, date: fmt(x.from) }) : t('review.aiming', { n: x.target }))).join('')}
+                  .{r.targets.length > 0 && r.weeks.before > 0 ? t('review.beforeNotCounted') : ''}
                 </p>
                 {r.weeks.counted > 0 && (
                   <p>
-                    Met in {r.weeks.met} of {plural(r.weeks.counted, 'week')}
-                    {r.weeks.exceeded ? `, beyond it in ${r.weeks.exceeded}` : ''}
-                    {r.weeks.unclear ? `; ${r.weeks.unclear} with too few days logged to say` : ''}.
-                    {r.backOnTrack ? ` Back on track after a missed week ${r.backOnTrack === 1 ? 'once' : r.backOnTrack === 2 ? 'twice' : `${r.backOnTrack} times`}.` : ''}
+                    {t('review.metIn', { met: r.weeks.met, weeks: t('review.weeks', { count: r.weeks.counted }) })}
+                    {r.weeks.exceeded ? t('review.beyondIn', { n: r.weeks.exceeded }) : ''}
+                    {r.weeks.unclear ? t('review.unclear', { n: r.weeks.unclear }) : ''}.
+                    {r.backOnTrack
+                      ? t('review.back', { times: r.backOnTrack === 1 ? t('review.once') : r.backOnTrack === 2 ? t('review.twice') : t('review.times', { n: r.backOnTrack }) })
+                      : ''}
                   </p>
                 )}
               </div>
@@ -202,15 +207,15 @@ export function Review() {
 
           {show('patterns') && (
             <section className="rv-section">
-              <h2 className="rv-sec">By day of week</h2>
+              <h2 className="rv-sec">{t('review.sec.patterns')}</h2>
               <div className="card rv-card">
                 <LevelLegend />
                 <ul className="rv-dow">
                   {r.dayOfWeek.map((w) => {
                     const n = w.clear + w.aFew + w.more;
                     return (
-                      <li key={w.weekday} aria-label={`${WEEKDAYS[w.weekday]}: ${w.clear} clear, ${w.aFew} a few, ${w.more - w.aLot} moderate, ${w.aLot} a lot${n ? `, ${Math.round((w.clear / n) * 100)}% clear` : ''}`}>
-                        <span className="rv-m-name" aria-hidden="true">{WEEKDAYS[w.weekday]}</span>
+                      <li key={w.weekday} aria-label={t('review.levelsLabel', { name: weekdayName(w.weekday, 'short'), clear: w.clear, few: w.aFew, moderate: w.more - w.aLot, lot: w.aLot }) + (n ? t('review.pctClear', { pct: Math.round((w.clear / n) * 100) }) : '')}>
+                        <span className="rv-m-name" aria-hidden="true">{weekdayName(w.weekday, 'short')}</span>
                         <span className="rv-m-bar" aria-hidden="true">
                           {w.clear > 0 && <span className="rv-seg rv-seg-clear" style={{ flex: w.clear }} />}
                           {w.aFew > 0 && <span className="rv-seg rv-seg-few" style={{ flex: w.aFew }} />}
@@ -228,28 +233,28 @@ export function Review() {
 
           {show('drinks') && (
             <section className="rv-section">
-              <h2 className="rv-sec">Estimated drinks</h2>
+              <h2 className="rv-sec">{t('review.sec.drinks')}</h2>
               <div className="card rv-card rv-text">
-                <p className="rv-big">{r.drinksPerWeek ? drinksText(r.drinksPerWeek) : 'Not enough logged days for a weekly estimate.'}</p>
+                <p className="rv-big">{r.drinksPerWeek ? drinksText(r.drinksPerWeek) : t('review.notEnough')}</p>
                 {r.drinksChange && <p className="rv-muted">{drinksChangeText(null, r.drinksChange.diff, prevLabel)}</p>}
-                <p className="rv-foot">From logged days, counting A few as 1.5 drinks, Moderate as 3.5 and A lot as 5 — its minimum, so a period with an A lot day could be higher. Unlogged days aren't included.</p>
+                <p className="rv-foot">{t('review.drinksFoot')}</p>
               </div>
             </section>
           )}
 
           {show('savings') && savingsSet && r.savings && (
             <section className="rv-section">
-              <h2 className="rv-sec">Estimated savings</h2>
+              <h2 className="rv-sec">{t('review.sec.savings')}</h2>
               <div className="card rv-card rv-text">
                 <p className="rv-big">{describeSavings(r.savings.most, r.savings.least)}</p>
-                <p className="rv-foot">Against the baseline set in Settings, over logged days.</p>
+                <p className="rv-foot">{t('review.savingsFoot')}</p>
               </div>
             </section>
           )}
 
           {show('challenges') && r.challenges.length > 0 && (
             <section className="rv-section">
-              <h2 className="rv-sec">Challenges</h2>
+              <h2 className="rv-sec">{t('review.sec.challenges')}</h2>
               <div className="card rv-card">
                 <ul className="rv-ms">
                   {r.challenges.map((c) => (
@@ -262,10 +267,10 @@ export function Review() {
 
           {show('milestones') && (
             <section className="rv-section">
-              <h2 className="rv-sec">Milestones</h2>
+              <h2 className="rv-sec">{t('review.sec.milestones')}</h2>
               <div className="card rv-card">
                 {r.milestones.length === 0 ? (
-                  <p className="rv-muted">No new milestones in {label}.</p>
+                  <p className="rv-muted">{t('review.noMilestones', { period: label })}</p>
                 ) : (
                   <ul className="rv-ms">
                     {r.milestones.map((m) => <li key={m.title + m.date}><span>{m.title}</span><span className="rv-muted">{fmt(m.date)}</span></li>)}
@@ -278,26 +283,25 @@ export function Review() {
       )}
 
       <p className="rv-generated">
-        Made with Clear Tracker on {fmt(today)}, {today.slice(0, 4)}, from days the person logged themselves
-        (self-reported). Amounts are estimates from ranges.
+        {t('review.generated', { date: dayMonthYear(today) })}
       </p>
 
       <div className="rv-noprint rv-share">
-        <button type="button" className="btn btn-primary rv-share-btn" onClick={() => window.print()}>Share or save as PDF</button>
+        <button type="button" className="btn btn-primary rv-share-btn" onClick={() => window.print()}>{t('review.share')}</button>
         {P !== 'other' && (
           <p className="rv-foot">
-            {P === 'ios' ? 'On iPhone: tap Share in the print preview to save to Files or send it.' : 'On Android: choose Save as PDF as the printer, then tap the download button.'}
+            {P === 'ios' ? t('review.shareIos') : t('review.shareAndroid')}
           </p>
         )}
         <details className="rv-include">
-          <summary>Choose what's included</summary>
+          <summary>{t('review.include')}</summary>
           <div className="rv-checks">
             {SECTIONS.filter(([k]) => (k !== 'savings' || savingsSet) && (k !== 'challenges' || !!report?.challenges.length)).map(([k, l]) => (
-              <label key={k}><input type="checkbox" checked={show(k)} onChange={() => toggle(k)} /> {l}</label>
+              <label key={k}><input type="checkbox" checked={show(k)} onChange={() => toggle(k)} /> {t(l)}</label>
             ))}
           </div>
         </details>
-        <HelpLinks topic="trends">About reports</HelpLinks>
+        <HelpLinks topic="trends">{t('review.about')}</HelpLinks>
       </div>
     </main>
   );

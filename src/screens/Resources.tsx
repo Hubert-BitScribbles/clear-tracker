@@ -3,18 +3,19 @@ import { Link, useLocation } from 'react-router-dom';
 import { SegmentNav } from '../components/SegmentNav';
 import { getSetting } from '../data/database';
 import { deviceTimeZone, parseRegion, regionLabel, type Region } from '../lib/regions';
-import { CHECKED, dialable, resourcesFor, STOPPING_CAUTION, type Line } from '../lib/resources';
+import { checkedFor, dialable, resourcesFor, type Line } from '../lib/resources';
 import './Support.css';
+import { rich, t } from '../i18n';
 
 // Resources: where to find help, for the region set in Settings. Checked
-// against official sources (see lib/resources.ts). The second half of
+// against official sources (see src/resources). The second half of
 // Help | Resources.
 
 export const HelpNav = ({ active }: { active: 'help' | 'resources' }) => (
   <SegmentNav
-    label="Help and resources"
-    current={active === 'help' ? 'Help' : 'Resources'}
-    items={[{ to: '/settings/help', text: 'Help' }, { to: '/settings/resources', text: 'Resources' }]}
+    label={t('helpNav.label')}
+    current={active === 'help' ? t('helpNav.help') : t('helpNav.resources')}
+    items={[{ to: '/settings/help', text: t('helpNav.help') }, { to: '/settings/resources', text: t('helpNav.resources') }]}
   />
 );
 
@@ -24,11 +25,14 @@ function LineCard({ line }: { line: Line }) {
       <p className="sp-line-name">{line.name}</p>
       <div className="sp-actions">
         {line.call && (
-          <a className="sp-action" href={`tel:${dialable(line.call)}`}>Call {line.call}</a>
+          <a className="sp-action" href={`tel:${dialable(line.call)}`}>{t('resources.call', { number: line.call })}</a>
         )}
         {line.text && (
           <a className="sp-action" href={`sms:${line.text.to}${line.text.word ? `?&body=${encodeURIComponent(line.text.word)}` : ''}`}>
-            Text {line.text.word ? `${line.text.word} to ` : ''}{line.text.to.length > 6 ? line.text.to.replace(/(\d{4})(\d{2})(\d{2})(\d{2})/, '$1 $2 $3 $4') : line.text.to}
+            {(() => {
+              const number = line.text.to.length > 6 ? line.text.to.replace(/(\d{4})(\d{2})(\d{2})(\d{2})/, '$1 $2 $3 $4') : line.text.to;
+              return line.text.word ? t('resources.textWord', { word: line.text.word, number }) : t('resources.text', { number });
+            })()}
           </a>
         )}
       </div>
@@ -53,25 +57,25 @@ export function Resources() {
 
   return (
     <main className="support">
-      <h1 className="sp-title">Resources</h1>
+      <h1 className="sp-title">{t('resources.title')}</h1>
       <HelpNav active="resources" />
       <p className="sp-lede">
-        For <strong>{regionLabel(region)}</strong>. <Link to="/settings#region">Change region in Settings</Link>
+        {rich('resources.for', { region: regionLabel(region), b: (c) => <strong>{c}</strong>, link: (c) => <Link to="/settings#region">{c}</Link> })}
       </p>
 
       <section className="card sp-urgent" aria-labelledby="sp-now">
-        <h2 id="sp-now" className="sp-urgent-title">If you're in danger now</h2>
-        <a className="sp-action sp-action-strong" href={`tel:${r.emergency}`}>Call {r.emergency}</a>
+        <h2 id="sp-now" className="sp-urgent-title">{t('resources.danger')}</h2>
+        <a className="sp-action sp-action-strong" href={`tel:${r.emergency}`}>{t('resources.call', { number: r.emergency })}</a>
       </section>
 
-      <h2 className="sp-sec">Someone to talk to, any time</h2>
+      <h2 className="sp-sec">{t('resources.talk')}</h2>
       <div className="card sp-card">{r.talk.map((l) => <LineCard key={l.name} line={l} />)}</div>
 
-      <h2 className="sp-sec">Help with drinking</h2>
-      <p className="sp-caution">{STOPPING_CAUTION}</p>
+      <h2 className="sp-sec">{t('resources.drinking')}</h2>
+      <p className="sp-caution">{t('resources.caution')}</p>
       <div className="card sp-card">{r.drinking.map((l) => <LineCard key={l.name} line={l} />)}</div>
 
-      <h2 className="sp-sec">Programmes and information</h2>
+      <h2 className="sp-sec">{t('resources.programmes')}</h2>
       <div className="card sp-card">
         {r.programmes.map((p) => (
           <div key={p.name} className="sp-line">
@@ -79,25 +83,24 @@ export function Resources() {
             <p className="sp-line-meta">{p.note}</p>
           </div>
         ))}
-        <p className="sp-foot">Listed as options, not recommendations: there's no one right path. Opens in your browser.</p>
+        <p className="sp-foot">{t('resources.optionsNote')}</p>
       </div>
 
       {r.drinkGuide && (
         <>
-          <h2 id="drink" className="sp-sec">What counts as one drink</h2>
+          <h2 id="drink" className="sp-sec">{t('resources.oneDrink')}</h2>
           <div className="card sp-card">
             <div className="sp-line">
               <a className="sp-prog" href={r.drinkGuide.url} target="_blank" rel="noopener noreferrer">{r.drinkGuide.name} ↗</a>
               <p className="sp-line-meta">{r.drinkGuide.note}</p>
             </div>
-            <p className="sp-foot">Clear Tracker doesn't count drink sizes. This is here if it helps you log the same way each time.</p>
+            <p className="sp-foot">{t('resources.oneDrinkNote')}</p>
           </div>
         </>
       )}
 
       <p className="sp-checked">
-        Numbers checked {CHECKED} against official sources. If one doesn't work,{' '}
-        <Link to="/settings/help?topic=contact">please let us know</Link>. Clear Tracker isn't a medical service.
+        {rich('resources.checked', { date: checkedFor(region.country, region.province, region.nation), link: (c) => <Link to="/settings/help?topic=contact">{c}</Link> })}
       </p>
     </main>
   );

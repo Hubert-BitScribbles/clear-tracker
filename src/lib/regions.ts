@@ -4,28 +4,18 @@
 // Ontario's resources. Stored in settings as 'region'; until the user picks
 // one, it's guessed from the device's time zone.
 
-export const COUNTRIES = [
-  { key: 'us', label: 'United States' },
-  { key: 'uk', label: 'United Kingdom' },
-  { key: 'au', label: 'Australia' },
-  { key: 'ca', label: 'Canada' },
-  { key: 'de', label: 'Germany' },
-  { key: 'at', label: 'Austria' },
-  { key: 'ie', label: 'Ireland' },
-  { key: 'nz', label: 'New Zealand' },
-];
-export const PROVINCES = [
-  { key: 'ca_ab', label: 'Alberta' }, { key: 'ca_bc', label: 'British Columbia' }, { key: 'ca_mb', label: 'Manitoba' },
-  { key: 'ca_nb', label: 'New Brunswick' }, { key: 'ca_nl', label: 'Newfoundland and Labrador' },
-  { key: 'ca_nt', label: 'Northwest Territories' }, { key: 'ca_ns', label: 'Nova Scotia' }, { key: 'ca_nu', label: 'Nunavut' },
-  { key: 'ca_on', label: 'Ontario' }, { key: 'ca_pe', label: 'Prince Edward Island' }, { key: 'ca_qc', label: 'Quebec' },
-  { key: 'ca_sk', label: 'Saskatchewan' }, { key: 'ca_yt', label: 'Yukon' },
-];
+import { t, type Key } from '../i18n';
+
+// Names come from the language files (country.us, province.ca_bc, nation.sct …).
+const named = (prefix: string, keys: string[]) =>
+  keys.map((key) => ({ key, get label() { return t(`${prefix}.${key}` as Key); } }));
+
+export const COUNTRIES = named('country', ['us', 'uk', 'au', 'ca', 'de', 'at', 'ie', 'nz']);
+export const PROVINCES = named('province', [
+  'ca_ab', 'ca_bc', 'ca_mb', 'ca_nb', 'ca_nl', 'ca_nt', 'ca_ns', 'ca_nu', 'ca_on', 'ca_pe', 'ca_qc', 'ca_sk', 'ca_yt',
+]);
 /** The UK's nations, for the lines that differ (Wales, Scotland, Northern Ireland). */
-export const UK_NATIONS = [
-  { key: 'eng', label: 'England' }, { key: 'sct', label: 'Scotland' },
-  { key: 'wls', label: 'Wales' }, { key: 'nir', label: 'Northern Ireland' },
-];
+export const UK_NATIONS = named('nation', ['eng', 'sct', 'wls', 'nir']);
 
 /** A starting region from the device's time zone; the user can change it. */
 export function regionFromTimeZone(tz: string): Region {
@@ -69,8 +59,8 @@ export function parseRegion(raw: string, timeZone: string): Region {
 /** "Canada · British Columbia", "United Kingdom · Wales", "Ireland" */
 export function regionLabel(r: Region): string {
   const c = COUNTRIES.find((x) => x.key === r.country)?.label ?? '';
-  if (r.country === 'ca') return `${c} · ${PROVINCES.find((p) => p.key === r.province)?.label ?? ''}`;
-  if (r.country === 'uk') return `${c} · ${UK_NATIONS.find((n) => n.key === (r.nation ?? 'eng'))?.label ?? 'England'}`;
+  if (r.country === 'ca') return t('region.label', { country: c, part: PROVINCES.find((p) => p.key === r.province)?.label ?? '' });
+  if (r.country === 'uk') return t('region.label', { country: c, part: UK_NATIONS.find((n) => n.key === (r.nation ?? 'eng'))?.label ?? t('nation.eng') });
   return c;
 }
 

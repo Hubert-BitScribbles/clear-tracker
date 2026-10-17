@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import './TabBar.css';
+import { t, type Key } from '../i18n';
 
 // Tabs as in the native app/(tabs)/_layout.tsx: same titles, and icons drawn
 // to resemble its SF Symbols (calendar, chart.bar.fill, star.fill, gear).
@@ -64,23 +65,23 @@ const icons = {
 };
 
 const tabs = [
-  { to: '/', label: 'Check-in', icon: icons.calendar },
-  { to: '/trends', label: 'Trends', icon: icons.trends },
-  { to: '/milestones', label: 'Milestones', icon: icons.milestones },
-  { to: '/settings', label: 'Settings', icon: icons.settings },
-] as const;
+  { to: '/', label: 'tabs.checkin', icon: icons.calendar },
+  { to: '/trends', label: 'tabs.trends', icon: icons.trends },
+  { to: '/milestones', label: 'tabs.milestones', icon: icons.milestones },
+  { to: '/settings', label: 'tabs.settings', icon: icons.settings },
+] as const satisfies readonly { to: string; label: Key; icon: unknown }[];
 
 export function TabBar() {
   return (
-    <nav className="tabbar" aria-label="Main">
+    <nav className="tabbar" aria-label={t('tabs.main')}>
       <ul>
-        {tabs.map((t) => (
-          <li key={t.to}>
-            <NavLink to={t.to} end={t.to === '/'} className="tab">
+        {tabs.map((tab) => (
+          <li key={tab.to}>
+            <NavLink to={tab.to} end={tab.to === '/'} className="tab">
               <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true">
-                {t.icon}
+                {tab.icon}
               </svg>
-              <span>{t.label}</span>
+              <span>{t(tab.label)}</span>
             </NavLink>
           </li>
         ))}

@@ -13,9 +13,10 @@ import {
 } from '../lib/install';
 import { deviceTimeZone, parseRegion, regionLabel, type Region } from '../lib/regions';
 import { playLoggingSound, unlockAudio } from '../lib/sounds';
-import { ML } from '../lib/trendText';
 import { Estimate } from './Intention';
 import './Onboarding.css';
+import { rich, t } from '../i18n';
+import { monthYear } from '../i18n/format';
 
 // Started as a port of the native app/onboarding.tsx (welcome, intention,
 // data), extended for the web:
@@ -30,12 +31,7 @@ import './Onboarding.css';
 
 type Step = 'welcome' | 'install' | 'privacy' | 'how' | 'intention' | 'region' | 'ready';
 
-const LEVEL_SHOWN: Record<DayLevel, string> = {
-  clear: 'Clear — no drinks',
-  'a-few': 'A few — 1–2 drinks',
-  moderate: 'Moderate — 3–4 drinks',
-  'a-lot': 'A lot — 5 or more',
-};
+const levelShown = (l: DayLevel) => t(`onboarding.level.${l}`);
 
 export function Onboarding() {
   const navigate = useNavigate();
@@ -96,7 +92,7 @@ export function Onboarding() {
     <main className="onboarding">
       <div className="ob-top">
         {i > 0 ? (
-          <button type="button" className="ob-back" onClick={() => go(-1)}>‹ Back</button>
+          <button type="button" className="ob-back" onClick={() => go(-1)}>{t('onboarding.back')}</button>
         ) : <span />}
       </div>
       <div className="ob-title-row">
@@ -106,47 +102,34 @@ export function Onboarding() {
       <div className="ob-dots" aria-hidden="true">
         {steps.map((s, k) => <span key={s} className="ob-dot" data-on={k === i || undefined} />)}
       </div>
-      <p className="sr-only" aria-live="polite">Step {i + 1} of {steps.length}</p>
+      <p className="sr-only" aria-live="polite">{t('onboarding.step', { n: i + 1, total: steps.length })}</p>
 
       {step === 'welcome' && (
         <section className="ob-step">
           <div>
             <div className="ob-center">
-              <h1 className="ob-headline">Welcome to Clear Tracker</h1>
-              <p className="ob-body">
-                A simple way to track days you choose not to drink — whether that's cutting back or stepping away
-                completely. There's no wrong way to use this.
-              </p>
+              <h1 className="ob-headline">{t('onboarding.welcome')}</h1>
+              <p className="ob-body">{t('onboarding.welcomeBody')}</p>
             </div>
             <div className="card ob-card">
-              <p className="ob-card-title">What it is</p>
-              <p className="ob-card-body">A private record of your days, and how they add up over weeks and months.</p>
-              <p className="ob-card-title">What it isn't</p>
-              <p className="ob-card-body">
-                A medical service or treatment programme. It doesn't diagnose, advise or judge. If you're concerned about
-                your drinking, a healthcare professional can help.
-              </p>
+              <p className="ob-card-title">{t('onboarding.whatItIs')}</p>
+              <p className="ob-card-body">{t('onboarding.whatItIsBody')}</p>
+              <p className="ob-card-title">{t('onboarding.whatItIsnt')}</p>
+              <p className="ob-card-body">{t('onboarding.whatItIsntBody')}</p>
             </div>
             <div className="ob-device">
               <DeviceFields />
-              <p className="ob-note">Each phone or computer keeps its own record, so use Clear Tracker on one device.</p>
+              <p className="ob-note">{t('onboarding.oneDevice')}</p>
               {installKeepsOwnRecord(dev) && !installed && (
                 // A browser tab can't see a Home Screen (or Dock) copy — separate
                 // storage, and no way to ask — so it always looks like a first visit.
                 <p className="ob-note ob-already">
-                  {isIos(dev) ? (
-                    <>Already added Clear Tracker to your Home Screen? Open it from there — this browser tab keeps its own,
-                    separate record. Can't spot the icon? Swipe down from the middle of the Home Screen and search for
-                    “Clear Tracker”.</>
-                  ) : (
-                    <>Already added Clear Tracker to your Dock? Open it from there — Safari keeps its own, separate
-                    record. Can't spot it? Search for “Clear Tracker” with Spotlight (⌘ Space).</>
-                  )}
+                  {isIos(dev) ? t('onboarding.alreadyIos') : t('onboarding.alreadyMac')}
                 </p>
               )}
             </div>
           </div>
-          <button type="button" className="btn btn-primary ob-button" onClick={next}>Get started</button>
+          <button type="button" className="btn btn-primary ob-button" onClick={next}>{t('onboarding.getStarted')}</button>
         </section>
       )}
 
@@ -161,9 +144,9 @@ export function Onboarding() {
                 {g.steps.length === 0 ? (
                   <>
                     <button type="button" className="btn btn-primary ob-button" onClick={() => promptInstall()}>
-                      Install Clear Tracker
+                      {t('onboarding.install')}
                     </button>
-                    <p className="ob-note">Then open it from your {g.place} and carry on there.</p>
+                    <p className="ob-note">{t('onboarding.thenOpen', { place: g.place })}</p>
                   </>
                 ) : (
                   <ol className="ob-steps">
@@ -175,13 +158,13 @@ export function Onboarding() {
             </div>
             <div className="ob-actions">
               <button type="button" className="ob-secondary" onClick={next}>
-                {g.canInstall ? 'Continue in the browser' : 'Continue'}
+                {g.canInstall ? t('onboarding.continueInBrowser') : t('common.continue')}
               </button>
               {g.canInstall && (
                 <p className="ob-note">
                   {installKeepsOwnRecord(dev)
-                    ? "You can still install later, but your days won't move across by themselves — you'd back up here and restore it there."
-                    : `You can install later from the browser menu; your days come with you.`}
+                    ? t('onboarding.laterOwnRecord')
+                    : t('onboarding.laterShared')}
                 </p>
               )}
             </div>
@@ -192,17 +175,17 @@ export function Onboarding() {
       {step === 'privacy' && (
         <section className="ob-step">
           <div>
-            <h1 className="ob-step-title">Your record stays on this device</h1>
+            <h1 className="ob-step-title">{t('onboarding.privacyTitle')}</h1>
             <ul className="card ob-card ob-points">
-              <li><strong>No account, no cloud.</strong> Nothing you log is sent to bitScribbles or anyone else, and there are no ads.</li>
-              <li><strong>Only here.</strong> Your days are stored on this device{installed ? '' : ', in this browser'}. Clearing its website data, or losing the device, loses them.</li>
-              <li><strong>Back up now and then.</strong> Settings can make an encrypted backup, protected by a passphrase you choose, to keep wherever you like. Check-in reminds you after 30 days.</li>
+              <li>{rich('onboarding.privacyNoAccount', { b: (c) => <strong>{c}</strong> })}</li>
+              <li>{rich('onboarding.privacyOnlyHere', { where: installed ? '' : t('onboarding.privacyInBrowser'), b: (c) => <strong>{c}</strong> })}</li>
+              <li>{rich('onboarding.privacyBackUp', { b: (c) => <strong>{c}</strong> })}</li>
             </ul>
           </div>
           <div className="ob-actions">
-            <button type="button" className="btn btn-primary ob-button" onClick={next}>Continue</button>
+            <button type="button" className="btn btn-primary ob-button" onClick={next}>{t('common.continue')}</button>
             <p className="ob-note">
-              Have a backup? <Link className="ob-link" to="/settings/restore">Restore it</Link> instead.
+              {rich('onboarding.haveBackup', { link: (c) => <Link className="ob-link" to="/settings/restore">{c}</Link> })}
             </p>
           </div>
         </section>
@@ -211,34 +194,28 @@ export function Onboarding() {
       {step === 'how' && (
         <section className="ob-step">
           <div>
-            <h1 className="ob-step-title">Logging a day</h1>
-            <p className="ob-body">
-              On Check-in, tap a day to select it, then tap it again to log it. Each tap moves it on a level, and back to
-              not logged. Try it on this practice day — it isn't saved.
-            </p>
+            <h1 className="ob-step-title">{t('onboarding.howTitle')}</h1>
+            <p className="ob-body">{t('onboarding.howBody')}</p>
             <div className="ob-practice">
               <p className="ob-practice-month" aria-hidden="true">
-                {ML[Number(today.slice(5, 7)) - 1].slice(0, 3)} {today.slice(0, 4)}
+                {monthYear(Number(today.slice(5, 7)), Number(today.slice(0, 4)), 'short')}
               </p>
               <div className="ob-practice-cell">
                 <DayCell
                   day={Number(today.slice(8, 10))}
                   level={practice}
                   onClick={tapPractice}
-                  label={`Practice day: ${practice ? LEVEL_SHOWN[practice] : 'not logged'}. Tap for the next level.`}
+                  label={t('onboarding.practiceLabel', { level: practice ? levelShown(practice) : t('onboarding.practiceNotLoggedSpoken') })}
                 />
               </div>
-              <p className="ob-practice-level" aria-live="polite">{practice ? LEVEL_SHOWN[practice] : tried ? 'Not logged' : 'Tap the day to try it'}</p>
+              <p className="ob-practice-level" aria-live="polite">{practice ? levelShown(practice) : tried ? t('onboarding.practiceNotLogged') : t('onboarding.practiceTry')}</p>
             </div>
-            <p className="ob-note">
-              Days you don't log are simply not logged — nothing assumes how they went. Past days can be logged or
-              changed at any time.
-            </p>
+            <p className="ob-note">{t('onboarding.howNote')}</p>
             <div className="card ob-card ob-toggle-card">
               <div className="ob-toggle-row">
                 <div>
-                  <span id="ob-audio" className="ob-row-label">Sounds</span>
-                  <p className="ob-row-sub">A tone for each level when you log a day.{isIos(dev) ? ' On iPhone, they follow the silent switch.' : isAndroid(dev) ? ' They play at your media volume.' : ''}</p>
+                  <span id="ob-audio" className="ob-row-label">{t('onboarding.sounds')}</span>
+                  <p className="ob-row-sub">{t('onboarding.soundsSub')}{isIos(dev) ? t('onboarding.soundsIos') : isAndroid(dev) ? t('onboarding.soundsAndroid') : ''}</p>
                 </div>
                 <button type="button" role="switch" aria-checked={audioCues} aria-labelledby="ob-audio" className="switch" onClick={() => setAudioCues((v) => !v)}>
                   <span className="switch-thumb" />
@@ -246,18 +223,18 @@ export function Onboarding() {
               </div>
             </div>
           </div>
-          <button type="button" className="btn btn-primary ob-button" onClick={next}>Continue</button>
+          <button type="button" className="btn btn-primary ob-button" onClick={next}>{t('common.continue')}</button>
         </section>
       )}
 
       {step === 'intention' && (
         <section className="ob-step">
           <div>
-            <h1 className="ob-step-title">Set your first intention</h1>
-            <p className="ob-body">How many clear days would you like to aim for each week? You can change this any time.</p>
+            <h1 className="ob-step-title">{t('onboarding.intentionTitle')}</h1>
+            <p className="ob-body">{t('onboarding.intentionBody')}</p>
             <div className="ob-number">
               <span className="ob-big" aria-hidden="true">{target}</span>
-              <span className="ob-number-label">clear days per week</span>
+              <span className="ob-number-label">{t('intention.perWeek')}</span>
             </div>
             <input
               type="range"
@@ -266,56 +243,49 @@ export function Onboarding() {
               max={7}
               step={1}
               value={target}
-              aria-label="Clear days per week"
-              aria-valuetext={`${target} clear day${target === 1 ? '' : 's'} per week`}
+              aria-label={t('intention.sliderLabel')}
+              aria-valuetext={t('intention.sliderValue', { count: target })}
               style={{ background: `linear-gradient(to right, var(--primary) ${fill}%, var(--track) ${fill}%)` }}
               onChange={(e) => setTarget(Number(e.target.value))}
             />
             <div className="in-callout">
               <p>
-                Starting today — <Estimate target={target} from={today} />
+                {t('onboarding.startingToday')}<Estimate target={target} from={today} />
               </p>
             </div>
           </div>
-          <button type="button" className="btn btn-primary ob-button" onClick={next}>Continue</button>
+          <button type="button" className="btn btn-primary ob-button" onClick={next}>{t('common.continue')}</button>
         </section>
       )}
 
       {step === 'region' && (
         <section className="ob-step">
           <div>
-            <h1 className="ob-step-title">Where are you?</h1>
-            <p className="ob-body">
-              So Clear Tracker can show help lines and programmes for where you live. It stays on this device, and you
-              can change it in Settings.
-            </p>
+            <h1 className="ob-step-title">{t('onboarding.regionTitle')}</h1>
+            <p className="ob-body">{t('onboarding.regionBody')}</p>
             <div className="card ob-card">
               <RegionFields region={region} onChange={setRegion} />
             </div>
           </div>
-          <button type="button" className="btn btn-primary ob-button" onClick={next}>Continue</button>
+          <button type="button" className="btn btn-primary ob-button" onClick={next}>{t('common.continue')}</button>
         </section>
       )}
 
       {step === 'ready' && (
         <section className="ob-step">
           <div>
-            <h1 className="ob-step-title">You're ready</h1>
-            <p className="ob-body">
-              Aiming for {target} clear day{target === 1 ? '' : 's'} a week. Every day you log adds to the picture —
-              there's no score to keep.
-            </p>
+            <h1 className="ob-step-title">{t('onboarding.readyTitle')}</h1>
+            <p className="ob-body">{t('onboarding.aiming', { count: target })}</p>
             <div className="card ob-card">
-              <p className="ob-card-title">If you'd like support</p>
+              <p className="ob-card-title">{t('onboarding.support')}</p>
               <p className="ob-card-body">
-                <strong>Resources</strong> lists help lines and programmes for {regionLabel(region)}, including someone to
-                talk to any time. <strong>Help</strong> answers common questions about the app.
+                {rich('onboarding.supportBody', { region: regionLabel(region), b: (c) => <strong>{c}</strong> })}
               </p>
-              <p className="ob-card-body">Both are linked from the bottom of Check-in, and in Settings.</p>
+              <p className="ob-card-body">{t('onboarding.supportWhere')}</p>
             </div>
           </div>
           <button type="button" className="btn btn-primary ob-button" onClick={finish} disabled={saving}>
-            {saving ? 'Setting up…' : 'Start tracking'}
+            {saving ? t('onboarding.settingUp') : t('onboarding.start')}
           </button>
         </section>
       )}

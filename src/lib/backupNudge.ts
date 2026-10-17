@@ -1,11 +1,12 @@
 import { daysBetween, localDateOf, type Iso } from '../data/dates';
+import { t } from '../i18n';
 
 export const NUDGE_AFTER_DAYS = 30;
 export const SNOOZE_DAYS = 7;
 
 /** "today", "yesterday", "23 days ago". */
 export function daysAgoText(days: number): string {
-  return days <= 0 ? 'today' : days === 1 ? 'yesterday' : `${days} days ago`;
+  return days <= 0 ? t('time.today') : days === 1 ? t('time.yesterday') : t('time.daysAgo', { n: days });
 }
 
 /**

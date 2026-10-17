@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { getCurrentWeeklyTarget, getIntentionHistory, saveIntention, weekHasEntries } from '../data/database';
 import { addDays, daysBetween, isoOf, mondayOf, todayIso } from '../data/dates';
 import './Intention.css';
+import { rich, t } from '../i18n';
+import { dayMonthLong, dayMonthYearLong } from '../i18n/format';
 
 // Port of the native app/intention.tsx. Differences:
 // - Date maths via dates.ts (native's "days left" divided milliseconds by
@@ -13,14 +15,7 @@ import './Intention.css';
 // - A change already saved for next Monday is shown and preselected.
 // - The footnote says earned milestones stay earned.
 
-const MONTHS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
-const formatFull = (iso: string) => {
-  const [y, m, d] = iso.split('-').map(Number);
-  return `${MONTHS[m - 1]} ${d}, ${y}`;
-};
+const formatFull = dayMonthYearLong;
 
 /** Days from iso to the end of its month / year, inclusive. */
 export function daysLeftInMonth(iso: string): number {
@@ -40,14 +35,7 @@ export function Estimate({ target, from }: { target: number; from: string }) {
   const left = daysLeftInMonth(from);
   const month = Math.round((target / 7) * left);
   const year = Math.round((target / 7) * daysLeftInYear(from));
-  return left < 7 ? (
-    <>that's about <strong>{year}</strong> clear days for the rest of the year.</>
-  ) : (
-    <>
-      that's about <strong>{month}</strong> clear days for the rest of the month, and about <strong>{year}</strong> for
-      the rest of the year.
-    </>
-  );
+  return <>{left < 7 ? rich('intention.estimateYear', { year, b: (c) => <strong>{c}</strong> }) : rich('intention.estimateBoth', { month, year, b: (c) => <strong>{c}</strong> })}</>;
 }
 
 export function Intention() {
@@ -83,24 +71,21 @@ export function Intention() {
   if (loading) return <main className="intention" />;
 
   const effective = weekEmpty ? monday : addDays(monday, 7);
-  const [, em, ed] = effective.split('-').map(Number);
   const fill = ((target - 1) / 6) * 100;
 
   return (
     <main className="intention">
       <div className="in-header">
-        <button type="button" className="in-close" onClick={close} aria-label="Close">✕</button>
-        <h1 className="in-title">Your intention</h1>
+        <button type="button" className="in-close" onClick={close} aria-label={t('intention.close')}>✕</button>
+        <h1 className="in-title">{t('intention.title')}</h1>
         <span style={{ width: 36 }} />
       </div>
 
-      <p className="in-desc">
-        Set how many clear days you'd like to aim for each week. Moderation and full breaks are both valid goals.
-      </p>
+      <p className="in-desc">{t('intention.desc')}</p>
 
       <div className="in-number">
         <span className="in-big" aria-hidden="true">{target}</span>
-        <span className="in-number-label">clear days per week</span>
+        <span className="in-number-label">{t('intention.perWeek')}</span>
       </div>
 
       <input
@@ -110,33 +95,32 @@ export function Intention() {
         max={7}
         step={1}
         value={target}
-        aria-label="Clear days per week"
-        aria-valuetext={`${target} clear day${target === 1 ? '' : 's'} per week`}
+        aria-label={t('intention.sliderLabel')}
+        aria-valuetext={t('intention.sliderValue', { count: target })}
         style={{ background: `linear-gradient(to right, var(--primary) ${fill}%, var(--track) ${fill}%)` }}
         onChange={(e) => setTarget(Number(e.target.value))}
       />
 
       {pending && (
         <p className="in-pending">
-          Already set: {pending.weekly_target} a week from Monday, {MONTHS[Number(pending.effective_date.slice(5, 7)) - 1]}{' '}
-          {Number(pending.effective_date.slice(8, 10))}.
+          {t('intention.pending', { target: pending.weekly_target, date: dayMonthLong(pending.effective_date) })}
         </p>
       )}
 
       <div className="in-callout">
         <p>
           {weekEmpty
-            ? "You haven't logged anything yet this week, so this applies right away — "
-            : `This applies starting Monday, ${MONTHS[em - 1]} ${ed} — `}
+            ? t('intention.appliesNow')
+            : t('intention.appliesMonday', { date: dayMonthLong(effective) })}
           <Estimate target={target} from={effective} />
         </p>
       </div>
 
       <p className="in-footnote">
         {weekEmpty
-          ? "Since this week hasn't started yet for you, the new target applies immediately."
-          : 'This week already has logged days, so the new target applies starting next week.'}{' '}
-        Past weeks always keep the intention that was active at the time, and milestones you've earned stay earned.
+          ? t('intention.footNow')
+          : t('intention.footNext')}{' '}
+        {t('intention.footPast')}
       </p>
 
       <button
@@ -147,25 +131,25 @@ export function Intention() {
           close();
         }}
       >
-        Save intention
+        {t('intention.save')}
       </button>
 
       {history.length > 0 && (
         <div className="in-history">
-          <p className="in-history-label">Last changed {formatFull(history[0].effective_date)}</p>
+          <p className="in-history-label">{t('intention.lastChanged', { date: formatFull(history[0].effective_date) })}</p>
           <ul>
             {history.map((h) => (
               <li key={h.effective_date}>
-                <span className="in-h-target">{h.weekly_target} days/week</span>
+                <span className="in-h-target">{t('intention.historyTarget', { n: h.weekly_target })}</span>
                 <span className="in-h-date">
-                  {h.effective_date > today ? 'from' : 'since'} {formatFull(h.effective_date)}
+                  {h.effective_date > today ? t('intention.from', { date: formatFull(h.effective_date) }) : t('intention.since', { date: formatFull(h.effective_date) })}
                 </span>
               </li>
             ))}
           </ul>
         </div>
       )}
-      <HelpLinks topic="intention">How intentions work</HelpLinks>
+      <HelpLinks topic="intention">{t('intention.howTheyWork')}</HelpLinks>
     </main>
   );
 }

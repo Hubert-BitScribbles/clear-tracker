@@ -1,6 +1,10 @@
 import type { ReactNode } from 'react';
 import { BROWSER_NAMES, installKeepsOwnRecord, isAndroid, isIos, type Device } from '../lib/install';
 
+const B = { b: (c: ReactNode) => <strong>{c}</strong>, icon: (c: ReactNode) => <span aria-hidden="true">{c}</span> };
+const r = (key: Key, vars: Record<string, string> = {}) => <>{rich(key, { ...B, ...vars })}</>;
+import { rich, t, type Key } from '../i18n';
+
 // How to install Clear Tracker on each path, shared by onboarding and Help.
 // See web-app-platform-notes in the Project for why the paths differ.
 
@@ -22,89 +26,80 @@ export interface InstallGuide {
 const ios = (d: Device): ReactNode[] => {
   const share =
     d.browser === 'safari' ? (
-      <>Tap <strong>Share</strong> <span aria-hidden="true">(□↑)</span> — in the toolbar, or under <strong>⋯</strong>.</>
+      r('install.ios.shareSafari')
     ) : d.browser === 'chrome' ? (
-      <>Tap <strong>Share</strong> <span aria-hidden="true">(□↑)</span> at the right of the address bar.</>
+      r('install.ios.shareChrome')
     ) : (
-      <>Open {BROWSER_NAMES[d.browser] === 'another browser' ? 'the browser' : BROWSER_NAMES[d.browser]}'s menu and tap <strong>Share</strong>.</>
+      r('install.ios.shareOther', { browser: d.browser === 'other' ? t('install.ios.theBrowser') : BROWSER_NAMES[d.browser] })
     );
   return [
     share,
-    <>Choose <strong>Add to Home Screen</strong>, then <strong>Add</strong>.</>,
-    <>Open Clear Tracker from your Home Screen and set it up there.</>,
+    r('install.ios.add'),
+    r('install.ios.open'),
   ];
 };
 
 export function installGuide(d: Device, browserOffersInstall: boolean): InstallGuide {
-  const browser = BROWSER_NAMES[d.browser] === 'another browser' ? 'this browser' : BROWSER_NAMES[d.browser];
-  const clearer = d.browser === 'safari' ? 'Safari' : `${d.os === 'ipad' ? 'An iPad' : 'An iPhone'} browser`;
-  const ownRecordWhy = `Clear Tracker keeps everything on this device. Installed, it opens like an app, works offline, and your record is much safer: ${clearer} can clear a website's data after seven days without a visit, but not an installed app's.`;
-  const sharedWhy =
-    'Installed, Clear Tracker opens like an app, works offline, and your record is less likely to be cleared if the device runs low on space.';
+  const browser = d.browser === 'other' ? t('install.thisBrowser') : BROWSER_NAMES[d.browser];
+  const clearer = d.browser === 'safari' ? t('install.clearerSafari') : d.os === 'ipad' ? t('install.clearerIpad') : t('install.clearerIphone');
+  const ownRecordWhy = t('install.ownRecordWhy', { clearer });
+  const sharedWhy = t('install.sharedWhy');
 
   if (isIos(d)) {
     return {
-      heading: 'Add it to your Home Screen first',
-      place: 'Home Screen',
+      heading: t('install.headingHomeScreen'),
+      place: t('install.placeHomeScreen'),
       why: ownRecordWhy,
       steps: ios(d),
-      note: `The Home Screen app keeps its own record, separate from ${browser}. Always open it from the Home Screen icon — this website, and links to it, open ${browser} instead.`,
+      note: t('install.iosNote', { browser }),
       canInstall: true,
     };
   }
   if (d.os === 'mac' && d.browser === 'safari') {
     return {
-      heading: 'Add it to your Dock first',
-      place: 'Dock',
+      heading: t('install.headingDock'),
+      place: t('install.placeDock'),
       why: ownRecordWhy,
-      steps: [
-        <>In the menu bar, choose <strong>File → Add to Dock</strong> (macOS Sonoma or later), then <strong>Add</strong>.</>,
-        <>Open Clear Tracker from the Dock and set it up there.</>,
-      ],
-      note: 'The Dock app keeps its own record, separate from Safari. Always open it from the Dock — this website, and links to it, open Safari instead.',
+      steps: [r('install.mac.add'), r('install.mac.open')],
+      note: t('install.macNote'),
       canInstall: true,
     };
   }
   if (d.browser === 'firefox' && !isAndroid(d)) {
     return {
-      heading: 'Keep it handy',
-      place: 'bookmarks',
-      why: 'Firefox keeps your record on this computer. It can’t install Clear Tracker as an app on a Mac, but a bookmark gets you back to it.',
-      steps: [
-        <>Bookmark this page (<strong>{d.os === 'mac' ? '⌘' : 'Ctrl'}+D</strong>) and open Clear Tracker from there.</>,
-        <>For an app window that works offline, open this page in Chrome or Edge instead — before you log anything, as each browser keeps its own record.</>,
-      ],
-      note: 'Your days stay in Firefox on this computer.',
+      heading: t('install.headingHandy'),
+      place: t('install.placeBookmarks'),
+      why: t('install.firefoxWhy'),
+      steps: [r('install.firefox.bookmark', { key: d.os === 'mac' ? '⌘' : 'Ctrl' }), r('install.firefox.other')],
+      note: t('install.firefoxNote'),
       canInstall: false,
     };
   }
-  const place = isAndroid(d) ? 'Home Screen' : 'app list';
+  const place = isAndroid(d) ? t('install.placeHomeScreen') : t('install.placeAppList');
   const steps: ReactNode[] = browserOffersInstall
     ? []
     : isAndroid(d)
       ? [
-          d.browser === 'samsung' ? (
-            <>Tap <strong>≡</strong>, then <strong>Add page to → Home screen</strong>.</>
-          ) : d.browser === 'firefox' ? (
-            <>Tap <strong>⋮</strong>, then <strong>Add to Home screen</strong>.</>
-          ) : (
-            <>Tap <strong>{d.browser === 'edge' ? '⋯' : '⋮'}</strong>, then <strong>Install app</strong> or <strong>Add to Home screen</strong>.</>
-          ),
-          <>Open Clear Tracker from your Home Screen.</>,
+          d.browser === 'samsung'
+            ? r('install.android.samsung')
+            : d.browser === 'firefox'
+              ? r('install.android.firefox')
+              : r('install.android.chrome', { menu: d.browser === 'edge' ? '⋯' : '⋮' }),
+          r('install.android.open'),
         ]
       : d.browser === 'edge'
-        ? [<>Open Edge's menu (<strong>⋯</strong>) and choose <strong>Apps → Install this site as an app</strong>.</>]
+        ? [r('install.edge')]
         : d.browser === 'chrome'
-          ? [<>Click the install icon at the right of the address bar, or open <strong>⋮ → Cast, save and share → Install page as app</strong>.</>]
-          : [<>Look in your browser's menu for <strong>Install</strong> or <strong>Add to Home Screen</strong>.</>];
+          ? [r('install.chrome')]
+          : [r('install.other')];
   return {
-    heading: isAndroid(d) ? 'Add it to your Home Screen first' : 'Install it as an app',
+    heading: isAndroid(d) ? t('install.headingHomeScreen') : t('install.headingApp'),
     place,
     why: sharedWhy,
     steps,
     note: d.browser === 'other' || installKeepsOwnRecord(d)
       ? ''
-      : `The app and ${browser} share one record, so your days are there whichever you open.`,
+      : t('install.sharedNote', { browser }),
     canInstall: true,
   };
 }

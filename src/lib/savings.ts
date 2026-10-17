@@ -1,3 +1,5 @@
+import { t } from '../i18n';
+
 export const BASELINE_KEY = 'savings_baseline_per_week';
 export const PRICE_KEY = 'savings_price_per_drink';
 
@@ -64,18 +66,18 @@ export const priceText = (n: number) =>
  * open-ended. weekly = phrase it as a rate ("… saved a week").
  */
 export function describeSavings(most: number, least: number | null, weekly = false): string {
-  const saved = weekly ? 'saved a week' : 'saved';
-  const over = weekly ? 'a week over baseline' : 'over baseline';
+  const saved = weekly ? t('money.savedWeek') : t('money.saved');
+  const over = weekly ? t('money.overWeek') : t('money.over');
   if (least === null) {
-    return most >= 0 ? `Up to ${money(most)} ${saved}` : `At least ${money(most)} ${over}`;
+    return most >= 0 ? t('money.upTo', { amount: money(most), what: saved }) : t('money.atLeast', { amount: money(most), what: over });
   }
   if (least >= 0) return range(least, most, saved);
   if (most <= 0) return range(-most, -least, over);
-  return `Between ${money(least)} over baseline and ${money(most)} saved${weekly ? ', a week' : ''}`;
+  return t(weekly ? 'money.betweenWeek' : 'money.between', { low: money(least), high: money(most) });
 }
 
 function range(low: number, high: number, what: string): string {
   const a = money(low);
   const b = money(high);
-  return a === b ? `About ${a} ${what}` : `About ${a}–${b} ${what}`;
+  return a === b ? t('money.about', { amount: a, what }) : t('money.aboutRange', { low: a, high: b, what });
 }

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import {
-  BROWSER_NAMES, device, detectedDevice, onDeviceChange, OS_NAMES, setDevice, type Browser, type Device, type Os,
+  BROWSER_NAMES, browserName, device, detectedDevice, onDeviceChange, OS_NAMES, setDevice, type Browser, type Device, type Os,
 } from '../lib/install';
+import { rich, t, type Key } from '../i18n';
 
 /** The device in use (detected, or as corrected), re-rendering when it changes. */
 export function useDevice(): Device {
@@ -21,19 +22,17 @@ const BROWSERS_FOR: Record<Os, Browser[]> = {
   linux: ['chrome', 'firefox', 'edge', 'other'],
   other: ['chrome', 'edge', 'firefox', 'safari', 'other'],
 };
-const OS_PHRASE: Record<Os, string> = {
-  iphone: 'an iPhone', ipad: 'an iPad', android: 'an Android device', mac: 'a Mac', windows: 'a Windows PC',
-  linux: 'a Linux computer', other: 'another device',
-};
+const osPhrase = (os: Os) => t(`device.phrase.${os}` as Key);
 const OS_ORDER: Os[] = ['iphone', 'ipad', 'android', 'mac', 'windows', 'linux', 'other'];
-// Capitalise "another …" for the menus; leave iPhone and iPad as they are.
-const cap = (s: string) => (s.startsWith('another') ? 'A' + s.slice(1) : s);
+// Menu names: product names as they are; "Another device" / "Another browser" for the rest.
+const osMenuName = (os: Os) => (os === 'other' ? t('device.menuOtherDevice') : OS_NAMES[os]);
+const browserMenuName = (b: Browser) => (b === 'other' ? t('device.menuOtherBrowser') : BROWSER_NAMES[b]);
 
 /**
  * "iPhone · Chrome — Not right? Change": the detected device and browser, with
  * a way to correct them. Saved on this device only (not in backups).
  */
-export function DeviceFields({ intro = 'Looks like you’re using' }: { intro?: string }) {
+export function DeviceFields({ intro = t('device.intro') }: { intro?: string }) {
   const d = useDevice();
   const [open, setOpen] = useState(false);
   const corrected = JSON.stringify(d) !== JSON.stringify(detectedDevice());
@@ -41,16 +40,18 @@ export function DeviceFields({ intro = 'Looks like you’re using' }: { intro?: 
   return (
     <div className="dv">
       <p className="dv-line" aria-live="polite">
-        {intro} <strong>{OS_PHRASE[d.os]}</strong>,
-        {' '}in <strong>{BROWSER_NAMES[d.browser]}</strong>.{' '}
+        {rich('device.line', {
+          intro, os: osPhrase(d.os), browser: browserName(d.browser),
+          b1: (c) => <strong>{c}</strong>, b2: (c) => <strong>{c}</strong>,
+        })}{' '}
         <button type="button" className="dv-change" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
-          {open ? 'Done' : 'Not right? Change'}
+          {open ? t('device.done') : t('device.change')}
         </button>
       </p>
       {open && (
         <div className="dv-fields">
           <label className="st-field">
-            <span className="st-field-label">Device</span>
+            <span className="st-field-label">{t('device.device')}</span>
             <select
               className="st-select"
               value={d.os}
@@ -59,17 +60,17 @@ export function DeviceFields({ intro = 'Looks like you’re using' }: { intro?: 
                 choose({ os, browser: BROWSERS_FOR[os].includes(d.browser) ? d.browser : BROWSERS_FOR[os][0] });
               }}
             >
-              {OS_ORDER.map((o) => <option key={o} value={o}>{cap(OS_NAMES[o])}</option>)}
+              {OS_ORDER.map((o) => <option key={o} value={o}>{osMenuName(o)}</option>)}
             </select>
           </label>
           <label className="st-field">
-            <span className="st-field-label">Browser</span>
+            <span className="st-field-label">{t('device.browser')}</span>
             <select className="st-select" value={d.browser} onChange={(e) => choose({ ...d, browser: e.target.value as Browser })}>
-              {BROWSERS_FOR[d.os].map((b) => <option key={b} value={b}>{cap(BROWSER_NAMES[b])}</option>)}
+              {BROWSERS_FOR[d.os].map((b) => <option key={b} value={b}>{browserMenuName(b)}</option>)}
             </select>
           </label>
           {corrected && (
-            <button type="button" className="dv-change" onClick={() => setDevice(null)}>Go back to what was detected</button>
+            <button type="button" className="dv-change" onClick={() => setDevice(null)}>{t('device.goBack')}</button>
           )}
         </div>
       )}

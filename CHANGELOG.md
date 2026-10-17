@@ -4,6 +4,22 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.1.2 — 16 October 2026
+
+Groundwork for German. Nothing looks different (screenshots and the page
+text of every screen were compared before and after), apart from this number.
+
+- **All app wording in one file**, `src/i18n/en.json`, with dates, month and
+  weekday names, and plurals from the browser's built-in formats. A second
+  language becomes a second file. Help and the privacy page stay as pages;
+  each language will get its own.
+- **Help lines and links, one file per country** (`src/resources/`), each
+  entry with where and when it was checked. `python3 checks/stale_resources.py`
+  lists anything not checked for six months. "Numbers checked" on Resources
+  now comes from the oldest entry shown.
+- The Reports screen loads when it's opened rather than with the app, as the
+  other secondary screens do.
+
 ## 1.1.1 — 16 October 2026
 
 - Savings show the region's currency everywhere. In 1.1.0 the monthly savings

@@ -1,6 +1,6 @@
 # Wording and languages
 
-Every word the app shows is in `en.json` (and `de.json` for German), except:
+Every word the app shows is in `en.json` (and `de.json`, `fr.json` …), except:
 
 - **Help**: one file of articles per language in `src/help/` (`en.tsx`,
   `de.tsx`), written to read naturally rather than line by line. Same
@@ -35,6 +35,12 @@ translation tools such as Weblate and Crowdin read.
    for German), and look at every screen in it:
    `SNAP_LANG=<lang> SNAP_WIDTH=320 python3 checks/snapshots.py <dir>`.
 
-German: `de.json`, with its key terms in `glossary-de.md`. Austria gets
-Austrian dates and money (`de-AT`) from the region; a `de-AT` word list can
-be added if Austrian wording ever needs to differ.
+German: `de.json`, key terms in `glossary-de.md`. French: `fr.json`, key terms
+in `glossary-fr.md`.
+
+**Regional words and formats** follow the region's country (`REGIONAL` in
+`index.ts`): Austria gets `de-AT` dates and money („Jänner“); Canada gets
+`fr-CA` formats and Quebec's own lines from `fr-CA.json`, which holds only
+the lines that differ from France's („fin de semaine“, „courriel“). A help
+link can name its page in another language (`urls: { fr: … }` in
+`src/resources/<country>.ts`).

@@ -4,6 +4,7 @@ import { useDevice } from '../components/DeviceFields';
 import { platform } from '../lib/install';
 import { articles as en } from '../help/en';
 import { articles as de } from '../help/de';
+import { articles as fr } from '../help/fr';
 import { HelpNav } from './Resources';
 import './Support.css';
 import { language, rich, t } from '../i18n';
@@ -14,7 +15,7 @@ import { language, rich, t } from '../i18n';
 // Android differ (installing, storage, where backups go, sounds, PDFs), each
 // reader sees their own device's wording.
 
-const BY_LANGUAGE = { en, de };
+const BY_LANGUAGE = { en, de, fr };
 
 export function Help() {
   const dev = useDevice();

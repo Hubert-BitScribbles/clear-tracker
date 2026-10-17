@@ -17,9 +17,9 @@ export const ca: Country = {
   drinking: [],
   programmes: [
     { id: 'smart', url: 'https://smartrecovery-canada.ca', source: 'smartrecovery-canada.ca', checked: '2026-10-05' },
-    { id: 'dllm', url: 'https://drinklesslivemore.ca/en', source: 'drinklesslivemore.ca (CCSA)', checked: '2026-10-05' },
+    { id: 'dllm', url: 'https://drinklesslivemore.ca/en', urls: { fr: 'https://drinklesslivemore.ca/fr' }, source: 'drinklesslivemore.ca (CCSA); French: « Boire moins, c’est mieux », checked 2026-10-17', checked: '2026-10-05' },
   ],
-  drinkGuide: { id: 'drink', url: 'https://www.ccsa.ca/sites/default/files/2025-05/CGAH-Standard-Drinks-Poster-en.pdf', source: 'ccsa.ca "Know Your Standard Drink" (2025 poster, matches Canada’s Guidance on Alcohol and Health)', checked: '2026-10-14' },
+  drinkGuide: { id: 'drink', url: 'https://www.ccsa.ca/sites/default/files/2025-05/CGAH-Standard-Drinks-Poster-en.pdf', urls: { fr: 'https://www.ccsa.ca/sites/default/files/2025-05/CGAH-Standard-Drinks-Poster-fr.pdf' }, source: 'ccsa.ca "Know Your Standard Drink" (2025 poster, matches Canada’s Guidance on Alcohol and Health)', checked: '2026-10-14' },
   areas: {
     ca_ab: { drinking: [{ id: 'ab', call: '1-866-332-2322', source: CCSA + '; canada.ca', checked: '2026-10-05' }] },
     ca_bc: { drinking: [{ id: 'bc', call: '1-800-663-1441', source: CCSA + '; gov.bc.ca; helpstartshere.gov.bc.ca', checked: '2026-10-05' }] },

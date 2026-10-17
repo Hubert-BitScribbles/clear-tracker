@@ -3,7 +3,7 @@
 // the words are in the language files (res.*). Re-check before each release:
 // python3 checks/stale_resources.py lists anything older than six months.
 
-import { hasText, t, type Key } from '../i18n';
+import { hasText, language, t, type Key } from '../i18n';
 import { monthYear } from '../i18n/format';
 import { COUNTRY_RESOURCES, type Checked, type LineData, type LinkData } from '../resources';
 
@@ -50,7 +50,7 @@ function line(cc: string, l: LineData): Line {
   if (note) out.note = note;
   return out;
 }
-const link = (cc: string, l: LinkData): Link => ({ name: t(`res.${cc}.${l.id}.name` as Key), url: l.url, note: t(`res.${cc}.${l.id}.note` as Key) });
+const link = (cc: string, l: LinkData): Link => ({ name: t(`res.${cc}.${l.id}.name` as Key), url: l.urls?.[language()] ?? l.url, note: t(`res.${cc}.${l.id}.note` as Key) });
 
 /** The country's data and the part that applies: a Canadian province, a UK nation. Unknown countries get Canada's. */
 function pick(country: string, province: string, nation: string) {

@@ -11,7 +11,7 @@ describe('resources', () => {
   ];
   it.each(regions)('%s %s: emergency, someone to talk to, help with drinking, programmes', (country, province) => {
     const r = resourcesFor(country, province);
-    expect(r.emergency).toMatch(/^\d{3}$/);
+    expect(r.emergency).toMatch(/^\d{2,3}$/); // France's medical emergency number is 15
     expect(r.talk.length).toBeGreaterThan(0);
     expect(r.drinking.length).toBeGreaterThanOrEqual(1);
     expect(r.programmes.length).toBeGreaterThan(0);
@@ -43,6 +43,10 @@ describe('resources', () => {
   });
   it('New Zealand: 111, 1737 by call and text, the Alcohol Drug Helpline', () => {
     expect(resourcesFor('nz', 'ca_ab')).toMatchObject({ emergency: '111', talk: [{ call: '1737', text: { to: '1737' } }], drinking: [{ call: '0800 787 797' }] });
+  });
+  it('France: 15, the 3114, Alcool Info Service', () => {
+    expect(resourcesFor('fr', 'ca_ab')).toMatchObject({ emergency: '15', talk: [{ call: '3114' }], drinking: [{ call: '0 980 980 930' }, { call: '09 69 39 40 20' }] });
+    expect(resourcesFor('fr', 'ca_ab').drinkGuide?.url).toMatch(/alcool-info-service\.fr/);
   });
   it('Ireland: 112, Samaritans, the HSE helpline', () => {
     expect(resourcesFor('ie', 'ca_ab')).toMatchObject({ emergency: '112', talk: [{ call: '116 123' }], drinking: [{ call: '1800 459 459' }] });

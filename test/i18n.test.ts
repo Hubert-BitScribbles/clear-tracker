@@ -49,8 +49,8 @@ describe('switching to German', () => {
   it('picks German from the setting or the device, else English', () => {
     expect(pickLanguage('de', ['en-CA'])).toBe('de');
     expect(pickLanguage('auto', ['de-AT', 'en'])).toBe('de');
-    expect(pickLanguage('auto', ['fr-FR', 'de-DE'])).toBe('de');
-    expect(pickLanguage('auto', ['fr-FR'])).toBe('en');
+    expect(pickLanguage('auto', ['it-IT', 'de-DE'])).toBe('de');
+    expect(pickLanguage('auto', ['it-IT'])).toBe('en');
     expect(pickLanguage('en', ['de-DE'])).toBe('en');
   });
   it('words, plurals, dates, numbers and money follow the language', async () => {
@@ -93,5 +93,68 @@ describe('German Help and privacy page', () => {
   it('the German privacy page has the same sections as the English one', () => {
     const count = (f: string) => (readFileSync(`public/${f}`, 'utf8').match(/<section/g) ?? []).length;
     expect(count('privacy-de.html')).toBe(count('privacy.html'));
+  });
+});
+
+describe('French text (fr.json, and Quebec’s lines in fr-CA.json)', async () => {
+  const E = en as Record<string, string>;
+  const F = (await import('../src/i18n/fr.json')).default as Record<string, string>;
+  const Q = (await import('../src/i18n/fr-CA.json')).default as Record<string, string>;
+  it('has every English key, and no others; Quebec only overrides French lines', () => {
+    expect(Object.keys(F).sort()).toEqual(Object.keys(E).sort());
+    for (const k of Object.keys(Q)) expect(k in F, k).toBe(true);
+  });
+  it('every line has the same blanks and markup as English', () => {
+    const wrong: string[] = [];
+    for (const [file, words] of [['fr', F], ['fr-CA', Q]] as const) {
+      for (const k of Object.keys(words)) {
+        const fr = placeholders(words[k]);
+        const ok = EXTRA_VARS[k] ? fr.every((p) => [...placeholders(E[k]), ...EXTRA_VARS[k]].includes(p)) : fr.join() === placeholders(E[k]).join();
+        if (!ok || tags(words[k]).join() !== tags(E[k]).join()) wrong.push(`${file} ${k}`);
+      }
+    }
+    expect(wrong).toEqual([]);
+  });
+  it('says vous, not tu', () => {
+    const tu = /(?<!\p{L})(tu|toi|ton|ta|tes|te|t’)(?!\p{L})/iu; // letters with accents count as letters
+    const hits = Object.entries({ ...F, ...Q }).filter(([, v]) => tu.test(v));
+    expect(hits).toEqual([]);
+  });
+});
+
+describe('switching to French', () => {
+  afterEach(async () => {
+    await setLanguage('en');
+    setMoneyCountry('ca');
+  });
+  it('France: French words, dates, numbers and euros', async () => {
+    await setLanguage('fr');
+    setMoneyCountry('fr');
+    expect(pickLanguage('auto', ['fr-CA'])).toBe('fr');
+    expect(t('checkin.clearDays', { count: 1 })).toBe('1 jour sans alcool');
+    expect(t('checkin.clearDays', { count: 3 })).toBe('3 jours sans alcool');
+    expect(monthName(8)).toBe('août');
+    expect(num(1234).replace(/\s/g, ' ')).toBe('1 234');
+    expect(money(12).replace(/\s/g, ' ')).toBe('12 €');
+    expect(t('ms.clearWeekend1')).toBe('Un week-end sans alcool');
+    expect(resourcesFor('fr', 'ca_ab')).toMatchObject({ emergency: '15', talk: [{ name: '3114 : numéro national de prévention du suicide'.replace(' :', ' :') }] });
+  });
+  it('Quebec: its own words over France’s, Canadian dollars, French links where Canada has them', async () => {
+    await setLanguage('fr');
+    setMoneyCountry('ca');
+    expect(t('ms.clearWeekend1')).toBe('Une fin de semaine sans alcool');
+    expect(t('checkin.clearDays', { count: 3 })).toBe('3 jours sans alcool'); // not in fr-CA: France’s line
+    expect(money(12).replace(/\s/g, ' ')).toBe('12 $');
+    const r = resourcesFor('ca', 'ca_qc');
+    expect(r.drinking[0].name).toBe('Drogue : aide et référence');
+    expect(r.programmes.find((p) => p.url.includes('drinklesslivemore'))?.url).toBe('https://drinklesslivemore.ca/fr');
+    expect(r.drinkGuide?.url).toMatch(/Poster-fr\.pdf$/);
+  });
+  it('French Help has the same articles as English', async () => {
+    const { articles: helpFr } = await import('../src/help/fr');
+    const d = { os: 'android', browser: 'chrome' } as const;
+    expect(helpFr({ d, P: 'android' }).map((a) => a.id)).toEqual(helpEn({ d, P: 'android' }).map((a) => a.id));
+    const count = (f: string) => (readFileSync(`public/${f}`, 'utf8').match(/<section/g) ?? []).length;
+    expect(count('privacy-fr.html')).toBe(count('privacy.html'));
   });
 });

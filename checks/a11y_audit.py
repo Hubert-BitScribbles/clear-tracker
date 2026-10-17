@@ -8,7 +8,7 @@ OB_FORWARD=['Get started','Continue in the browser','Continue','Continue','Conti
 def ob(n, extra=''):
     seq=json.dumps(OB_FORWARD[:n])
     return ("(async () => { for (const t of "+seq+") { await new Promise(r => setTimeout(r, 80)); "
-            "[...document.querySelectorAll('button')].find(b => b.textContent.trim() === t).click(); } "
+            "(document.querySelector('.ob-step .btn-primary, .ob-step .ob-secondary')).click(); } "
             "await new Promise(r => setTimeout(r, 80)); "+extra+" })()")
 # (name, path, optional setup js run on the page before scanning)
 STATES=[
@@ -27,17 +27,18 @@ STATES=[
  ('All milestones','/milestones/all',None),
  ('Challenges','/milestones/challenges',None),
  ('Settings','/settings',None),
- ('Settings: savings form','/settings',"[...document.querySelectorAll('.st-link')].find(b=>b.textContent.includes('Change')).click()"),
- ('Settings: erase dialog','/settings',"[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Erase all data')).click()"),
+ ('Settings: savings form','/settings',"[...document.querySelectorAll('.st-link')].find(b=>/Change|Ändern/.test(b.textContent)).click()"),
+ ('Settings: erase dialog','/settings',"[...document.querySelectorAll('button')].find(b=>/Erase all data|Alle Daten löschen/.test(b.textContent)).click()"),
  ('About','/settings/about',None),
  ('Help','/settings/help?topic=contact',None),
  ('Help: sounds','/settings/help?topic=sounds',None),
  ('Resources','/settings/resources',None),
  ('Intention','/intention',None),
- ('Backup: passphrase','/settings/backup',"[...document.querySelectorAll('button')].find(b=>b.textContent==='Continue').click()"),
+ ('Backup: passphrase','/settings/backup',"[...document.querySelectorAll('button')].find(b=>/^(Continue|Weiter)$/.test(b.textContent)).click()"),
  ('Restore','/settings/restore',None),
 ]
 only=sys.argv[1:]  # optional filter
+LANG=__import__('os').environ.get('AUDIT_LANG','en')  # AUDIT_LANG=de for German
 found=defaultdict(lambda: {'impact':'', 'help':'', 'where':set(), 'nodes':[]})
 with sync_playwright() as p:
     b=p.chromium.launch()
@@ -49,7 +50,7 @@ with sync_playwright() as p:
         pg.evaluate(f"""async () => {{ localStorage.setItem('ct-appearance', JSON.stringify({{theme:'{t}',highContrast:{str(hc).lower()}}}));
           const db = await import('/src/data/database.ts'); const h = await import('/test/helpers.ts');
           const s=h.scenario(42,'2026-09-30',{{}}); await db.restoreFromBackup(s.entries, s.intentions); await db.setSetting('onboarding_complete','true');
-          await db.setSetting('savings_baseline_per_week','14'); await db.setSetting('savings_price_per_drink','9');
+          await db.setSetting('savings_baseline_per_week','14'); await db.setSetting('savings_price_per_drink','9'); await db.setSetting('language','{LANG}');
           await db.setChallenges({{weekendRuns:[{{from:'2026-06-05'}}],weekRuns:[],months:['2026-09','2026-12']}}); }}""")
         for name,path,setup in STATES:
             if only and not any(o.lower() in name.lower() for o in only): continue

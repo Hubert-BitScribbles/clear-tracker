@@ -22,18 +22,44 @@ type Base<K> = K extends `${infer B}_one` ? B : K extends `${infer B}_other` ? B
 export type Key = Base<Raw>;
 export type Vars = Record<string, string | number>;
 
-export type Lang = 'en';
-const MESSAGES: Record<Lang, Record<string, string>> = { en };
+export type Lang = 'en' | 'de';
+/** The languages on offer, each named in itself. */
+export const LANGUAGES: readonly { code: Lang; name: string }[] = [
+  { code: 'en', name: 'English' },
+  { code: 'de', name: 'Deutsch' },
+];
+// English is bundled; other languages load when chosen, so nobody downloads
+// words they won't see.
+const LOADERS: Record<Exclude<Lang, 'en'>, () => Promise<{ default: Record<string, string> }>> = {
+  de: () => import('./de.json'),
+};
+const MESSAGES: Partial<Record<Lang, Record<string, string>>> = { en };
 let lang: Lang = 'en';
+let country = '';
 
 export const language = (): Lang => lang;
-export function setLanguage(l: Lang): void {
+/** Switches language, loading its words first. Call before the first render, or reload after. */
+export async function setLanguage(l: Lang): Promise<void> {
+  if (!MESSAGES[l] && l !== 'en') MESSAGES[l] = (await LOADERS[l]()).default;
   lang = l;
-  if (typeof document !== 'undefined') document.documentElement.lang = l;
+  if (typeof document !== 'undefined') document.documentElement.lang = locale();
+}
+/** The region's country, for regional formats: Austria's German says "Jänner". */
+export function setFormatCountry(c: string): void {
+  country = c;
+  if (typeof document !== 'undefined') document.documentElement.lang = locale();
+}
+/** The locale for dates, numbers and money in the current language ('en' means English as written). */
+export const locale = (): string => (lang === 'de' ? (country === 'at' ? 'de-AT' : 'de-DE') : 'en');
+
+/** The language to use: the one chosen in Settings, or the device's first one we have, or English. */
+export function pickLanguage(chosen: string, preferred: readonly string[]): Lang {
+  const known = (code: string) => LANGUAGES.find((x) => x.code === code.toLowerCase().split('-')[0])?.code;
+  return known(chosen) ?? preferred.map(known).find((x) => x !== undefined) ?? 'en';
 }
 
 function lookup(key: string, vars?: Vars): string {
-  const own = MESSAGES[lang];
+  const own: Record<string, string> = MESSAGES[lang] ?? en;
   if (typeof vars?.count === 'number') {
     const form = new Intl.PluralRules(lang).select(vars.count);
     const hit = own[`${key}_${form}`] ?? own[`${key}_other`] ?? en[`${key}_${new Intl.PluralRules('en').select(vars.count)}` as Raw] ?? en[`${key}_other` as Raw];
@@ -43,7 +69,7 @@ function lookup(key: string, vars?: Vars): string {
 }
 
 /** Whether there's any text for a key, for optional text such as a help line's hours. */
-export const hasText = (key: string): boolean => key in MESSAGES[lang] || key in en;
+export const hasText = (key: string): boolean => key in (MESSAGES[lang] ?? en) || key in en;
 
 const fill = (text: string, vars?: Vars) =>
   vars ? text.replace(/\{\{(\w+)\}\}/g, (m, name: string) => (name in vars ? String(vars[name]) : m)) : text;

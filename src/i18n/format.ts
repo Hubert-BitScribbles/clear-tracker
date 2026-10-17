@@ -2,12 +2,12 @@
 // from the browser's built-in formats (German gives "Januar", and Austria
 // "Jänner", without translation). Money is in lib/savings.ts.
 
-import { language, t } from './index';
+import { language, locale, t } from './index';
 
 /** The locale used for words such as month names. English uses US forms ("Sep", not "Sept"). */
-const wordLocale = () => (language() === 'en' ? 'en-US' : language());
+const wordLocale = () => (language() === 'en' ? 'en-US' : locale());
 /** The locale used for plain numbers ("1,234"). */
-const numberLocale = () => (language() === 'en' ? 'en-CA' : language());
+const numberLocale = () => (language() === 'en' ? 'en-CA' : locale());
 
 const UTC = 'UTC';
 /** "January" or "Jan" for month 1–12. */
@@ -40,7 +40,7 @@ export const dayMonthLong = (iso: string) => date(iso, { month: 'long', day: 'nu
 /** "September 7, 2026" */
 export const dayMonthYearLong = (iso: string) => date(iso, { month: 'long', day: 'numeric', year: 'numeric' });
 /** A moment as a medium date in the reader's own style ("Sep 30, 2026"); English follows the browser's locale. */
-export const mediumDate = (d: Date) => d.toLocaleDateString(language() === 'en' ? undefined : language(), { dateStyle: 'medium' });
+export const mediumDate = (d: Date) => d.toLocaleDateString(language() === 'en' ? undefined : locale(), { dateStyle: 'medium' });
 /** "M" … the one-letter weekday for 0 = Sunday … 6 = Saturday, for calendar headings. */
 export const weekdayLetter = (weekday: number) =>
   new Intl.DateTimeFormat(wordLocale(), { weekday: 'narrow', timeZone: UTC }).format(Date.UTC(2026, 1, 1 + weekday));

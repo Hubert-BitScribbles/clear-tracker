@@ -1,5 +1,6 @@
 # Screenshots of every screen, for proving a change altered nothing visible.
 #   python3 checks/snapshots.py <out-dir>              take screenshots (dev server on 5173, or SNAP_URL)
+#   SNAP_LANG=de python3 checks/snapshots.py <out-dir>  the same in German (onboarding buttons found by position)
 #   python3 checks/snapshots.py --compare <dirA> <dirB>  report screens whose pixels differ
 # Same data, clock and screen states as a11y_audit.py, in light and dark, plus
 # regions whose wording or currency differs (UK nations, euro countries, New Zealand).
@@ -25,12 +26,15 @@ if sys.argv[1:2] == ['--compare']:
 
 OUT = sys.argv[1]
 BASE = os.environ.get("SNAP_URL", "http://localhost:5173")
+LANG = os.environ.get("SNAP_LANG", "en")
+WIDTH = int(os.environ.get("SNAP_WIDTH", "390"))
+WIDE = []  # screens wider than the window: something doesn't fit
 os.makedirs(OUT, exist_ok=True)
 OB_FORWARD = ['Get started', 'Continue in the browser', 'Continue', 'Continue', 'Continue', 'Continue']
 def ob(n, extra=''):
     seq = json.dumps(OB_FORWARD[:n])
     return ("(async () => { for (const t of " + seq + ") { await new Promise(r => setTimeout(r, 80)); "
-            "[...document.querySelectorAll('button')].find(b => b.textContent.trim() === t).click(); } "
+            "(document.querySelector('.ob-step .btn-primary, .ob-step .ob-secondary')).click(); } "
             "await new Promise(r => setTimeout(r, 80)); " + extra + " })()")
 STATES = [
     ('onboarding-1-welcome', '/onboarding', None),
@@ -44,22 +48,22 @@ STATES = [
     ('checkin-selected-past', '/', "document.querySelectorAll('.day-cell')[3].click()"),
     ('trends', '/trends', None),
     ('trends-details', '/trends', "document.querySelectorAll('.tr-dow-row')[4].click(); document.querySelectorAll('.wg-tile')[10].click();"),
-    ('trends-all-time', '/trends', "[...document.querySelectorAll('button, option')].find(b => /All time/.test(b.textContent))?.click()"),
+    ('trends-all-time', '/trends', "[...document.querySelectorAll('button, option')].find(b => /All time|Gesamt/.test(b.textContent))?.click()"),
     ('review-month', '/trends/review?year=2026&month=8', "document.querySelector('.rv-include summary').click()"),
     ('review-year', '/trends/review?year=2026', None),
     ('milestones', '/milestones', None),
     ('milestones-all', '/milestones/all', None),
     ('challenges', '/milestones/challenges', None),
     ('settings', '/settings', None),
-    ('settings-savings-form', '/settings', "[...document.querySelectorAll('.st-link')].find(b=>b.textContent.includes('Change')).click()"),
-    ('settings-erase-dialog', '/settings', "[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Erase all data')).click()"),
+    ('settings-savings-form', '/settings', "[...document.querySelectorAll('.st-link')].find(b=>/Change|Ändern/.test(b.textContent)).click()"),
+    ('settings-erase-dialog', '/settings', "[...document.querySelectorAll('button')].find(b=>/Erase all data|Alle Daten löschen/.test(b.textContent)).click()"),
     ('about', '/settings/about', None),
     ('help', '/settings/help', None),
     ('help-contact', '/settings/help?topic=contact', None),
     ('resources', '/settings/resources', None),
     ('intention', '/intention', None),
     ('backup', '/settings/backup', None),
-    ('backup-passphrase', '/settings/backup', "[...document.querySelectorAll('button')].find(b=>b.textContent==='Continue').click()"),
+    ('backup-passphrase', '/settings/backup', "[...document.querySelectorAll('button')].find(b=>/^(Continue|Weiter)$/.test(b.textContent)).click()"),
     ('restore', '/settings/restore', None),
 ]
 # Screens whose text or money depends on the region, shown for other regions too.
@@ -70,14 +74,14 @@ REGIONS = [('uk-sct', {'country': 'uk', 'province': 'ca_ab', 'nation': 'sct'}), 
 with sync_playwright() as p:
     b = p.chromium.launch()
     for theme in ['light', 'dark']:
-        ctx = b.new_context(viewport={"width": 390, "height": 844}, timezone_id="America/Vancouver", locale='en-CA')
+        ctx = b.new_context(viewport={"width": WIDTH, "height": 844}, timezone_id="America/Vancouver", locale='en-CA')
         pg = ctx.new_page()
         pg.clock.install(time=datetime.datetime(2026, 9, 30, 20, 0, tzinfo=datetime.timezone(datetime.timedelta(hours=-7))))
         pg.goto(BASE + "/#/settings"); pg.wait_for_timeout(400)
         pg.evaluate(f"""async () => {{ localStorage.setItem('ct-appearance', JSON.stringify({{theme:'{theme}',highContrast:false}}));
           const db = await import('/src/data/database.ts'); const h = await import('/test/helpers.ts');
           const s=h.scenario(42,'2026-09-30',{{}}); await db.restoreFromBackup(s.entries, s.intentions); await db.setSetting('onboarding_complete','true');
-          await db.setSetting('savings_baseline_per_week','14'); await db.setSetting('savings_price_per_drink','9');
+          await db.setSetting('savings_baseline_per_week','14'); await db.setSetting('language','{LANG}'); await db.setSetting('savings_price_per_drink','9');
           await db.setChallenges({{weekendRuns:[{{from:'2026-06-05'}}],weekRuns:[],months:['2026-09','2026-12']}}); }}""")
         runs = [('ca', {'country': 'ca', 'province': 'ca_bc'}, STATES)] + (
             [(k, r, [s for s in STATES if s[0] in REGIONAL]) for k, r in REGIONS] if theme == 'light' else [])
@@ -86,8 +90,13 @@ with sync_playwright() as p:
             for name, path, setup in states:
                 pg.evaluate(f"async () => (await import('/src/data/database.ts')).setSetting('onboarding_complete', '{'false' if path == '/onboarding' else 'true'}')")
                 pg.goto(BASE + "/#" + path); pg.reload(); pg.wait_for_timeout(900)
-                if setup: pg.evaluate(setup); pg.wait_for_timeout(500)
+                if setup:
+                    try: pg.evaluate(setup)
+                    except Exception as e: print('setup failed:', name, str(e).splitlines()[0])
+                    pg.wait_for_timeout(500)
                 pg.screenshot(path=os.path.join(OUT, f"{name}--{rkey}--{theme}.png"), full_page=True, animations='disabled', caret='hide')
+                if pg.evaluate("document.documentElement.scrollWidth > document.documentElement.clientWidth"): WIDE.append(f"{name}--{rkey}--{theme}")
         ctx.close()
     b.close()
 print('saved', len(os.listdir(OUT)), 'screenshots to', OUT)
+print('wider than the window:', ', '.join(WIDE) or 'none')

@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { BackupError, backupsAvailable, decryptBackup, type BackupPayload } from '../data/backup';
 import { getEntryCount, restoreBackup } from '../data/database';
 import { loadMoneyCountry } from '../lib/moneyRegion';
+import { loadLanguage } from '../lib/language';
 import './Flow.css';
 import { t } from '../i18n';
 import { mediumDate } from '../i18n/format';
@@ -54,7 +55,7 @@ export function Restore() {
     setBusy(true);
     try {
       await restoreBackup(parsed);
-      await loadMoneyCountry(); // the backup's region decides the currency
+      await Promise.all([loadMoneyCountry(), loadLanguage()]); // the backup's region and language
       setStep(3);
     } catch {
       setError(t('restore.failed'));

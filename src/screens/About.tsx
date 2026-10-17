@@ -6,6 +6,7 @@ import iconUrl from '../assets/clear-icon-96.png';
 import { SegmentNav } from '../components/SegmentNav';
 import './About.css';
 import { rich, t, type Key } from '../i18n';
+import { privacyUrl } from '../lib/privacy';
 
 // About, the second half of Settings | About. Adapted from the native
 // app/about.tsx, with:
@@ -73,7 +74,7 @@ export function About() {
             : rich('about.notBackupShared', { b: (c) => <strong>{c}</strong> })}
         </p>
         <p className="ab-body ab-gap">
-          <a href="./privacy.html" target="_blank" rel="noopener">{t('about.privacy')}</a>
+          <a href={privacyUrl()} target="_blank" rel="noopener">{t('about.privacy')}</a>
         </p>
         <ul className="ab-status" aria-label={t('about.thisDevice')}>
           <li>

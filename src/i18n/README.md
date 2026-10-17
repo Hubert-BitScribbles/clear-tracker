@@ -1,8 +1,13 @@
 # Wording and languages
 
-Every word the app shows is in `en.json` (and `de.json` for German), except Help and the privacy page,
-which are whole pages (each language will get its own) and the problem
-report's device details, which stay in English for us to read.
+Every word the app shows is in `en.json` (and `de.json` for German), except:
+
+- **Help**: one file of articles per language in `src/help/` (`en.tsx`,
+  `de.tsx`), written to read naturally rather than line by line. Same
+  articles, ids and order in each (tested).
+- **The privacy statement**: `public/privacy.html`, and `privacy-<lang>.html`
+  per language; `privacyUrl()` in `src/lib/privacy.ts` picks the reader's.
+- **The problem report's device details**, which stay in English for us to read.
 
 - `t('key', { name: value })` gives the text, filling `{{name}}`.
 - Plurals: `key_one` and `key_other` in the file, asked for as
@@ -21,7 +26,8 @@ translation tools such as Weblate and Crowdin read.
 ## Adding a language
 
 1. Copy `en.json` to `<lang>.json` and translate the values. A key left out
-   falls back to English.
+   falls back to English. Add `src/help/<lang>.tsx` (and to `BY_LANGUAGE` in
+   `Help.tsx`) and `public/privacy-<lang>.html`, linked both ways.
 2. Add it to `Lang` in `index.ts`.
 3. Add it to `LANGUAGES` and `LOADERS` in `index.ts`; the Language setting in
    Settings lists it, and a device in that language gets it automatically.

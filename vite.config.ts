@@ -37,9 +37,9 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,wav,woff2,webmanifest}'],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
-        // The privacy page is its own page, not the app: don't answer it with
+        // The privacy pages (privacy.html, privacy-de.html) are their own pages, not the app: don't answer them with
         // the app's index.html (it's still precached, so it works offline).
-        navigateFallbackDenylist: [/\/privacy\.html$/],
+        navigateFallbackDenylist: [/\/privacy(-\w+)?\.html$/],
       },
     }),
   ],

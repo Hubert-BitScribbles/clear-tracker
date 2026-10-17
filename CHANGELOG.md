@@ -10,10 +10,13 @@ on the branch, before merging.
   straight away; anyone can choose in **Settings → Language** (Automatic,
   English, Deutsch). Dates, numbers and money follow German style, and in
   Austria the months too („Jänner“). Help lines keep their own names, with
-  hours and notes in German. Help and the privacy page are still in English,
-  and Help says so.
-- The German wording was written for review by a German speaker before
-  release; `src/i18n/glossary-de.md` records the key terms.
+  hours and notes in German. Help and the privacy statement are in German
+  too (`src/help/de.tsx`, `public/privacy-de.html`), each linking to its
+  English version.
+- Reviewed by a German speaker in Austria: „Ihre Einträge“, „Wenig“ and
+  „Vorhaben“ are her choices.
+- `src/i18n/glossary-de.md` records the key terms. Fixed in both languages:
+  "1 day logged" (was "1 days logged").
 
 ## 1.1.3 — 16 October 2026
 

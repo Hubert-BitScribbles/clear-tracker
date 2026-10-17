@@ -6,6 +6,9 @@ import { dayMonth, monthName, num } from '../src/i18n/format';
 import { spanText } from '../src/lib/challengeText';
 import { money, setMoneyCountry } from '../src/lib/savings';
 import { resourcesFor } from '../src/lib/resources';
+import { articles as helpEn } from '../src/help/en';
+import { articles as helpDe } from '../src/help/de';
+import { readFileSync } from 'fs';
 
 const placeholders = (s: string) => [...s.matchAll(/\{\{(\w+)\}\}/g)].map((m) => m[1]).sort();
 const tags = (s: string) => [...s.matchAll(/<(\w+)>/g)].map((m) => m[1]).sort();
@@ -74,5 +77,21 @@ describe('switching to German', () => {
     const r = resourcesFor('de', 'ca_ab');
     expect(r.talk[0]).toMatchObject({ name: 'TelefonSeelsorge', call: '0800 111 0 111', hours: 'Kostenlos, rund um die Uhr' });
     expect(resourcesFor('ca', 'ca_on').drinking[0]).toMatchObject({ call: '1-866-531-2600', hours: 'Rund um die Uhr' });
+  });
+});
+
+describe('German Help and privacy page', () => {
+  const devices = [
+    { os: 'iphone', browser: 'safari' }, { os: 'android', browser: 'chrome' }, { os: 'mac', browser: 'safari' },
+    { os: 'windows', browser: 'edge' }, { os: 'linux', browser: 'firefox' },
+  ] as const;
+  it.each(devices)('the same articles, in the same order, on $os with $browser', (d) => {
+    const P = d.os === 'iphone' ? 'ios' : d.os === 'android' ? 'android' : 'other';
+    const ids = (a: { id: string }[]) => a.map((x) => x.id);
+    expect(ids(helpDe({ d, P }))).toEqual(ids(helpEn({ d, P })));
+  });
+  it('the German privacy page has the same sections as the English one', () => {
+    const count = (f: string) => (readFileSync(`public/${f}`, 'utf8').match(/<section/g) ?? []).length;
+    expect(count('privacy-de.html')).toBe(count('privacy.html'));
   });
 });

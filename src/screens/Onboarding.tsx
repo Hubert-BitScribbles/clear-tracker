@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import iconUrl from '../assets/clear-icon-96.png';
 import { DayCell } from '../components/DayCell';
 import { RegionFields } from '../components/RegionFields';
+import { setMoneyCountry } from '../lib/savings';
 import { getSetting, nextLevel, saveIntention, setSetting, type DayLevel } from '../data/database';
 import { mondayOf, todayIso } from '../data/dates';
 import { DeviceFields, useDevice } from '../components/DeviceFields';
@@ -83,6 +84,7 @@ export function Onboarding() {
     await saveIntention(target, mondayOf(today));
     await setSetting('audio_cues_enabled', audioCues ? 'true' : 'false');
     await setSetting('region', JSON.stringify(region));
+    setMoneyCountry(region.country);
     await setSetting('onboarding_complete', 'true');
     await persist;
     navigate('/', { replace: true });

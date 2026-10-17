@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { captureInstallPrompt } from './lib/install';
+import { loadMoneyCountry } from './lib/moneyRegion';
 
 // Brand fonts, bundled with the app so they work offline once installed.
 import '@fontsource/inter/latin-400.css';
@@ -18,8 +19,11 @@ import './styles/base.css';
 
 captureInstallPrompt();
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+// The currency follows the region; read it before the first screen draws.
+loadMoneyCountry().finally(() =>
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  ),
 );

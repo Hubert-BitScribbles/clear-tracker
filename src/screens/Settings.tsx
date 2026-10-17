@@ -6,7 +6,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { baselineText, SavingsSetup } from '../components/SavingsCard';
 import { getEntryCount, getSavingsSettings, getSetting, resetDatabase, setSetting, type SavingsSettings } from '../data/database';
-import { BASELINE_KEY, PRICE_KEY, priceText } from '../lib/savings';
+import { BASELINE_KEY, PRICE_KEY, priceText, setMoneyCountry } from '../lib/savings';
 import { daysAgoText } from '../lib/backupNudge';
 import { daysBetween, localDateOf, todayIso } from '../data/dates';
 import { useAppearance } from '../theme/AppearanceContext';
@@ -57,6 +57,7 @@ export function Settings() {
   const [lastBackup, setLastBackup] = useState<string | null>(null);
   // Bumped after erasing, so cards that load their own setting (Region) reload too.
   const [version, setVersion] = useState(0);
+  const [, setCurrencyShown] = useState(0); // redraws savings when the region (and so the currency) changes
   const location = useLocation();
 
   async function load() {
@@ -178,7 +179,7 @@ export function Settings() {
       )}
 
       <h2 className="st-sec" id="region">Region</h2>
-      <RegionCard key={version} />
+      <RegionCard key={version} onChange={() => setCurrencyShown((n) => n + 1)} />
 
       <h2 className="st-sec" id="device">This device</h2>
       <section className="card st-card st-block">
@@ -325,8 +326,8 @@ function ReminderCard() {
   );
 }
 
-/** Region: where help lines (and later, currency and resources) come from. Guessed from the time zone until set. */
-function RegionCard() {
+/** Region: where help lines and the savings currency come from. Guessed from the time zone until set. */
+function RegionCard({ onChange }: { onChange: () => void }) {
   const [region, setRegion] = useState<Region | null>(null);
   const [isSet, setIsSet] = useState(false);
   useEffect(() => {
@@ -340,11 +341,13 @@ function RegionCard() {
     setRegion(r);
     setIsSet(true);
     await setSetting('region', JSON.stringify(r));
+    setMoneyCountry(r.country);
+    onChange();
   };
   return (
     <section className="card st-card st-block">
       <p className="st-sub st-sub-first">
-        Decides which help lines and programmes <Link to="/settings/resources">Resources</Link> shows.{' '}
+        Decides which help lines and programmes <Link to="/settings/resources">Resources</Link> shows, and the currency for savings.{' '}
         {isSet ? '' : `Guessed from this device's time zone: ${regionLabel(region)}.`}
       </p>
       <RegionFields region={region} onChange={save} />

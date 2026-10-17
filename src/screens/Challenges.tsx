@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { HelpLinks } from '../components/HelpLink';
 import { MilestonesNav } from '../components/SegmentNav';
 import { TierBadges } from '../components/TierBadges';
@@ -105,6 +106,10 @@ export function Challenges() {
         Optional goals you take on. They're all-or-nothing — one drinking day means that one isn't earned — which suits
         some people and not others. Like an intention, a weekend or week challenge starts with the next one that hasn't
         begun, and only counts from then.
+      </p>
+      <p className="ch-intro">
+        If you drink heavily every day, stopping suddenly can be dangerous. Talk to a doctor first, or one of the lines
+        in <Link to="/settings/resources">Resources</Link>.
       </p>
 
       {section('weekend')}

@@ -4,6 +4,31 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.1.0 — 16 October 2026
+
+More countries, tested on a preview by testers in Austria and the UK.
+
+- **New countries**, in English: Germany, Austria, Ireland and New Zealand.
+  Each has its emergency number, someone to talk to, help with drinking and
+  programmes, checked against official sources on 14–15 October 2026. German
+  and Austrian lines are in German and say so. Austria has no national alcohol
+  helpline, so AA Austria and the 1450 health line stand in. A device on
+  Berlin, Vienna, Dublin or Auckland time starts on that country.
+- **UK nations:** choosing the United Kingdom now asks for the nation, as
+  Canada asks for the province. England keeps Drinkline; Wales gets DAN 24/7;
+  Scotland gets Drinkline Scotland and Breathing Space; Northern Ireland adds
+  Lifeline. A UK region saved before this reads as England.
+- **Caution about stopping suddenly**, in Resources, Help and Challenges:
+  stopping suddenly after heavy daily drinking can be dangerous, so talk to a
+  doctor or a help line first (NHS, HealthLink BC, NIAAA).
+- **What counts as one drink:** Resources links to the country's official
+  guide (none found for Austria yet). The app still doesn't count drink sizes;
+  Help's logging topic says so and points there.
+- **Savings in the region's currency:** € for Ireland, Germany and Austria,
+  £ for the UK (which showed $ before), $ elsewhere. Nothing is converted.
+  Prices and baselines accept a comma decimal ("4,50") and a typed symbol, and
+  changing region in Settings updates the savings line straight away.
+
 ## 1.0.0 — 12 October 2026
 
 The first release. Tested on iPhone, Mac and other platforms by several

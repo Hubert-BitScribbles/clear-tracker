@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { SegmentNav } from '../components/SegmentNav';
 import { getSetting } from '../data/database';
 import { deviceTimeZone, parseRegion, regionLabel, type Region } from '../lib/regions';
-import { CHECKED, dialable, resourcesFor, type Line } from '../lib/resources';
+import { CHECKED, dialable, resourcesFor, STOPPING_CAUTION, type Line } from '../lib/resources';
 import './Support.css';
 
 // Resources: where to find help, for the region set in Settings. Checked
@@ -43,8 +43,13 @@ export function Resources() {
   useEffect(() => {
     getSetting('region', '').then((raw) => setRegion(parseRegion(raw, deviceTimeZone())));
   }, []);
+  const { hash } = useLocation();
+  useEffect(() => {
+    // From Help's "what counts as one drink" link.
+    if (region && hash === '#drink') document.getElementById('drink')?.scrollIntoView({ block: 'start' });
+  }, [region, hash]);
   if (!region) return <main className="support" />;
-  const r = resourcesFor(region.country, region.province);
+  const r = resourcesFor(region.country, region.province, region.nation);
 
   return (
     <main className="support">
@@ -63,6 +68,7 @@ export function Resources() {
       <div className="card sp-card">{r.talk.map((l) => <LineCard key={l.name} line={l} />)}</div>
 
       <h2 className="sp-sec">Help with drinking</h2>
+      <p className="sp-caution">{STOPPING_CAUTION}</p>
       <div className="card sp-card">{r.drinking.map((l) => <LineCard key={l.name} line={l} />)}</div>
 
       <h2 className="sp-sec">Programmes and information</h2>
@@ -75,6 +81,19 @@ export function Resources() {
         ))}
         <p className="sp-foot">Listed as options, not recommendations: there's no one right path. Opens in your browser.</p>
       </div>
+
+      {r.drinkGuide && (
+        <>
+          <h2 id="drink" className="sp-sec">What counts as one drink</h2>
+          <div className="card sp-card">
+            <div className="sp-line">
+              <a className="sp-prog" href={r.drinkGuide.url} target="_blank" rel="noopener noreferrer">{r.drinkGuide.name} ↗</a>
+              <p className="sp-line-meta">{r.drinkGuide.note}</p>
+            </div>
+            <p className="sp-foot">Clear Tracker doesn't count drink sizes. This is here if it helps you log the same way each time.</p>
+          </div>
+        </>
+      )}
 
       <p className="sp-checked">
         Numbers checked {CHECKED} against official sources. If one doesn't work,{' '}

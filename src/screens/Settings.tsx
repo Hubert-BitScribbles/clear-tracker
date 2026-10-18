@@ -16,7 +16,7 @@ import { deviceTimeZone, parseRegion, regionLabel, type Region } from '../lib/re
 import { RegionFields } from '../components/RegionFields';
 import './Settings.css';
 import { LANGUAGES, pickLanguage, rich, t, type Key } from '../i18n';
-import { LANGUAGE_KEY } from '../lib/language';
+import { chooseLanguage, LANGUAGE_KEY } from '../lib/language';
 
 // Port of the native app/(tabs)/settings.tsx, adapted for the web:
 // - Reminders: instructions for a repeating reminder in the phone's own
@@ -382,8 +382,7 @@ function LanguageCard() {
           lang={chosen === 'auto' ? undefined : chosen}
           value={chosen}
           onChange={async (e) => {
-            await setSetting(LANGUAGE_KEY, e.target.value); // other windows switch too
-            window.location.reload();
+            await chooseLanguage(e.target.value);
           }}
         >
           <option value="auto">{t('settings.languageAuto', { language: auto.name })}</option>

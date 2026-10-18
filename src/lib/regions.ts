@@ -17,8 +17,14 @@ export const PROVINCES = named('province', [
 /** The UK's nations, for the lines that differ (Wales, Scotland, Northern Ireland). */
 export const UK_NATIONS = named('nation', ['eng', 'sct', 'wls', 'nir']);
 
-/** A starting region from the device's time zone; the user can change it. */
-export function regionFromTimeZone(tz: string): Region {
+/**
+ * A starting region from the device's time zone (and, for eastern Canada, its
+ * language); the user can change it. Quebec has no time zone of its own —
+ * America/Montreal is an old alias that devices report as America/Toronto —
+ * so a French-language device on Toronto time starts on Quebec.
+ */
+export function regionFromTimeZone(tz: string, languages: readonly string[] = deviceLanguages()): Region {
+  if (tz === 'America/Toronto' && languages[0]?.toLowerCase().startsWith('fr')) return { country: 'ca', province: 'ca_qc' };
   const ca: Record<string, string> = {
     'America/Vancouver': 'ca_bc', 'America/Edmonton': 'ca_ab', 'America/Regina': 'ca_sk', 'America/Swift_Current': 'ca_sk',
     'America/Winnipeg': 'ca_mb', 'America/Toronto': 'ca_on', 'America/Montreal': 'ca_qc', 'America/Halifax': 'ca_ns',
@@ -66,3 +72,5 @@ export function regionLabel(r: Region): string {
 }
 
 export const deviceTimeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
+const deviceLanguages = (): readonly string[] =>
+  typeof navigator === 'undefined' ? [] : navigator.languages?.length ? navigator.languages : [navigator.language];

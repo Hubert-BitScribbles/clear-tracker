@@ -4,7 +4,7 @@ from playwright.sync_api import sync_playwright
 AXE=open(__import__('os').path.join(__import__('os').path.dirname(__file__), '..', 'node_modules', 'axe-core', 'axe.min.js')).read()
 MODES=[('light',False),('dark',False),('light',True),('dark',True)]
 # Onboarding: press the forward buttons in order (a browser tab has the install step).
-OB_FORWARD=['Get started','Continue in the browser','Continue','Continue','Continue','Continue']
+OB_FORWARD=['Get started','Continue in the browser','Continue','Continue','Continue']
 def ob(n, extra=''):
     seq=json.dumps(OB_FORWARD[:n])
     return ("(async () => { for (const t of "+seq+") { await new Promise(r => setTimeout(r, 80)); "
@@ -17,8 +17,8 @@ STATES=[
  ('Onboarding: privacy','/onboarding',ob(2)),
  ('Onboarding: logging a day','/onboarding',ob(3,"document.querySelector('.ob-practice .day-cell').click(); document.querySelector('.ob-practice .day-cell').click();")),
  ('Onboarding: intention','/onboarding',ob(4)),
- ('Onboarding: region','/onboarding',ob(5)),
- ('Onboarding: ready','/onboarding',ob(6)),
+ ('Onboarding: language and region','/onboarding',"document.querySelectorAll('.ob-device .dv-change')[1].click()"),
+ ('Onboarding: ready','/onboarding',ob(5)),
  ('Check-in','/',None),
  ('Trends','/trends',"document.querySelectorAll('.tr-dow-row')[4].click(); document.querySelectorAll('.wg-tile')[10].click();"),
  ('Month in review','/trends/review?year=2026&month=8',"document.querySelector('.rv-include summary').click()"),

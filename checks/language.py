@@ -43,6 +43,21 @@ with sync_playwright() as p:
     check('no page errors (English device)', not errors, errors[:2])
     ctx.close()
 
+    # Onboarding: choose a region, then a language; the page reloads in it and keeps the region.
+    ctx = b.new_context(viewport={"width": 390, "height": 844}, timezone_id='America/Vancouver', locale='en-CA')
+    pg = ctx.new_page(); errors = []; pg.on('pageerror', lambda e: errors.append(str(e)))
+    pg.goto(BASE + "/"); pg.wait_for_timeout(1200)
+    pg.locator('.ob-device .dv-change').nth(1).click(); pg.wait_for_timeout(150)
+    sel = pg.locator('.ob-device .dv-fields select')
+    sel.nth(1).select_option('at'); pg.wait_for_timeout(150)
+    with pg.expect_navigation(): sel.nth(0).select_option('de')
+    pg.wait_for_timeout(1000)
+    line = pg.locator('.ob-device .dv-line').nth(1).inner_text()
+    check('onboarding: Deutsch chosen, page reloads in German with Austria kept',
+          pg.locator('h1').inner_text() == 'Willkommen bei Clear Tracker' and 'Sprache: Deutsch · Region: Österreich' in line, line)
+    check('no page errors (onboarding switch)', not errors, errors[:2])
+    ctx.close()
+
     # A German-language device in Vienna: German straight away, Austrian dates.
     ctx, pg, errors = fresh(b, 'de-AT', 'Europe/Vienna')
     pg.evaluate("async () => (await import('/src/data/database.ts')).setSetting('region', JSON.stringify({country: 'at', province: 'ca_ab'}))")

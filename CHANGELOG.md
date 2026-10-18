@@ -18,6 +18,11 @@ on the branch, before merging.
 - Canadian links open their French versions for French readers (Boire moins,
   c'est mieux; the CCSA's standard-drink poster).
 - `src/i18n/glossary-fr.md` records the key terms, for review.
+- **Language and region on the welcome screen**, under the device line and
+  in the same way: what the app guessed, with "Not right? Change" to pick
+  another language, country and province. The separate "Where are you?"
+  step is gone, so setup is one step shorter. A French-language phone on
+  Toronto time now starts on Quebec (Quebec reports Toronto's time zone).
 
 ## 1.2.0 — 17 October 2026
 

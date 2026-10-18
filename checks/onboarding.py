@@ -29,9 +29,18 @@ with sync_playwright() as p:
     ctx, pg = fresh(b)
     pg.goto(BASE + "/"); pg.wait_for_timeout(1200)
     check('first open goes to onboarding', pg.url.endswith('#/onboarding'), pg.url)
-    check('browser tab: 7 steps, no tab bar', dots(pg) == 7 and pg.locator('.tabbar, nav.tab-bar, .tab').count() == 0)
+    check('browser tab: 6 steps, no tab bar', dots(pg) == 6 and pg.locator('.tabbar, nav.tab-bar, .tab').count() == 0)
     check('welcome: says what it is and isn\'t; no Back', "What it isn't" in pg.locator('main').inner_text()
           and 'medical service' in pg.locator('main').inner_text() and button(pg, '‹ Back').count() == 0)
+    line = pg.locator('.ob-device .dv-line').nth(1)
+    check('welcome: language and region guessed (English; Canada · British Columbia)',
+          line.inner_text().startswith('Language: English · Region: Canada · British Columbia.'), line.inner_text())
+    line.get_by_role('button', name='Not right? Change').click(); pg.wait_for_timeout(150)
+    sel = pg.locator('.ob-device .dv-fields select')
+    check('…Change opens language, country and province', sel.count() == 3 and sel.nth(0).input_value() == 'auto'
+          and sel.nth(1).input_value() == 'ca' and sel.nth(2).input_value() == 'ca_bc', [sel.nth(i).input_value() for i in range(sel.count())])
+    sel.nth(2).select_option('ca_on'); pg.wait_for_timeout(150)
+    check('…choosing a province updates the line', 'Canada · Ontario' in line.inner_text(), line.inner_text())
     button(pg, 'Get started').click(); pg.wait_for_timeout(200)
     check('install step next, with Back', h1(pg) == 'Install it as an app' and button(pg, '‹ Back').count() == 1)
     button(pg, '‹ Back').click(); pg.wait_for_timeout(200)
@@ -75,11 +84,6 @@ with sync_playwright() as p:
     check('intention set to 5 from the keyboard', pg.locator('.ob-big').inner_text() == '5')
     button(pg, 'Continue').click(); pg.wait_for_timeout(200)
 
-    check('region step', h1(pg) == 'Where are you?')
-    sel = pg.locator('.ob-card select')
-    check('region guessed from time zone: Canada, British Columbia', sel.nth(0).input_value() == 'ca' and sel.nth(1).input_value() == 'ca_bc')
-    sel.nth(1).select_option('ca_on'); pg.wait_for_timeout(100)
-    button(pg, 'Continue').click(); pg.wait_for_timeout(200)
 
     t = pg.locator('main').inner_text()
     check('ready: intention and region summarised, support explained', h1(pg) == "You're ready"
@@ -109,7 +113,7 @@ with sync_playwright() as p:
     # ---- Installed app: no install step; restore path
     ctx, pg = fresh(b, installed=True)
     pg.goto(BASE + "/onboarding"); pg.wait_for_timeout(1000)
-    check('installed app: 6 steps, no install step', dots(pg) == 6)
+    check('installed app: 5 steps, no install step', dots(pg) == 5)
     button(pg, 'Get started').click(); pg.wait_for_timeout(200)
     check('installed app: privacy follows welcome, without "in this browser"', h1(pg) == 'Your record stays on this device'
           and 'in this browser' not in pg.locator('main').inner_text())

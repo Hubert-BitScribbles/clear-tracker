@@ -92,7 +92,7 @@ export function Milestones() {
               {data.dayStreak.on && (
                 <Badge
                   glyph="●"
-                  title={data.dayStreak.now > 0 ? t('milestones.dayStreak', { n: data.dayStreak.now }) : t('milestones.noDayStreak')}
+                  title={data.dayStreak.now > 0 ? t('milestones.dayStreak', { count: data.dayStreak.now }) : t('milestones.noDayStreak')}
                   sub={t('milestones.longest', { n: data.dayStreak.best })}
                   earned={data.dayStreak.now > 0}
                 />

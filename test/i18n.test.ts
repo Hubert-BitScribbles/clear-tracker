@@ -150,6 +150,23 @@ describe('switching to French', () => {
     expect(r.programmes.find((p) => p.url.includes('drinklesslivemore'))?.url).toBe('https://drinklesslivemore.ca/fr');
     expect(r.drinkGuide?.url).toMatch(/Poster-fr\.pdf$/);
   });
+  it('0 and 1 take the singular in French; 1 takes it in English and German', async () => {
+    const plain = (x: string) => x.replace(/[\u00a0\u202f]/g, ' ');
+    expect(t('review.aiming', { count: 1 })).toBe('Aiming for 1 clear day a week');
+    expect(t('milestones.dayStreak', { count: 1 })).toBe('Clear day streak: 1 day');
+    expect(t('intention.historyTarget', { count: 1 })).toBe('1 day/week');
+    await setLanguage('de');
+    expect(t('trends.intention', { count: 1 })).toBe('Vorhaben: 1 alkoholfreier Tag');
+    await setLanguage('fr');
+    expect(t('checkin.weekCount', { count: 0, target: 3 })).toBe('0 jour sans alcool sur 3');
+    expect(t('checkin.weekCount', { count: 2, target: 3 })).toBe('2 jours sans alcool sur 3');
+    expect(plain(t('week.label', { date: '5 oct.', count: 1, target: 3, alignment: 'partielle' }))).toBe('Semaine du 5 oct. : 1 jour sans alcool sur 3, partielle');
+    expect(t('trends.daysLogged', { count: 1, available: 30 })).toBe('1 jour noté sur 30');
+    expect(t('all.daysProgress', { count: 0, target: 7 })).toBe('0 jour sur 7');
+    expect(plain(t('review.aiming', { count: 1 }))).toBe('Intention : 1 jour sans alcool par semaine');
+    expect(t('trends.actualPartial', { count: 1 })).toBe(' (1 jour noté sur 7)');
+    expect(t('settings.savingsSummary', { count: 1, price: '9 €' })).toBe('Environ 1 verre par semaine, à 9 € le verre');
+  });
   it('French Help has the same articles as English', async () => {
     const { articles: helpFr } = await import('../src/help/fr');
     const d = { os: 'android', browser: 'chrome' } as const;

@@ -292,7 +292,7 @@ export function Review() {
                     ? r.weeks.before > 0
                       ? t('review.weeksBefore')
                       : t('review.weeksNone')
-                    : r.targets.map((x, i) => (i ? t('review.then', { n: x.target, date: fmt(x.from) }) : t('review.aiming', { n: x.target }))).join('')}
+                    : r.targets.map((x, i) => (i ? t('review.then', { n: x.target, date: fmt(x.from) }) : t('review.aiming', { count: x.target }))).join('')}
                   .{r.targets.length > 0 && r.weeks.before > 0 ? t('review.beforeNotCounted') : ''}
                 </p>
                 {r.weeks.counted > 0 && (

@@ -41,6 +41,11 @@ on the branch, before merging.
   little more — a clearer head, and a choice that's yours. German and French
   keep "Clear" in English and say what it means (the French reviewer's
   suggestion), rather than « clair » or „klar“ in the wording.
+- **Singular and plural counts fixed**: « 0 jour sans alcool sur 3 » (French
+  uses the singular for 0 and 1) on the Check-in intention card, the weeks
+  chart, days logged, milestone progress and more; and in English and German
+  for 1 ("Aiming for 1 clear day a week", "Clear day streak: 1 day",
+  "1 day/week", „Vorhaben: 1 alkoholfreier Tag“).
 
 ## 1.2.0 — 17 October 2026
 

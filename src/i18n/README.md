@@ -38,6 +38,31 @@ translation tools such as Weblate and Crowdin read.
 German: `de.json`, key terms in `glossary-de.md`. French: `fr.json`, key terms
 in `glossary-fr.md`.
 
+**"Clear" in other languages** (Hugh, 19 October 2026, after the French
+reviewer's suggestion). The name stays **Clear Tracker**, in English. The
+day and the level use the language's own plain words, as its public-health
+guidance does (« jour sans alcool », „alkoholfreier Tag“), chosen with the
+language's reviewer and recorded in its glossary. What "Clear" means — a day
+without alcohol, and a little more: a clearer head, and a choice that's
+yours — is said once, in `onboarding.whyClear` / `whyClearBody` (the
+welcome card) and at the end of Help's first article. Weighed and not done:
+"Clear" as the word throughout. For: one word everywhere, short, the
+mindset carried along, fewer choices per language. Against: an English word
+needs gender, plurals and endings in every sentence (« 3 jours Clear »,
+„Clear-Tage“) across ~80 lines per language and reads like marketing; Quebec
+discourages English for common words; « sans alcool » / „alkoholfrei“ are
+understood at once and match the help lines; screen readers would mispronounce
+it unless every use is marked English; it doesn't extend to other scripts;
+both reviewers chose the local words. Also not done: "Clear" only as the
+level label, with the local words in sentences — the legend and the counts
+would seem to name two things. English is the exception only because
+"clear" is an everyday English word.
+
+**Counts need `_one`/`_other`** whenever a number sits before a noun, even if
+English would read fine without: French uses the singular for 0 and 1
+(« 0 jour sans alcool sur 3 »), and the forms come from `Intl.PluralRules`
+for each language. Pass the number as `count`.
+
 **Regional words and formats** follow the region's country (`REGIONAL` in
 `index.ts`): Austria gets `de-AT` dates and money („Jänner“); Canada gets
 `fr-CA` formats and Quebec's own lines from `fr-CA.json`, which holds only

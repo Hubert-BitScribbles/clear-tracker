@@ -30,7 +30,7 @@ export function comparisonText(now: number, before: number, beforeLabel: string)
 /** "About 1–2 drinks on a typical Friday" (open-ended: "1 or more"; from none: "Up to 1"). Whole drinks. */
 export function typicalDayText(least: number, most: number | null, dayName: string): string {
   const a = wholeDrinks(least);
-  if (most === null) return t('typical.orMore', { low: a, day: dayName });
+  if (most === null) return t('typical.orMore', { count: a, day: dayName });
   const b = wholeDrinks(most);
   if (a === b) return a === 0 ? t('typical.none', { day: dayName }) : t('typical.about', { count: a, day: dayName });
   if (a === 0) return t('typical.upTo', { count: b, day: dayName });

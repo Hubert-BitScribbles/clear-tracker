@@ -140,7 +140,7 @@ export function Intention() {
           <ul>
             {history.map((h) => (
               <li key={h.effective_date}>
-                <span className="in-h-target">{t('intention.historyTarget', { n: h.weekly_target })}</span>
+                <span className="in-h-target">{t('intention.historyTarget', { count: h.weekly_target })}</span>
                 <span className="in-h-date">
                   {h.effective_date > today ? t('intention.from', { date: formatFull(h.effective_date) }) : t('intention.since', { date: formatFull(h.effective_date) })}
                 </span>

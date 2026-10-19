@@ -139,7 +139,7 @@ export function AllMilestones() {
           size="all"
           glyph="🔥"
           title={t('ms.streak', { n: weeks })}
-          sub={reached ? t('all.earned') : t('all.weeksProgress', { done: data.currentStreak, target: weeks })}
+          sub={reached ? t('all.earned') : t('all.weeksProgress', { count: data.currentStreak, target: weeks })}
           earned={reached}
           progress={pct(data.currentStreak, weeks)}
         />
@@ -155,7 +155,7 @@ export function AllMilestones() {
             size="all"
             glyph="◆"
             title={t('ms.loggedInARow', { n: d })}
-            sub={reached ? t('all.earned') : t('all.longestRunDays', { done: data.longestRun, target: d })}
+            sub={reached ? t('all.earned') : t('all.longestRunDays', { count: data.longestRun, target: d })}
             earned={reached}
             progress={pct(data.longestRun, d)}
           />
@@ -173,7 +173,7 @@ export function AllMilestones() {
           sub={
             tier.reached
               ? t('tier.reached', { date: tier.reachedDate ? formatShort(tier.reachedDate) : '' })
-              : t('all.daysProgress', { done: clearDates.length, target: tier.threshold })
+              : t('all.daysProgress', { count: clearDates.length, target: tier.threshold })
           }
           earned={tier.reached}
           progress={pct(clearDates.length, tier.threshold)}
@@ -205,7 +205,7 @@ export function AllMilestones() {
       ) : (
         [...ex.bestMonths].reverse().map((b) => (
           <Badge key={`${b.year}-${b.month}`} size="all" glyph="▲" title={t('ms.bestMonth', { month: monthYear(b.month, b.year, 'short') })}
-            sub={t('all.bestSub', { n: b.clearDays, date: formatShort(b.reachedIso) })} earned />
+            sub={t('all.bestSub', { count: b.clearDays, date: formatShort(b.reachedIso) })} earned />
         ))
       )}
 

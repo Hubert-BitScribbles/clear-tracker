@@ -12,7 +12,7 @@ import type { Article, HelpContext } from './types';
 export function articles({ d, P }: HelpContext): Article[] {
   return [
   {
-    id: 'start', title: 'Logging your days', keywords: 'tap calendar clear a few moderate a lot level unlogged past change edit standard drink unit size',
+    id: 'start', title: 'Logging your days', keywords: 'tap calendar clear a few moderate a lot level unlogged past change edit standard drink unit size name why clear meaning',
     body: (
       <>
         <p>Tap a day to select it, then tap it again to log it. Each tap moves to the next level:</p>
@@ -25,6 +25,7 @@ export function articles({ d, P }: HelpContext): Article[] {
         </ul>
         <p>What counts as one drink differs from country to country, and the app doesn't count sizes. If it helps you log the same way each time, <Link to="/settings/resources#drink">Resources</Link> links to your country's guide where there is one.</p>
         <p>You can log or change past days at any time; use the arrows to move between months. Future days can't be logged. A day you don't log is simply not logged: nothing assumes it was clear or not.</p>
+        <p><strong>Why “Clear”?</strong> A clear day is a day without alcohol. The name means a little more: a clearer head, and a choice that’s yours. Clear Tracker doesn’t judge the other days — every logged day adds to the picture.</p>
       </>
     ),
   },

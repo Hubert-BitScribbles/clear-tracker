@@ -36,6 +36,11 @@ on the branch, before merging.
   first, then Share (in the default Compact tab layout Share sits under ⋯),
   and keep "Open as Web App" on when it's offered (off, it saves a bookmark
   that opens Safari instead). Help's summary says the same.
+- **Why "Clear"**: a short note on the welcome screen and in Help (Logging
+  your days): a clear day is a day without alcohol, and the name means a
+  little more — a clearer head, and a choice that's yours. German and French
+  keep "Clear" in English and say what it means (the French reviewer's
+  suggestion), rather than « clair » or „klar“ in the wording.
 
 ## 1.2.0 — 17 October 2026
 

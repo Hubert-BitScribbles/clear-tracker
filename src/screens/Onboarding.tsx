@@ -125,6 +125,8 @@ export function Onboarding() {
               <p className="ob-card-body">{t('onboarding.whatItIsBody')}</p>
               <p className="ob-card-title">{t('onboarding.whatItIsnt')}</p>
               <p className="ob-card-body">{t('onboarding.whatItIsntBody')}</p>
+              <p className="ob-card-title">{t('onboarding.whyClear')}</p>
+              <p className="ob-card-body">{t('onboarding.whyClearBody')}</p>
             </div>
             <div className="ob-device">
               <DeviceFields />

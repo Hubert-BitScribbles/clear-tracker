@@ -14,6 +14,7 @@ clinical; no exclamation marks.
 | --- | --- | --- |
 | clear day | alkoholfreier Tag | The term German health guidance uses ("zwei alkoholfreie Tage pro Woche"). |
 | Clear (the level) | Alkoholfrei | |
+| Clear (the name) | „Clear“, kept in English | As in French (reviewer in France, 19 October 2026): not „klar“ in the wording; „Warum „Clear““ on the welcome screen and in Help (Tage eintragen) explains it. |
 | A few / Moderate / A lot | Wenig / Mäßig / Viel | With drinks: Wenig (1–2 Gläser), Mäßig (3–4 Gläser), Viel (5+ Gläser). „Wenig“ chosen by the reviewer over „Ein paar“. |
 | drink(s) | Glas / Gläser | As in Kenn dein Limit's „Standardglas“. „Gläser pro Woche“. |
 | drinking day | Tag mit Alkohol | Neutral; not „Trinktag“. |

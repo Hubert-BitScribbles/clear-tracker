@@ -11,7 +11,7 @@ import type { Article, HelpContext } from './types';
 export function articles({ d, P }: HelpContext): Article[] {
   return [
   {
-    id: 'start', title: 'Tage eintragen', keywords: 'tippen kalender alkoholfrei wenig mäßig viel stufe nicht eingetragen vergangen ändern bearbeiten standardglas glas größe',
+    id: 'start', title: 'Tage eintragen', keywords: 'tippen kalender alkoholfrei wenig mäßig viel stufe nicht eingetragen vergangen ändern bearbeiten standardglas glas größe name warum clear klar bedeutung',
     body: (
       <>
         <p>Tippen Sie auf einen Tag, um ihn auszuwählen, und noch einmal, um ihn einzutragen. Jedes Tippen geht zur nächsten Stufe:</p>
@@ -24,6 +24,7 @@ export function articles({ d, P }: HelpContext): Article[] {
         </ul>
         <p>Was als ein Glas zählt, ist von Land zu Land verschieden, und die App zählt keine Größen. Wenn es Ihnen hilft, jedes Mal gleich einzutragen, finden Sie unter <Link to="/settings/resources#drink">Hilfsangebote</Link> den Leitfaden Ihres Landes, sofern es einen gibt.</p>
         <p>Vergangene Tage können Sie jederzeit eintragen oder ändern; mit den Pfeilen wechseln Sie den Monat. Zukünftige Tage lassen sich nicht eintragen. Ein Tag, den Sie nicht eintragen, bleibt einfach offen: Die App nimmt weder an, dass er alkoholfrei war, noch das Gegenteil.</p>
+        <p><strong>Warum „Clear“?</strong> „Clear“ heißt „klar“. Gemeint sind alkoholfreie Tage – und ein wenig mehr: ein klarerer Kopf und eine Entscheidung, die Ihre ist. Clear Tracker bewertet die anderen Tage nicht; jeder eingetragene Tag ergänzt das Bild.</p>
       </>
     ),
   },

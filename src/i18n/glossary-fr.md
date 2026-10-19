@@ -11,6 +11,7 @@ health services and help lines do. Plain and kind, never clinical.
 | --- | --- | --- |
 | clear day | jour sans alcool | As French and Canadian guidance say. |
 | Clear (the level) | Sans alcool | |
+| Clear (the name) | « Clear », kept in English | The French reviewer, 19 October 2026: keep « Clear » rather than « clair », and say what it means — « Pourquoi « Clear » » on the welcome screen and in Help (Noter vos jours). |
 | A few / Moderate / A lot | Un peu / Modéré / Beaucoup | Un peu (1–2 verres), Modéré (3–4 verres), Beaucoup (5 verres ou plus). |
 | drink(s) | verre(s) | As in « verre standard ». « verres par semaine ». |
 | drinking day | jour avec alcool | Neutral. |

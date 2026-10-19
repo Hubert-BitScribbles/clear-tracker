@@ -15,7 +15,7 @@ export function articles({ d, P }: HelpContext): Article[] {
   const sp = ' '; // before « : » and the like
   return [
   {
-    id: 'start', title: 'Noter vos jours', keywords: 'toucher calendrier sans alcool un peu modéré beaucoup niveau non noté passé modifier verre standard unité taille',
+    id: 'start', title: 'Noter vos jours', keywords: 'toucher calendrier sans alcool un peu modéré beaucoup niveau non noté passé modifier verre standard unité taille nom pourquoi clear clair sens',
     body: (
       <>
         <p>Touchez un jour pour le sélectionner, puis touchez-le à nouveau pour le noter. Chaque toucher passe au niveau suivant{sp}:</p>
@@ -28,6 +28,7 @@ export function articles({ d, P }: HelpContext): Article[] {
         </ul>
         <p>Ce qui compte comme un verre varie d’un pays à l’autre, et l’app ne compte pas les tailles. Si cela vous aide à noter de la même façon à chaque fois, les <Link to="/settings/resources#drink">Ressources d’aide</Link> renvoient au guide de votre pays quand il en existe un.</p>
         <p>Vous pouvez noter ou modifier les jours passés à tout moment{sp}; utilisez les flèches pour changer de mois. Les jours à venir ne peuvent pas être notés. Un jour que vous ne notez pas reste simplement non noté{sp}: rien ne suppose qu’il était sans alcool, ni le contraire.</p>
+        <p><strong>Pourquoi « Clear » ?</strong> « Clear » veut dire « clair ». Le nom désigne les jours sans alcool, et un peu plus{sp}: un esprit plus clair, et un choix qui vous appartient. Clear Tracker ne juge pas les autres jours{sp}; chaque jour noté complète le tableau.</p>
       </>
     ),
   },

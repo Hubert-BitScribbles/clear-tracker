@@ -4,7 +4,7 @@ from playwright.sync_api import sync_playwright
 AXE=open(__import__('os').path.join(__import__('os').path.dirname(__file__), '..', 'node_modules', 'axe-core', 'axe.min.js')).read()
 MODES=[('light',False),('dark',False),('light',True),('dark',True)]
 # Onboarding: press the forward buttons in order (a browser tab has the install step).
-OB_FORWARD=['Get started','Continue in the browser','Continue','Continue','Continue','Continue']
+OB_FORWARD=['Get started','Continue in the browser','Continue','Continue','Continue']
 def ob(n, extra=''):
     seq=json.dumps(OB_FORWARD[:n])
     return ("(async () => { for (const t of "+seq+") { await new Promise(r => setTimeout(r, 80)); "
@@ -17,24 +17,27 @@ STATES=[
  ('Onboarding: privacy','/onboarding',ob(2)),
  ('Onboarding: logging a day','/onboarding',ob(3,"document.querySelector('.ob-practice .day-cell').click(); document.querySelector('.ob-practice .day-cell').click();")),
  ('Onboarding: intention','/onboarding',ob(4)),
- ('Onboarding: region','/onboarding',ob(5)),
- ('Onboarding: ready','/onboarding',ob(6)),
+ ('Onboarding: language and region','/onboarding',"document.querySelectorAll('.ob-device .dv-change')[1].click()"),
+ ('Onboarding: ready','/onboarding',ob(5)),
  ('Check-in','/',None),
  ('Trends','/trends',"document.querySelectorAll('.tr-dow-row')[4].click(); document.querySelectorAll('.wg-tile')[10].click();"),
  ('Month in review','/trends/review?year=2026&month=8',"document.querySelector('.rv-include summary').click()"),
  ('Year in review','/trends/review?year=2026',None),
+ # Everything ticked, the month-by-month trends included (the choice is kept, so the year follows).
+ ('Month in review: everything included','/trends/review?year=2026&month=8',"document.querySelector('.rv-include summary').click(); document.querySelectorAll('.rv-checks input:not(:checked)').forEach((i) => i.click())"),
+ ('Year in review: everything included','/trends/review?year=2026',None),
  ('Milestones','/milestones',None),
  ('All milestones','/milestones/all',None),
  ('Challenges','/milestones/challenges',None),
  ('Settings','/settings',None),
- ('Settings: savings form','/settings',"[...document.querySelectorAll('.st-link')].find(b=>/Change|Ändern/.test(b.textContent)).click()"),
- ('Settings: erase dialog','/settings',"[...document.querySelectorAll('button')].find(b=>/Erase all data|Alle Daten löschen/.test(b.textContent)).click()"),
+ ('Settings: savings form','/settings',"[...document.querySelectorAll('.st-link')].find(b=>/Change|Ändern|Modifier/.test(b.textContent)).click()"),
+ ('Settings: erase dialog','/settings',"[...document.querySelectorAll('button')].find(b=>/Erase all data|Alle Daten löschen|Effacer toutes les données/.test(b.textContent)).click()"),
  ('About','/settings/about',None),
  ('Help','/settings/help?topic=contact',None),
  ('Help: sounds','/settings/help?topic=sounds',None),
  ('Resources','/settings/resources',None),
  ('Intention','/intention',None),
- ('Backup: passphrase','/settings/backup',"[...document.querySelectorAll('button')].find(b=>/^(Continue|Weiter)$/.test(b.textContent)).click()"),
+ ('Backup: passphrase','/settings/backup',"[...document.querySelectorAll('button')].find(b=>/^(Continue|Weiter|Continuer)$/.test(b.textContent)).click()"),
  ('Restore','/settings/restore',None),
 ]
 only=sys.argv[1:]  # optional filter

@@ -279,3 +279,73 @@ export function weekdaySummary(
   const logged = levels.clear + levels['a-few'] + levels.moderate + levels['a-lot'];
   return { logged, levels, perDay: logged ? { least: least / logged, most: most === null ? null : most / logged } : null };
 }
+
+/** A month's clear days and estimated drinks a week, for a report's month-by-month trends. */
+export interface TrendMonth {
+  year: number;
+  month: number;
+  clear: number;
+  logged: number;
+  perWeek: number | null; // null with fewer than 7 logged days
+  soFar: boolean; // the current month, still running
+}
+/** Two stretches of months side by side: the share of logged days that were clear, and drinks a week. */
+export interface TrendWindow {
+  clear: { pct: number; before: number } | null;
+  drinksDiff: number | null; // drinks a week, recent − before; negative = fewer lately
+  challenges: string[]; // chosen challenge months inside the stretches, as "2026-08"
+}
+export interface ReportTrends {
+  months: TrendMonth[];
+  three: TrendWindow;
+  six: TrendWindow;
+}
+
+const monthKey = (y: number, m: number) => y * 12 + (m - 1);
+const fromKey = (k: number) => ({ year: Math.floor(k / 12), month: (k % 12) + 1 });
+const monthEnd = (k: number) => {
+  const { year, month } = fromKey(k);
+  return isoOf(year, month, daysInMonth(year, month));
+};
+
+/**
+ * Month-by-month trends for a report: a year report shows its year's months; a
+ * month report the 12 months ending with it. Months before the first logged
+ * day and after today are left out. The 3- and 6-month comparisons end with
+ * the report's period and set its last months against the same number before,
+ * with the minimums the Trends screen uses (30 and 60 logged days in each).
+ */
+export function reportTrends(d: Data, p: Period, today: Iso, ranges: { start: Iso; end: Iso; ym: string }[] = []): ReportTrends {
+  const endKey = monthKey(p.year, p.month ?? 12);
+  const todayKey = monthKey(yearOf(today), Number(today.slice(5, 7)));
+  const lastKey = Math.min(endKey, todayKey);
+  const firstKey = Math.max(
+    p.month ? endKey - 11 : monthKey(p.year, 1),
+    d.earliest ? monthKey(yearOf(d.earliest), Number(d.earliest.slice(5, 7))) : lastKey + 1,
+  );
+  const months: TrendMonth[] = [];
+  for (let k = firstKey; k <= lastKey; k++) {
+    const { year, month } = fromKey(k);
+    const start = isoOf(year, month, 1);
+    const full = monthEnd(k);
+    const end = full < today ? full : today;
+    const s = summarizeRange(d, start, end);
+    const r = rate(d, start, end);
+    months.push({ year, month, clear: s.levels.clear, logged: s.logged, perWeek: r.logged >= MIN_LOGGED_MONTH ? r.perWeek : null, soFar: full >= today });
+  }
+  const window = (n: number, minLogged: number): TrendWindow => {
+    const end = monthEnd(lastKey) < today ? monthEnd(lastKey) : today;
+    const start = isoOf(fromKey(lastKey - n + 1).year, fromKey(lastKey - n + 1).month, 1);
+    const prevStart = isoOf(fromKey(lastKey - 2 * n + 1).year, fromKey(lastKey - 2 * n + 1).month, 1);
+    const prevEnd = monthEnd(lastKey - n);
+    const now = summarizeRange(d, start, end);
+    const before = summarizeRange(d, prevStart, prevEnd);
+    const enough = now.logged >= minLogged && before.logged >= minLogged;
+    return {
+      clear: enough ? { pct: Math.round((now.levels.clear / now.logged) * 100), before: Math.round((before.levels.clear / before.logged) * 100) } : null,
+      drinksDiff: enough ? rate(d, start, end).perWeek - rate(d, prevStart, prevEnd).perWeek : null,
+      challenges: enough ? ranges.filter((c) => c.start <= end && c.end >= prevStart).map((c) => c.ym) : [],
+    };
+  };
+  return { months, three: window(3, 30), six: window(6, 60) };
+}

@@ -44,7 +44,7 @@ export function DeviceFields({ intro = t('device.intro') }: { intro?: string }) 
           intro, os: osPhrase(d.os), browser: browserName(d.browser),
           b1: (c) => <strong>{c}</strong>, b2: (c) => <strong>{c}</strong>,
         })}{' '}
-        <button type="button" className="dv-change" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+        <button type="button" className="dv-change" aria-expanded={open} aria-label={open ? undefined : t('device.changeLabel')} onClick={() => setOpen((v) => !v)}>
           {open ? t('device.done') : t('device.change')}
         </button>
       </p>

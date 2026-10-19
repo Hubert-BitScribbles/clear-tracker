@@ -12,7 +12,7 @@ import type { Article, HelpContext } from './types';
 export function articles({ d, P }: HelpContext): Article[] {
   return [
   {
-    id: 'start', title: 'Logging your days', keywords: 'tap calendar clear a few moderate a lot level unlogged past change edit standard drink unit size',
+    id: 'start', title: 'Logging your days', keywords: 'tap calendar clear a few moderate a lot level unlogged past change edit standard drink unit size name why clear meaning',
     body: (
       <>
         <p>Tap a day to select it, then tap it again to log it. Each tap moves to the next level:</p>
@@ -25,6 +25,7 @@ export function articles({ d, P }: HelpContext): Article[] {
         </ul>
         <p>What counts as one drink differs from country to country, and the app doesn't count sizes. If it helps you log the same way each time, <Link to="/settings/resources#drink">Resources</Link> links to your country's guide where there is one.</p>
         <p>You can log or change past days at any time; use the arrows to move between months. Future days can't be logged. A day you don't log is simply not logged: nothing assumes it was clear or not.</p>
+        <p><strong>Why “Clear”?</strong> A clear day is a day without alcohol. The name means a little more: a clearer head, and a choice that’s yours. Clear Tracker doesn’t judge the other days — every logged day adds to the picture.</p>
       </>
     ),
   },
@@ -45,7 +46,7 @@ export function articles({ d, P }: HelpContext): Article[] {
     body: (
       <>
         <p><strong>Trends</strong> shows a year, or all time, clear days first: the year at a glance (clear days, weeks met, days logged and each level's total), clear days month by month, weeks by intention, the day of the week — then estimates of drinks a week and savings, for context. Tap a month, a day or a week to see its details below.</p>
-        <p><strong>Reports</strong> are a month or a year in review, to keep or to share — with a counsellor or doctor, if you like. Choose what's included, then "Share or save as PDF"{P === 'ios' ? ' and tap Share in the print preview' : P === 'android' ? ', and choose Save as PDF as the printer' : ''}.</p>
+        <p><strong>Reports</strong> are a month or a year in review, to keep or to share — with a counsellor or doctor, if you like. Choose what's included — clear days and drinks month by month, over the past year, are there if you want the longer view — then "Share or save as PDF"{P === 'ios' ? ' and tap Share in the print preview' : P === 'android' ? ', and choose Save as PDF as the printer' : ''}.</p>
         <p>Comparisons with an earlier period only appear when that period was tracked from its start, so a partly-tracked month never makes another look better or worse.</p>
         <p><strong>Why does my first month show no unlogged days?</strong> Tracking counts from the first day you've logged. Days before it are before you started, not days you missed, so they aren't shown as not logged. If you fill in earlier days later, the start moves back with them.</p>
       </>
@@ -101,7 +102,7 @@ export function articles({ d, P }: HelpContext): Article[] {
         {installKeepsOwnRecord(d) && (
           <p>Because the installed app has its own record, days logged in the browser don't move across by themselves: back up in one and restore in the other.{isIos(d) ? ' Can’t find the app? Swipe down from the middle of the Home Screen and search for “Clear Tracker”.' : ' Can’t find it? Search for “Clear Tracker” with Spotlight.'}</p>
         )}
-        <p><strong>Other devices:</strong> iPhone and iPad — Share, then Add to Home Screen (in any browser; the Home Screen app keeps its own record). Android — Chrome's ⋮ menu, Install app. Mac with Safari — File → Add to Dock (its own record). Chrome or Edge on a computer — Install, from the address bar or menu (same record as the browser). Each device keeps its own record.</p>
+        <p><strong>Other devices:</strong> iPhone and iPad — Share (in Safari, under ⋯ next to the address bar), then Add to Home Screen (in any browser; the Home Screen app keeps its own record). Android — Chrome's ⋮ menu, Install app. Mac with Safari — File → Add to Dock (its own record). Chrome or Edge on a computer — Install, from the address bar or menu (same record as the browser). Each device keeps its own record.</p>
         <p>Updates arrive automatically; you may see the new version the next time you open the app.</p>
       </>
     ),

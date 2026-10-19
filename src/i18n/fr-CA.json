@@ -1,0 +1,21 @@
+{
+  "backup.whereAndroid": "Google Drive, Fichiers, ou par courriel à vous-même",
+  "challenge.next": "Prochaine : {{span}}",
+  "challenge.thisEarned.weekend": "Cette fin de semaine, {{span}} : réussie",
+  "challenge.thisMissed.weekend": "Cette fin de semaine, {{span}} : pas cette fois – la prochaine compte",
+  "challenge.thisUnderWay.weekend": "Cette fin de semaine, {{span}} : en cours{{toLog}}",
+  "challenges.intro": "Des défis facultatifs que vous vous lancez. C’est tout ou rien – un jour avec alcool et celui-ci n’est pas réussi –, ce qui convient à certains et pas à d’autres. Comme une intention, un défi fin de semaine ou semaine commence avec le prochain qui n’a pas encore débuté, et ne compte qu’à partir de là.",
+  "challenges.label.weekend": "Fins de semaine sans alcool",
+  "challenges.startsThis.weekend": "Commence cette fin de semaine, le {{date}}",
+  "challenges.takeOn.weekend": "Relever les fins de semaine sans alcool",
+  "checkin.challengeSpan.weekend": "Fin de semaine sans alcool · jour {{day}} sur {{len}}{{toLog}}",
+  "help.contact.email": "Un courriel reste entre vous et bitScribbles, comme n’importe quel autre, et part de votre propre adresse.",
+  "install.firefox.bookmark": "Ajoutez cette page à vos signets (<b>{{key}}+D</b>) et ouvrez Clear Tracker à partir de là.",
+  "install.placeBookmarks": "vos signets",
+  "ms.clearWeekend1": "Une fin de semaine sans alcool",
+  "ms.clearWeekendN": "{{n}} fins de semaine sans alcool",
+  "reminder.placeOther": "vos signets ou votre liste d’apps",
+  "res.de.telefonseelsorge.note": "Aussi le 0800 111 0 222 ou le 116 123 ; chat et courriel sur telefonseelsorge.de",
+  "res.ie.hse.note": "Ou par courriel : helpline@hse.ie",
+  "res.uk.drinkline.hours": "En semaine de 9 h à 20 h, la fin de semaine de 11 h à 16 h"
+}

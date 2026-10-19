@@ -22,35 +22,57 @@ type Base<K> = K extends `${infer B}_one` ? B : K extends `${infer B}_other` ? B
 export type Key = Base<Raw>;
 export type Vars = Record<string, string | number>;
 
-export type Lang = 'en' | 'de';
+export type Lang = 'en' | 'de' | 'fr';
 /** The languages on offer, each named in itself. */
 export const LANGUAGES: readonly { code: Lang; name: string }[] = [
   { code: 'en', name: 'English' },
   { code: 'de', name: 'Deutsch' },
+  { code: 'fr', name: 'Français' },
 ];
+type Words = Record<string, string>;
+type Load = () => Promise<{ default: Words }>;
 // English is bundled; other languages load when chosen, so nobody downloads
 // words they won't see.
-const LOADERS: Record<Exclude<Lang, 'en'>, () => Promise<{ default: Record<string, string> }>> = {
+const LOADERS: Record<Exclude<Lang, 'en'>, Load> = {
   de: () => import('./de.json'),
+  fr: () => import('./fr.json'),
 };
-const MESSAGES: Partial<Record<Lang, Record<string, string>>> = { en };
+// A region's own words, over its language's: only the lines that differ
+// (Quebec says « fin de semaine » and « courriel »). Chosen by the region's
+// country, as dates and money are.
+const REGIONAL: Partial<Record<Lang, Record<string, { locale: string; load?: Load }>>> = {
+  de: { at: { locale: 'de-AT' } },
+  fr: { ca: { locale: 'fr-CA', load: () => import('./fr-CA.json') } },
+};
+const DEFAULT_LOCALE: Record<Lang, string> = { en: 'en', de: 'de-DE', fr: 'fr-FR' };
+const MESSAGES: Partial<Record<Lang, Words>> = { en };
+const REGIONAL_WORDS: Record<string, Words> = {};
 let lang: Lang = 'en';
 let country = '';
+let active: Words = en;
+
+/** This language's words, with the region's own lines over them. */
+function activate() {
+  const r = REGIONAL[lang]?.[country];
+  active = { ...(MESSAGES[lang] ?? en), ...(r ? REGIONAL_WORDS[r.locale] : undefined) };
+  if (typeof document !== 'undefined') document.documentElement.lang = locale();
+}
 
 export const language = (): Lang => lang;
-/** Switches language, loading its words first. Call before the first render, or reload after. */
+/** Switches language, loading its words (and its regional lines) first. Call before the first render, or reload after. */
 export async function setLanguage(l: Lang): Promise<void> {
   if (!MESSAGES[l] && l !== 'en') MESSAGES[l] = (await LOADERS[l]()).default;
+  for (const r of Object.values(REGIONAL[l] ?? {})) if (r.load && !REGIONAL_WORDS[r.locale]) REGIONAL_WORDS[r.locale] = (await r.load()).default;
   lang = l;
-  if (typeof document !== 'undefined') document.documentElement.lang = locale();
+  activate();
 }
-/** The region's country, for regional formats: Austria's German says "Jänner". */
+/** The region's country, for regional words and formats: Austria's German says "Jänner", Quebec's French "fin de semaine". */
 export function setFormatCountry(c: string): void {
   country = c;
-  if (typeof document !== 'undefined') document.documentElement.lang = locale();
+  activate();
 }
 /** The locale for dates, numbers and money in the current language ('en' means English as written). */
-export const locale = (): string => (lang === 'de' ? (country === 'at' ? 'de-AT' : 'de-DE') : 'en');
+export const locale = (): string => REGIONAL[lang]?.[country]?.locale ?? DEFAULT_LOCALE[lang];
 
 /** The language to use: the one chosen in Settings, or the device's first one we have, or English. */
 export function pickLanguage(chosen: string, preferred: readonly string[]): Lang {
@@ -59,7 +81,7 @@ export function pickLanguage(chosen: string, preferred: readonly string[]): Lang
 }
 
 function lookup(key: string, vars?: Vars): string {
-  const own: Record<string, string> = MESSAGES[lang] ?? en;
+  const own: Words = active;
   if (typeof vars?.count === 'number') {
     const form = new Intl.PluralRules(lang).select(vars.count);
     const hit = own[`${key}_${form}`] ?? own[`${key}_other`] ?? en[`${key}_${new Intl.PluralRules('en').select(vars.count)}` as Raw] ?? en[`${key}_other` as Raw];
@@ -69,7 +91,7 @@ function lookup(key: string, vars?: Vars): string {
 }
 
 /** Whether there's any text for a key, for optional text such as a help line's hours. */
-export const hasText = (key: string): boolean => key in (MESSAGES[lang] ?? en) || key in en;
+export const hasText = (key: string): boolean => key in active || key in en;
 
 const fill = (text: string, vars?: Vars) =>
   vars ? text.replace(/\{\{(\w+)\}\}/g, (m, name: string) => (name in vars ? String(vars[name]) : m)) : text;

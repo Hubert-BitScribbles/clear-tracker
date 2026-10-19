@@ -7,11 +7,12 @@ import { DayCell } from '../components/DayCell';
 import { LevelLegend } from '../components/LevelLegend';
 import { TrendsNav } from '../components/SegmentNav';
 import { Data } from '../data/compute';
-import { getBackupData, getChallenges, getSavingsSettings, getSetting, setSetting } from '../data/database';
+import { chosenMonthRanges, getBackupData, getChallenges, getSavingsSettings, getSetting, setSetting } from '../data/database';
 import { addDays, daysInMonth, isoOf, todayIso, weekdayOf } from '../data/dates';
-import { buildReport, defaultPeriod, periodBounds, previousPeriod, type Period, type Report } from '../data/report';
-import { comparisonText, drinksText } from '../lib/reportText';
-import { drinksChangeText } from '../lib/trendText';
+import { buildReport, defaultPeriod, periodBounds, previousPeriod, reportTrends, type Period, type Report, type ReportTrends } from '../data/report';
+import { TrendChart } from '../components/TrendChart';
+import { comparisonText, drinksText, wholeDrinks } from '../lib/reportText';
+import { challengeNote, drinksChangeText } from '../lib/trendText';
 import { describeSavings } from '../lib/savings';
 import './Review.css';
 import { t, type Key } from '../i18n';
@@ -23,18 +24,23 @@ import { dayMonth, dayMonthYear, monthName, monthYear, weekdayLetter, weekdayNam
 
 const fmt = dayMonth;
 
+// In the order they appear (Hugh, 18 October 2026): the days, by day of week,
+// clear days month by month, then drinks.
 const SECTIONS = [
   ['days', 'review.sec.days'],
-  ['intention', 'review.sec.intention'],
   ['patterns', 'review.sec.patterns'],
+  ['clearTrend', 'review.sec.clearTrend'],
   ['drinks', 'review.sec.drinks'],
+  ['drinksTrend', 'review.sec.drinksTrend'],
+  ['intention', 'review.sec.intention'],
   ['savings', 'review.sec.savings'],
-  ['milestones', 'review.sec.milestones'],
   ['challenges', 'review.sec.challenges'],
+  ['milestones', 'review.sec.milestones'],
 ] as const satisfies readonly (readonly [string, Key])[];
 type Section = (typeof SECTIONS)[number][0];
-// For you more than for a reader: left out until ticked (rc.7).
-const OFF_BY_DEFAULT: Section[] = ['savings', 'milestones', 'challenges'];
+// For you more than for a reader: left out until ticked (rc.7). The longer
+// month-by-month trends are an option too, for a fuller picture.
+const OFF_BY_DEFAULT: Section[] = ['clearTrend', 'drinksTrend', 'savings', 'milestones', 'challenges'];
 
 export const periodLabel = (p: Period) => (p.month ? monthYear(p.month, p.year) : String(p.year));
 
@@ -47,6 +53,7 @@ export function Review() {
     ? { year: Number(params.get('year')), month: params.get('month') ? Number(params.get('month')) : null }
     : defaultPeriod(today);
   const [report, setReport] = useState<Report | null>(null);
+  const [trends, setTrends] = useState<ReportTrends | null>(null);
   const [hidden, setHidden] = useState<Set<Section>>(new Set());
   const [savingsSet, setSavingsSet] = useState(false);
 
@@ -59,7 +66,9 @@ export function Review() {
       setSavingsSet(!!savings);
       // '' = never chosen (use the defaults); 'none' = everything included.
       setHidden(new Set(h === '' ? OFF_BY_DEFAULT : h === 'none' ? [] : (h.split(',') as Section[])));
-      setReport(buildReport(new Data({ entries: all.dayEntries, intentions: all.intentions }), period, today, savings, ch));
+      const d = new Data({ entries: all.dayEntries, intentions: all.intentions });
+      setReport(buildReport(d, period, today, savings, ch));
+      setTrends(reportTrends(d, period, today, chosenMonthRanges(ch)));
       // Opening a month's review counts as seeing it (for the Check-in note).
       if (period.month) setSetting(`report_seen_${period.year}-${String(period.month).padStart(2, '0')}`, 'true');
     })();
@@ -101,6 +110,10 @@ export function Review() {
     ? t('report.vsMonth', { month: prev.year === period.year ? monthName(prev.month) : monthYear(prev.month, prev.year) })
     : t('report.vsYear', { year: prev.year });
   const label = periodLabel(period);
+  // "September 2025 – August 2026": the months the trends cover.
+  const tm = trends?.months ?? [];
+  const trendSpan = tm.length ? `${monthYear(tm[0].month, tm[0].year)} – ${monthYear(tm[tm.length - 1].month, tm[tm.length - 1].year)}` : '';
+  const trendPoint = (m: ReportTrends['months'][number]) => ({ label: monthName(m.month, 'short'), year: m.year, month: m.month, full: monthYear(m.month, m.year), soFar: m.soFar });
 
   return (
     <main className="review">
@@ -181,32 +194,6 @@ export function Review() {
             </section>
           )}
 
-          {show('intention') && (
-            <section className="rv-section">
-              <h2 className="rv-sec">{t('review.sec.intention')}</h2>
-              <div className="card rv-card rv-text">
-                <p>
-                  {r.targets.length === 0
-                    ? r.weeks.before > 0
-                      ? t('review.weeksBefore')
-                      : t('review.weeksNone')
-                    : r.targets.map((x, i) => (i ? t('review.then', { n: x.target, date: fmt(x.from) }) : t('review.aiming', { n: x.target }))).join('')}
-                  .{r.targets.length > 0 && r.weeks.before > 0 ? t('review.beforeNotCounted') : ''}
-                </p>
-                {r.weeks.counted > 0 && (
-                  <p>
-                    {t('review.metIn', { met: r.weeks.met, weeks: t('review.weeks', { count: r.weeks.counted }) })}
-                    {r.weeks.exceeded ? t('review.beyondIn', { n: r.weeks.exceeded }) : ''}
-                    {r.weeks.unclear ? t('review.unclear', { n: r.weeks.unclear }) : ''}.
-                    {r.backOnTrack
-                      ? t('review.back', { times: r.backOnTrack === 1 ? t('review.once') : r.backOnTrack === 2 ? t('review.twice') : t('review.times', { n: r.backOnTrack }) })
-                      : ''}
-                  </p>
-                )}
-              </div>
-            </section>
-          )}
-
           {show('patterns') && (
             <section className="rv-section">
               <h2 className="rv-sec">{t('review.sec.patterns')}</h2>
@@ -233,6 +220,32 @@ export function Review() {
             </section>
           )}
 
+          {show('clearTrend') && trends && (
+            <section className="rv-section">
+              <h2 className="rv-sec">{t('review.sec.clearTrend')}</h2>
+              <div className="card rv-card rv-text">
+                {trends.months.filter((m) => m.logged > 0).length < 2 ? (
+                  <p className="rv-muted">{t('review.trendTooFew')}</p>
+                ) : (
+                  <>
+                    <p className="rv-muted">{trendSpan}</p>
+                    <TrendChart
+                      kind="bars"
+                      name={t('review.clearChartName', { span: trendSpan })}
+                      format={(v) => String(v)}
+                      points={trends.months.map((m) => ({ ...trendPoint(m), value: m.logged ? m.clear : null, note: t('trends.loggedCount', { count: m.logged }) }))}
+                    />
+                    {([['three', 3, 'savings.last3'], ['six', 6, 'savings.last6']] as const).map(([w, n, lead]) => {
+                      const c = trends[w].clear;
+                      return c && <p key={w}>{t('review.clearShare', { lead: t(lead), pct: c.pct, before: c.before, n })}{challengeNote(trends[w].challenges)}</p>;
+                    })}
+                    <p className="rv-foot">{t('review.clearTrendFoot')}</p>
+                  </>
+                )}
+              </div>
+            </section>
+          )}
+
           {show('drinks') && (
             <section className="rv-section">
               <h2 className="rv-sec">{t('review.sec.drinks')}</h2>
@@ -240,6 +253,58 @@ export function Review() {
                 <p className="rv-big">{r.drinksPerWeek ? drinksText(r.drinksPerWeek) : t('review.notEnough')}</p>
                 {r.drinksChange && <p className="rv-muted">{drinksChangeText(null, r.drinksChange.diff, prevLabel)}</p>}
                 <p className="rv-foot">{t('review.drinksFoot')}</p>
+              </div>
+            </section>
+          )}
+
+          {show('drinksTrend') && trends && (
+            <section className="rv-section">
+              <h2 className="rv-sec">{t('review.sec.drinksTrend')}</h2>
+              <div className="card rv-card rv-text">
+                {trends.months.filter((m) => m.perWeek !== null).length < 2 ? (
+                  <p className="rv-muted">{t('review.trendTooFew')}</p>
+                ) : (
+                  <>
+                    <p className="rv-muted">{trendSpan}</p>
+                    <TrendChart
+                      kind="line"
+                      name={t('review.drinksChartName', { span: trendSpan })}
+                      format={(v) => String(wholeDrinks(v))}
+                      points={trends.months.map((m) => ({ ...trendPoint(m), value: m.perWeek, note: t('trends.loggedCount', { count: m.logged }) }))}
+                    />
+                    {([['three', 'savings.last3', 'savings.the3Before'], ['six', 'savings.last6', 'savings.the6Before']] as const).map(([w, lead, vs]) => {
+                      const diff = trends[w].drinksDiff;
+                      return diff !== null && <p key={w}>{drinksChangeText(t(lead), diff, t(vs))}{challengeNote(trends[w].challenges)}</p>;
+                    })}
+                    <p className="rv-foot">{t('review.drinksTrendFoot')}</p>
+                  </>
+                )}
+              </div>
+            </section>
+          )}
+
+          {show('intention') && (
+            <section className="rv-section">
+              <h2 className="rv-sec">{t('review.sec.intention')}</h2>
+              <div className="card rv-card rv-text">
+                <p>
+                  {r.targets.length === 0
+                    ? r.weeks.before > 0
+                      ? t('review.weeksBefore')
+                      : t('review.weeksNone')
+                    : r.targets.map((x, i) => (i ? t('review.then', { n: x.target, date: fmt(x.from) }) : t('review.aiming', { n: x.target }))).join('')}
+                  .{r.targets.length > 0 && r.weeks.before > 0 ? t('review.beforeNotCounted') : ''}
+                </p>
+                {r.weeks.counted > 0 && (
+                  <p>
+                    {t('review.metIn', { met: r.weeks.met, weeks: t('review.weeks', { count: r.weeks.counted }) })}
+                    {r.weeks.exceeded ? t('review.beyondIn', { n: r.weeks.exceeded }) : ''}
+                    {r.weeks.unclear ? t('review.unclear', { n: r.weeks.unclear }) : ''}.
+                    {r.backOnTrack
+                      ? t('review.back', { times: r.backOnTrack === 1 ? t('review.once') : r.backOnTrack === 2 ? t('review.twice') : t('review.times', { n: r.backOnTrack }) })
+                      : ''}
+                  </p>
+                )}
               </div>
             </section>
           )}

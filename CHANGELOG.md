@@ -4,7 +4,45 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
-## 1.2.0 — 17 October 2026 (in review)
+## 1.3.0 — 17 October 2026 (in review)
+
+- **French**, addressing people as « vous », including Help and the privacy
+  statement. A device set to French gets it straight away; anyone can choose
+  it in Settings → Language. With Canada as the region it uses Quebec's
+  words where they differ (« fin de semaine », « courriel », « signets »)
+  and Canadian formats (« 12 $ »); elsewhere, France's (« 12 € »).
+- **France** as a country: 15 (SAMU), the 3114 national suicide prevention
+  line, Alcool Info Service and Alcooliques anonymes, Alcool Info Service's
+  site and local help finder, and its « repères de consommation » (10 g),
+  checked 17 October 2026. A device on Paris time starts on France.
+- Canadian links open their French versions for French readers (Boire moins,
+  c'est mieux; the CCSA's standard-drink poster).
+- `src/i18n/glossary-fr.md` records the key terms, for review.
+- **Language and region on the welcome screen**, under the device line and
+  in the same way: what the app guessed, with "Not right? Change" to pick
+  another language, country and province. The separate "Where are you?"
+  step is gone, so setup is one step shorter. A French-language phone on
+  Toronto time now starts on Quebec (Quebec reports Toronto's time zone).
+- **Reports: month-by-month trends**, as an option under "Choose what's
+  included" (left out until ticked): clear days each month, and estimated
+  drinks a week each month, over the 12 months ending with the report (a
+  year report: its own months). Each has a chart with the values written on
+  it, so it prints, and the last 3 and 6 months against the same before
+  (clear days as a share of logged days, so months with gaps compare fairly).
+- Report sections in a new order: the days, by day of week, clear days
+  month by month, drinks, drinks month by month, then weeks by intention,
+  savings, challenges and milestones.
+- **iPhone install steps for Safari 26:** tap ⋯ next to the address bar
+  first, then Share (in the default Compact tab layout Share sits under ⋯),
+  and keep "Open as Web App" on when it's offered (off, it saves a bookmark
+  that opens Safari instead). Help's summary says the same.
+- **Why "Clear"**: a short note on the welcome screen and in Help (Logging
+  your days): a clear day is a day without alcohol, and the name means a
+  little more — a clearer head, and a choice that's yours. German and French
+  keep "Clear" in English and say what it means (the French reviewer's
+  suggestion), rather than « clair » or „klar“ in the wording.
+
+## 1.2.0 — 17 October 2026
 
 - **German**, addressing people as „Sie“. A device set to German gets it
   straight away; anyone can choose in **Settings → Language** (Automatic,

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import iconUrl from '../assets/clear-icon-96.png';
 import { DayCell } from '../components/DayCell';
-import { RegionFields } from '../components/RegionFields';
 import { setMoneyCountry } from '../lib/savings';
 import { getSetting, nextLevel, saveIntention, setSetting, type DayLevel } from '../data/database';
 import { mondayOf, todayIso } from '../data/dates';
@@ -17,6 +16,7 @@ import { Estimate } from './Intention';
 import './Onboarding.css';
 import { rich, t } from '../i18n';
 import { monthYear } from '../i18n/format';
+import { LocaleFields } from '../components/LocaleFields';
 
 // Started as a port of the native app/onboarding.tsx (welcome, intention,
 // data), extended for the web:
@@ -25,11 +25,12 @@ import { monthYear } from '../i18n/format';
 //   set up: an installed app on iPhone has its own storage.
 // - Privacy before any choices, with a way in for restoring a backup.
 // - How logging works, with a practice day to tap (nothing is saved).
-// - Region, guessed from the time zone, deciding what Resources shows.
+// - Language and region on the welcome screen, guessed from the device's
+//   language and time zone and changeable there, like the device line.
 // - Where support lives, then Start tracking (asks for persistent storage).
 // App lock is dropped on the web. Every step after the first has Back.
 
-type Step = 'welcome' | 'install' | 'privacy' | 'how' | 'intention' | 'region' | 'ready';
+type Step = 'welcome' | 'install' | 'privacy' | 'how' | 'intention' | 'ready';
 
 const levelShown = (l: DayLevel) => t(`onboarding.level.${l}`);
 
@@ -37,13 +38,21 @@ export function Onboarding() {
   const navigate = useNavigate();
   const installed = isInstalled();
   const dev = useDevice();
-  const steps: Step[] = ['welcome', ...(installed ? [] : (['install'] as Step[])), 'privacy', 'how', 'intention', 'region', 'ready'];
+  const steps: Step[] = ['welcome', ...(installed ? [] : (['install'] as Step[])), 'privacy', 'how', 'intention', 'ready'];
   const [i, setI] = useState(0);
   const [target, setTarget] = useState(3);
   const [audioCues, setAudioCues] = useState(true);
   const [practice, setPractice] = useState<DayLevel | null>(null);
   const [tried, setTried] = useState(false);
   const [region, setRegion] = useState<Region>(() => parseRegion('', deviceTimeZone()));
+  // A region chosen before switching language is saved, so it survives the reload.
+  useEffect(() => {
+    getSetting('region', '').then((raw) => raw && setRegion(parseRegion(raw, deviceTimeZone())));
+  }, []);
+  const chooseRegion = (r: Region) => {
+    setRegion(r);
+    setMoneyCountry(r.country); // dates and money follow the region too
+  };
   const [saving, setSaving] = useState(false);
   const [canInstall, setCanInstall] = useState(canPromptInstall());
   useEffect(() => onInstallAvailability(() => setCanInstall(canPromptInstall())), []);
@@ -116,9 +125,12 @@ export function Onboarding() {
               <p className="ob-card-body">{t('onboarding.whatItIsBody')}</p>
               <p className="ob-card-title">{t('onboarding.whatItIsnt')}</p>
               <p className="ob-card-body">{t('onboarding.whatItIsntBody')}</p>
+              <p className="ob-card-title">{t('onboarding.whyClear')}</p>
+              <p className="ob-card-body">{t('onboarding.whyClearBody')}</p>
             </div>
             <div className="ob-device">
               <DeviceFields />
+              <LocaleFields region={region} onChange={chooseRegion} />
               <p className="ob-note">{t('onboarding.oneDevice')}</p>
               {installKeepsOwnRecord(dev) && !installed && (
                 // A browser tab can't see a Home Screen (or Dock) copy — separate
@@ -252,19 +264,6 @@ export function Onboarding() {
               <p>
                 {t('onboarding.startingToday')}<Estimate target={target} from={today} />
               </p>
-            </div>
-          </div>
-          <button type="button" className="btn btn-primary ob-button" onClick={next}>{t('common.continue')}</button>
-        </section>
-      )}
-
-      {step === 'region' && (
-        <section className="ob-step">
-          <div>
-            <h1 className="ob-step-title">{t('onboarding.regionTitle')}</h1>
-            <p className="ob-body">{t('onboarding.regionBody')}</p>
-            <div className="card ob-card">
-              <RegionFields region={region} onChange={setRegion} />
             </div>
           </div>
           <button type="button" className="btn btn-primary ob-button" onClick={next}>{t('common.continue')}</button>

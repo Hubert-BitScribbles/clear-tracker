@@ -30,7 +30,7 @@ LANG = os.environ.get("SNAP_LANG", "en")
 WIDTH = int(os.environ.get("SNAP_WIDTH", "390"))
 WIDE = []  # screens wider than the window: something doesn't fit
 os.makedirs(OUT, exist_ok=True)
-OB_FORWARD = ['Get started', 'Continue in the browser', 'Continue', 'Continue', 'Continue', 'Continue']
+OB_FORWARD = ['Get started', 'Continue in the browser', 'Continue', 'Continue', 'Continue']
 def ob(n, extra=''):
     seq = json.dumps(OB_FORWARD[:n])
     return ("(async () => { for (const t of " + seq + ") { await new Promise(r => setTimeout(r, 80)); "
@@ -42,33 +42,33 @@ STATES = [
     ('onboarding-3-privacy', '/onboarding', ob(2)),
     ('onboarding-4-practice', '/onboarding', ob(3, "document.querySelector('.ob-practice .day-cell').click(); document.querySelector('.ob-practice .day-cell').click();")),
     ('onboarding-5-intention', '/onboarding', ob(4)),
-    ('onboarding-6-region', '/onboarding', ob(5)),
-    ('onboarding-7-ready', '/onboarding', ob(6)),
+    ('onboarding-1-locale', '/onboarding', "document.querySelectorAll('.ob-device .dv-change')[1].click()"),
+    ('onboarding-6-ready', '/onboarding', ob(5)),
     ('checkin', '/', None),
     ('checkin-selected-past', '/', "document.querySelectorAll('.day-cell')[3].click()"),
     ('trends', '/trends', None),
     ('trends-details', '/trends', "document.querySelectorAll('.tr-dow-row')[4].click(); document.querySelectorAll('.wg-tile')[10].click();"),
-    ('trends-all-time', '/trends', "[...document.querySelectorAll('button, option')].find(b => /All time|Gesamt/.test(b.textContent))?.click()"),
+    ('trends-all-time', '/trends', "[...document.querySelectorAll('button, option')].find(b => /All time|Gesamt|Depuis le début/.test(b.textContent))?.click()"),
     ('review-month', '/trends/review?year=2026&month=8', "document.querySelector('.rv-include summary').click()"),
     ('review-year', '/trends/review?year=2026', None),
     ('milestones', '/milestones', None),
     ('milestones-all', '/milestones/all', None),
     ('challenges', '/milestones/challenges', None),
     ('settings', '/settings', None),
-    ('settings-savings-form', '/settings', "[...document.querySelectorAll('.st-link')].find(b=>/Change|Ändern/.test(b.textContent)).click()"),
-    ('settings-erase-dialog', '/settings', "[...document.querySelectorAll('button')].find(b=>/Erase all data|Alle Daten löschen/.test(b.textContent)).click()"),
+    ('settings-savings-form', '/settings', "[...document.querySelectorAll('.st-link')].find(b=>/Change|Ändern|Modifier/.test(b.textContent)).click()"),
+    ('settings-erase-dialog', '/settings', "[...document.querySelectorAll('button')].find(b=>/Erase all data|Alle Daten löschen|Effacer toutes les données/.test(b.textContent)).click()"),
     ('about', '/settings/about', None),
     ('help', '/settings/help', None),
     ('help-contact', '/settings/help?topic=contact', None),
     ('resources', '/settings/resources', None),
     ('intention', '/intention', None),
     ('backup', '/settings/backup', None),
-    ('backup-passphrase', '/settings/backup', "[...document.querySelectorAll('button')].find(b=>/^(Continue|Weiter)$/.test(b.textContent)).click()"),
+    ('backup-passphrase', '/settings/backup', "[...document.querySelectorAll('button')].find(b=>/^(Continue|Weiter|Continuer)$/.test(b.textContent)).click()"),
     ('restore', '/settings/restore', None),
 ]
 # Screens whose text or money depends on the region, shown for other regions too.
-REGIONAL = ['resources', 'settings', 'trends', 'review-month', 'onboarding-6-region']
-REGIONS = [('uk-sct', {'country': 'uk', 'province': 'ca_ab', 'nation': 'sct'}), ('de', {'country': 'de', 'province': 'ca_ab'}),
+REGIONAL = ['resources', 'settings', 'trends', 'review-month', 'onboarding-1-locale']
+REGIONS = [('fr', {'country': 'fr', 'province': 'ca_ab'}), ('uk-sct', {'country': 'uk', 'province': 'ca_ab', 'nation': 'sct'}), ('de', {'country': 'de', 'province': 'ca_ab'}),
            ('at', {'country': 'at', 'province': 'ca_ab'}), ('nz', {'country': 'nz', 'province': 'ca_ab'}), ('us', {'country': 'us', 'province': 'ca_ab'})]
 
 with sync_playwright() as p:

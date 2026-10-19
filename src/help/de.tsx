@@ -11,7 +11,7 @@ import type { Article, HelpContext } from './types';
 export function articles({ d, P }: HelpContext): Article[] {
   return [
   {
-    id: 'start', title: 'Tage eintragen', keywords: 'tippen kalender alkoholfrei wenig mäßig viel stufe nicht eingetragen vergangen ändern bearbeiten standardglas glas größe',
+    id: 'start', title: 'Tage eintragen', keywords: 'tippen kalender alkoholfrei wenig mäßig viel stufe nicht eingetragen vergangen ändern bearbeiten standardglas glas größe name warum clear klar bedeutung',
     body: (
       <>
         <p>Tippen Sie auf einen Tag, um ihn auszuwählen, und noch einmal, um ihn einzutragen. Jedes Tippen geht zur nächsten Stufe:</p>
@@ -24,6 +24,7 @@ export function articles({ d, P }: HelpContext): Article[] {
         </ul>
         <p>Was als ein Glas zählt, ist von Land zu Land verschieden, und die App zählt keine Größen. Wenn es Ihnen hilft, jedes Mal gleich einzutragen, finden Sie unter <Link to="/settings/resources#drink">Hilfsangebote</Link> den Leitfaden Ihres Landes, sofern es einen gibt.</p>
         <p>Vergangene Tage können Sie jederzeit eintragen oder ändern; mit den Pfeilen wechseln Sie den Monat. Zukünftige Tage lassen sich nicht eintragen. Ein Tag, den Sie nicht eintragen, bleibt einfach offen: Die App nimmt weder an, dass er alkoholfrei war, noch das Gegenteil.</p>
+        <p><strong>Warum „Clear“?</strong> „Clear“ heißt „klar“. Gemeint sind alkoholfreie Tage – und ein wenig mehr: ein klarerer Kopf und eine Entscheidung, die Ihre ist. Clear Tracker bewertet die anderen Tage nicht; jeder eingetragene Tag ergänzt das Bild.</p>
       </>
     ),
   },
@@ -44,7 +45,7 @@ export function articles({ d, P }: HelpContext): Article[] {
     body: (
       <>
         <p><strong>Trends</strong> zeigt ein Jahr oder die gesamte Zeit, alkoholfreie Tage zuerst: das Jahr auf einen Blick (alkoholfreie Tage, erreichte Wochen, eingetragene Tage und die Summe jeder Stufe), alkoholfreie Tage Monat für Monat, Wochen nach Vorhaben, die Wochentage – dann, zur Einordnung, Schätzungen der Gläser pro Woche und der Ersparnis. Tippen Sie auf einen Monat, einen Tag oder eine Woche, um darunter die Details zu sehen.</p>
-        <p><strong>Berichte</strong> sind ein Rückblick auf einen Monat oder ein Jahr, zum Aufheben oder Teilen – etwa mit einer Beraterin, einem Berater oder Ihrer Ärztin, wenn Sie möchten. Wählen Sie den Inhalt aus, dann „Teilen oder als PDF sichern“{P === 'ios' ? ' und in der Druckvorschau auf Teilen tippen' : P === 'android' ? ' und „Als PDF speichern“ als Drucker wählen' : ''}.</p>
+        <p><strong>Berichte</strong> sind ein Rückblick auf einen Monat oder ein Jahr, zum Aufheben oder Teilen – etwa mit einer Beraterin, einem Berater oder Ihrer Ärztin, wenn Sie möchten. Wählen Sie den Inhalt aus – für den längeren Blick auch alkoholfreie Tage und Gläser Monat für Monat über das letzte Jahr –, dann „Teilen oder als PDF sichern“{P === 'ios' ? ' und in der Druckvorschau auf Teilen tippen' : P === 'android' ? ' und „Als PDF speichern“ als Drucker wählen' : ''}.</p>
         <p>Vergleiche mit einem früheren Zeitraum erscheinen nur, wenn dieser Zeitraum von Anfang an erfasst wurde. So lässt ein nur teilweise erfasster Monat einen anderen nie besser oder schlechter aussehen.</p>
         <p><strong>Warum zeigt mein erster Monat keine offenen Tage?</strong> Gezählt wird ab dem ersten Tag, den Sie eingetragen haben. Die Tage davor lagen vor Ihrem Start und gelten nicht als verpasst, daher erscheinen sie nicht als nicht eingetragen. Tragen Sie später frühere Tage nach, rückt der Start mit.</p>
       </>
@@ -100,7 +101,7 @@ export function articles({ d, P }: HelpContext): Article[] {
         {installKeepsOwnRecord(d) && (
           <p>Weil die installierte App eigene Einträge hat, wandern im Browser eingetragene Tage nicht von selbst hinüber: Sichern Sie im einen und stellen Sie im anderen wieder her.{isIos(d) ? ' App nicht gefunden? Wischen Sie auf dem Home-Bildschirm von der Mitte nach unten und suchen Sie nach „Clear Tracker“.' : ' Nicht gefunden? Suchen Sie mit Spotlight nach „Clear Tracker“.'}</p>
         )}
-        <p><strong>Andere Geräte:</strong> iPhone und iPad – Teilen, dann Zum Home-Bildschirm (in jedem Browser; die App auf dem Home-Bildschirm hat eigene Einträge). Android – im ⋮-Menü von Chrome „App installieren“. Mac mit Safari – Ablage → Zum Dock hinzufügen (eigene Einträge). Chrome oder Edge auf einem Computer – Installieren, über die Adressleiste oder das Menü (dieselben Einträge wie im Browser). Jedes Gerät hat eigene Einträge.</p>
+        <p><strong>Andere Geräte:</strong> iPhone und iPad – Teilen (in Safari unter ⋯ neben der Adressleiste), dann Zum Home-Bildschirm (in jedem Browser; die App auf dem Home-Bildschirm hat eigene Einträge). Android – im ⋮-Menü von Chrome „App installieren“. Mac mit Safari – Ablage → Zum Dock hinzufügen (eigene Einträge). Chrome oder Edge auf einem Computer – Installieren, über die Adressleiste oder das Menü (dieselben Einträge wie im Browser). Jedes Gerät hat eigene Einträge.</p>
         <p>Updates kommen automatisch; die neue Version sehen Sie eventuell beim nächsten Öffnen der App.</p>
       </>
     ),

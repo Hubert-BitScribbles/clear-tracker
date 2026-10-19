@@ -10,15 +10,21 @@ import { t, type Key } from '../i18n';
 const named = (prefix: string, keys: string[]) =>
   keys.map((key) => ({ key, get label() { return t(`${prefix}.${key}` as Key); } }));
 
-export const COUNTRIES = named('country', ['us', 'uk', 'au', 'ca', 'de', 'at', 'ie', 'nz']);
+export const COUNTRIES = named('country', ['us', 'uk', 'au', 'ca', 'de', 'at', 'fr', 'ie', 'nz']);
 export const PROVINCES = named('province', [
   'ca_ab', 'ca_bc', 'ca_mb', 'ca_nb', 'ca_nl', 'ca_nt', 'ca_ns', 'ca_nu', 'ca_on', 'ca_pe', 'ca_qc', 'ca_sk', 'ca_yt',
 ]);
 /** The UK's nations, for the lines that differ (Wales, Scotland, Northern Ireland). */
 export const UK_NATIONS = named('nation', ['eng', 'sct', 'wls', 'nir']);
 
-/** A starting region from the device's time zone; the user can change it. */
-export function regionFromTimeZone(tz: string): Region {
+/**
+ * A starting region from the device's time zone (and, for eastern Canada, its
+ * language); the user can change it. Quebec has no time zone of its own —
+ * America/Montreal is an old alias that devices report as America/Toronto —
+ * so a French-language device on Toronto time starts on Quebec.
+ */
+export function regionFromTimeZone(tz: string, languages: readonly string[] = deviceLanguages()): Region {
+  if (tz === 'America/Toronto' && languages[0]?.toLowerCase().startsWith('fr')) return { country: 'ca', province: 'ca_qc' };
   const ca: Record<string, string> = {
     'America/Vancouver': 'ca_bc', 'America/Edmonton': 'ca_ab', 'America/Regina': 'ca_sk', 'America/Swift_Current': 'ca_sk',
     'America/Winnipeg': 'ca_mb', 'America/Toronto': 'ca_on', 'America/Montreal': 'ca_qc', 'America/Halifax': 'ca_ns',
@@ -32,6 +38,7 @@ export function regionFromTimeZone(tz: string): Region {
   if (tz.startsWith('Australia/')) return { country: 'au', province: 'ca_ab' };
   if (tz === 'Europe/Berlin' || tz === 'Europe/Busingen') return { country: 'de', province: 'ca_ab' };
   if (tz === 'Europe/Vienna') return { country: 'at', province: 'ca_ab' };
+  if (tz === 'Europe/Paris') return { country: 'fr', province: 'ca_ab' };
   if (tz === 'Europe/Dublin') return { country: 'ie', province: 'ca_ab' };
   if (tz === 'Pacific/Auckland' || tz === 'Pacific/Chatham') return { country: 'nz', province: 'ca_ab' };
   return { country: 'us', province: 'ca_ab' };
@@ -39,7 +46,7 @@ export function regionFromTimeZone(tz: string): Region {
 
 
 export interface Region {
-  country: string; // 'us' | 'uk' | 'au' | 'ca' | 'de' | 'at' | 'ie' | 'nz'
+  country: string; // 'us' | 'uk' | 'au' | 'ca' | 'de' | 'at' | 'fr' | 'ie' | 'nz'
   province: string; // used when country is 'ca'
   nation?: string; // used when country is 'uk'; missing (saved before 1.1) means England
 }
@@ -65,3 +72,5 @@ export function regionLabel(r: Region): string {
 }
 
 export const deviceTimeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
+const deviceLanguages = (): readonly string[] =>
+  typeof navigator === 'undefined' ? [] : navigator.languages?.length ? navigator.languages : [navigator.language];

@@ -187,3 +187,4 @@ button {
 .dv-line { font-size: 13px; line-height: 20px; }
 .dv-change { font: inherit; font-size: 13px; font-weight: 600; color: var(--primary-text); background: none; border: 0; padding: 4px 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
 .dv-fields { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; text-align: left; }
+.dv-note { font-size: 11px; line-height: 16px; color: var(--text-muted); }

@@ -27,9 +27,14 @@ describe('About: region from time zone', () => {
     ['Europe/London', 'uk', undefined], ['Australia/Sydney', 'au', undefined], ['America/New_York', 'us', undefined],
     ['Europe/Berlin', 'de', undefined], ['Europe/Vienna', 'at', undefined], ['Europe/Dublin', 'ie', undefined], ['Pacific/Auckland', 'nz', undefined], ['Asia/Tokyo', 'us', undefined],
   ])('%s → %s', (tz, country, province) => {
-    const r = regionFromTimeZone(tz);
+    const r = regionFromTimeZone(tz, ['en-CA']);
     expect(r.country).toBe(country);
     if (province) expect(r.province).toBe(province);
+  });
+  it('Paris → France', () => expect(regionFromTimeZone('Europe/Paris', ['fr-FR']).country).toBe('fr'));
+  it('a French-language device on Toronto time starts on Quebec (Montreal reports as Toronto)', () => {
+    expect(regionFromTimeZone('America/Toronto', ['fr-CA', 'en-CA']).province).toBe('ca_qc');
+    expect(regionFromTimeZone('America/Toronto', ['en-CA', 'fr-CA']).province).toBe('ca_on');
   });
 });
 

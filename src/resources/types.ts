@@ -16,6 +16,8 @@ export interface LineData extends Checked {
 export interface LinkData extends Checked {
   id: string;
   url: string;
+  /** The same page in another language, where it has one: { fr: '…' }. */
+  urls?: Partial<Record<string, string>>;
 }
 export interface Country {
   emergency: Checked & { number: string };

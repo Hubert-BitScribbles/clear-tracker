@@ -43,6 +43,21 @@ with sync_playwright() as p:
     check('no page errors (English device)', not errors, errors[:2])
     ctx.close()
 
+    # Onboarding: choose a region, then a language; the page reloads in it and keeps the region.
+    ctx = b.new_context(viewport={"width": 390, "height": 844}, timezone_id='America/Vancouver', locale='en-CA')
+    pg = ctx.new_page(); errors = []; pg.on('pageerror', lambda e: errors.append(str(e)))
+    pg.goto(BASE + "/"); pg.wait_for_timeout(1200)
+    pg.locator('.ob-device .dv-change').nth(1).click(); pg.wait_for_timeout(150)
+    sel = pg.locator('.ob-device .dv-fields select')
+    sel.nth(1).select_option('at'); pg.wait_for_timeout(150)
+    with pg.expect_navigation(): sel.nth(0).select_option('de')
+    pg.wait_for_timeout(1000)
+    line = pg.locator('.ob-device .dv-line').nth(1).inner_text()
+    check('onboarding: Deutsch chosen, page reloads in German with Austria kept',
+          pg.locator('h1').inner_text() == 'Willkommen bei Clear Tracker' and 'Sprache: Deutsch · Region: Österreich' in line, line)
+    check('no page errors (onboarding switch)', not errors, errors[:2])
+    ctx.close()
+
     # A German-language device in Vienna: German straight away, Austrian dates.
     ctx, pg, errors = fresh(b, 'de-AT', 'Europe/Vienna')
     pg.evaluate("async () => (await import('/src/data/database.ts')).setSetting('region', JSON.stringify({country: 'at', province: 'ca_ab'}))")
@@ -56,6 +71,25 @@ with sync_playwright() as p:
     sel = pg.locator('#language + section select')
     check('Language: Automatisch (Deutsch)', 'Automatisch (Deutsch)' in sel.inner_text(), sel.inner_text())
     check('no page errors (German device)', not errors, errors[:2])
+    ctx.close()
+
+    # A French-language device in Montreal: French with Quebec's words.
+    ctx, pg, errors = fresh(b, 'fr-CA', 'America/Montreal')
+    pg.goto(BASE + "/milestones/challenges"); pg.reload(); pg.wait_for_timeout(900)
+    check('French device: French without choosing', pg.locator('h1').inner_text() == 'Défis', pg.locator('h1').inner_text())
+    check('Quebec: page language fr-CA, and « fins de semaine »', pg.evaluate("document.documentElement.lang") == 'fr-CA' and 'Fins de semaine sans alcool' in pg.inner_text('main'), pg.inner_text('main')[:300])
+    pg.goto(BASE + "/settings/about"); pg.wait_for_timeout(900)
+    check('About links to the French privacy page', pg.locator('a[href$="privacy-fr.html"]').count() == 1)
+    check('no page errors (French device)', not errors, errors[:2])
+    ctx.close()
+
+    # A French-language device in Paris: France's lines and « week-end ».
+    ctx, pg, errors = fresh(b, 'fr-FR', 'Europe/Paris')
+    pg.goto(BASE + "/settings/resources"); pg.reload(); pg.wait_for_timeout(900)
+    check('Paris: France guessed, the 15 and the 3114', 'Appeler le 15' in pg.inner_text('main') and '3114' in pg.inner_text('main'), pg.inner_text('main')[:300])
+    pg.goto(BASE + "/milestones/challenges"); pg.wait_for_timeout(900)
+    check('France: « Week-ends sans alcool »', 'Week-ends sans alcool' in pg.inner_text('main'))
+    check('no page errors (France)', not errors, errors[:2])
     ctx.close()
     b.close()
 print(f'{sum(results)} / {len(results)} passed')

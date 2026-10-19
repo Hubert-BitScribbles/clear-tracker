@@ -101,7 +101,7 @@ export function articles({ d, P }: HelpContext): Article[] {
         {installKeepsOwnRecord(d) && (
           <p>Because the installed app has its own record, days logged in the browser don't move across by themselves: back up in one and restore in the other.{isIos(d) ? ' Can’t find the app? Swipe down from the middle of the Home Screen and search for “Clear Tracker”.' : ' Can’t find it? Search for “Clear Tracker” with Spotlight.'}</p>
         )}
-        <p><strong>Other devices:</strong> iPhone and iPad — Share, then Add to Home Screen (in any browser; the Home Screen app keeps its own record). Android — Chrome's ⋮ menu, Install app. Mac with Safari — File → Add to Dock (its own record). Chrome or Edge on a computer — Install, from the address bar or menu (same record as the browser). Each device keeps its own record.</p>
+        <p><strong>Other devices:</strong> iPhone and iPad — Share (in Safari, under ⋯ next to the address bar), then Add to Home Screen (in any browser; the Home Screen app keeps its own record). Android — Chrome's ⋮ menu, Install app. Mac with Safari — File → Add to Dock (its own record). Chrome or Edge on a computer — Install, from the address bar or menu (same record as the browser). Each device keeps its own record.</p>
         <p>Updates arrive automatically; you may see the new version the next time you open the app.</p>
       </>
     ),

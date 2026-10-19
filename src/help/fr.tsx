@@ -104,7 +104,7 @@ export function articles({ d, P }: HelpContext): Article[] {
         {installKeepsOwnRecord(d) && (
           <p>Comme l’app installée a son propre suivi, les jours notés dans le navigateur ne la suivent pas d’eux-mêmes{sp}: sauvegardez dans l’un et restaurez dans l’autre.{isIos(d) ? ' Vous ne trouvez pas l’app ? Balayez vers le bas depuis le milieu de l’écran d’accueil et cherchez « Clear Tracker ».' : ' Vous ne la trouvez pas ? Cherchez « Clear Tracker » avec Spotlight.'}</p>
         )}
-        <p><strong>Autres appareils{sp}:</strong> iPhone et iPad – Partager, puis Sur l’écran d’accueil (dans n’importe quel navigateur{sp}; l’app de l’écran d’accueil a son propre suivi). Android – menu ⋮ de Chrome, Installer l’application. Mac avec Safari – Fichier → Ajouter au Dock (son propre suivi). Chrome ou Edge sur un ordinateur – Installer, depuis la barre d’adresse ou le menu (le même suivi que le navigateur). Chaque appareil a son propre suivi.</p>
+        <p><strong>Autres appareils{sp}:</strong> iPhone et iPad – Partager (dans Safari, sous ⋯ à côté de la barre d’adresse), puis Sur l’écran d’accueil (dans n’importe quel navigateur{sp}; l’app de l’écran d’accueil a son propre suivi). Android – menu ⋮ de Chrome, Installer l’application. Mac avec Safari – Fichier → Ajouter au Dock (son propre suivi). Chrome ou Edge sur un ordinateur – Installer, depuis la barre d’adresse ou le menu (le même suivi que le navigateur). Chaque appareil a son propre suivi.</p>
         <p>Les mises à jour arrivent automatiquement{sp}; vous verrez peut-être la nouvelle version à la prochaine ouverture de l’app.</p>
       </>
     ),

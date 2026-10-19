@@ -32,6 +32,10 @@ on the branch, before merging.
 - Report sections in a new order: the days, by day of week, clear days
   month by month, drinks, drinks month by month, then weeks by intention,
   savings, challenges and milestones.
+- **iPhone install steps for Safari 26:** tap ⋯ next to the address bar
+  first, then Share (in the default Compact tab layout Share sits under ⋯),
+  and keep "Open as Web App" on when it's offered (off, it saves a bookmark
+  that opens Safari instead). Help's summary says the same.
 
 ## 1.2.0 — 17 October 2026
 

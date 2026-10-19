@@ -100,7 +100,7 @@ export function articles({ d, P }: HelpContext): Article[] {
         {installKeepsOwnRecord(d) && (
           <p>Weil die installierte App eigene Einträge hat, wandern im Browser eingetragene Tage nicht von selbst hinüber: Sichern Sie im einen und stellen Sie im anderen wieder her.{isIos(d) ? ' App nicht gefunden? Wischen Sie auf dem Home-Bildschirm von der Mitte nach unten und suchen Sie nach „Clear Tracker“.' : ' Nicht gefunden? Suchen Sie mit Spotlight nach „Clear Tracker“.'}</p>
         )}
-        <p><strong>Andere Geräte:</strong> iPhone und iPad – Teilen, dann Zum Home-Bildschirm (in jedem Browser; die App auf dem Home-Bildschirm hat eigene Einträge). Android – im ⋮-Menü von Chrome „App installieren“. Mac mit Safari – Ablage → Zum Dock hinzufügen (eigene Einträge). Chrome oder Edge auf einem Computer – Installieren, über die Adressleiste oder das Menü (dieselben Einträge wie im Browser). Jedes Gerät hat eigene Einträge.</p>
+        <p><strong>Andere Geräte:</strong> iPhone und iPad – Teilen (in Safari unter ⋯ neben der Adressleiste), dann Zum Home-Bildschirm (in jedem Browser; die App auf dem Home-Bildschirm hat eigene Einträge). Android – im ⋮-Menü von Chrome „App installieren“. Mac mit Safari – Ablage → Zum Dock hinzufügen (eigene Einträge). Chrome oder Edge auf einem Computer – Installieren, über die Adressleiste oder das Menü (dieselben Einträge wie im Browser). Jedes Gerät hat eigene Einträge.</p>
         <p>Updates kommen automatisch; die neue Version sehen Sie eventuell beim nächsten Öffnen der App.</p>
       </>
     ),

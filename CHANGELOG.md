@@ -4,6 +4,19 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.3.2 — 19 October 2026
+
+- **Open-source credits in full.** About → Credits now names what the app is
+  built with (React, React Router, Dexie, Workbox), the fonts and the sounds,
+  and links to **licenses.txt**: every open-source component that ships, with
+  its full licence text and Dexie's notice. It's written by every build from
+  the code actually in it (`licences.ts`), so it can't fall behind, and it
+  works offline. `checks/licences.py` compares it with the built files.
+- **Sounds credited correctly.** The Clear chime and the A lot hum are from
+  Mixkit (free licence, no credit required); the other two are made from
+  them. About said they were made for Clear Tracker. The README and
+  `src/assets/sounds/README.md` say they aren't covered by the MIT licence.
+
 ## 1.3.1 — 19 October 2026
 
 - **Singular and plural counts fixed**: « 0 jour sans alcool sur 3 » (French

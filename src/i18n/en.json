@@ -1,7 +1,7 @@
 {
   "about.bitscribbles": "Clear Tracker is made by bitScribbles: small apps, carefully made. Every app starts as a scribble — an idea sketched for a real need — and is refined until it's simple, private and pleasant to use.",
   "about.credits": "Credits",
-  "about.creditsBody": "Type: Space Grotesk, Inter, JetBrains Mono and Caveat, all under the SIL Open Font License 1.1. Sounds made for Clear Tracker.",
+  "about.creditsBody": "Built with React, React Router, Dexie and Workbox. Type: Space Grotesk, Inter, JetBrains Mono and Caveat, under the SIL Open Font License 1.1. Two sounds are from Mixkit; the other two are made from them. <link>All the licences</link>",
   "about.designed": "How it's designed",
   "about.disclaimer": "Disclaimer",
   "about.disclaimerBody": "Clear Tracker is a personal tracking tool, not a medical device or treatment program. It doesn't diagnose or treat alcohol use. If you're concerned about your drinking, please reach out to a healthcare professional, or see Resources for help lines in your region.",

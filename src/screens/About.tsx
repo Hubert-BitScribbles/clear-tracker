@@ -14,7 +14,7 @@ import { privacyUrl } from '../lib/privacy';
 // - storage: says plainly that browser storage isn't a backup, and shows
 //   this device's real status (installed? persistent storage granted?);
 // - support: help lines moved to the Resources page (Help | Resources);
-// - credits (the fonts' licence).
+// - credits (what it's built with, the fonts and sounds; all licences in licenses.txt).
 
 export const SettingsNav = ({ active }: { active: 'settings' | 'about' }) => (
   <SegmentNav
@@ -104,7 +104,10 @@ export function About() {
 
       <h2 className="ab-sec">{t('about.credits')}</h2>
       <div className="card ab-card">
-        <p className="ab-body">{t('about.creditsBody')}</p>
+        <p className="ab-body">
+          {/* Every open-source part that ships, with its licence: built into licenses.txt (licences.ts). */}
+          {rich('about.creditsBody', { link: (c) => <a href="./licenses.txt" target="_blank" rel="noopener">{c}</a> })}
+        </p>
       </div>
     </main>
   );

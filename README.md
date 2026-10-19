@@ -98,9 +98,10 @@ because the native versions have time-zone bugs; see FIX in compute.ts.
 ## Logging sounds
 
 `src/assets/sounds/`: `clear-chime.wav` (Clear), `a-few-tone.wav` (A few),
-`moderate-tone.wav` (Moderate), `drinking-hum.wav` (A lot). The middle two
-are the chime pitched down three semitones and the hum pitched up four, so
-the four tones step from bright to low.
+`moderate-tone.wav` (Moderate), `drinking-hum.wav` (A lot). The chime and
+the hum are from Mixkit (see Licence below); the middle two are the chime
+pitched down three semitones and the hum pitched up four, so the four tones
+step from bright to low.
 
 ## Installable and offline
 
@@ -135,5 +136,21 @@ data by its exact address, so a new address starts every user from empty.
 ## Licence
 
 The code is MIT-licensed — see [LICENSE](LICENSE). The names "Clear Tracker"
-and "bitScribbles" and the logos aren't covered by it, and the bundled fonts
-keep their SIL Open Font License.
+and "bitScribbles" and the logos aren't covered by it.
+
+The app ships these open-source components, each under its own licence:
+React, React DOM and scheduler (MIT), React Router (MIT), Dexie (Apache 2.0),
+Workbox (MIT, in the service worker), and the fonts Space Grotesk, Inter,
+JetBrains Mono and Caveat (SIL Open Font License 1.1, via Fontsource). Every
+build writes `licenses.txt` with each one's full licence text and notices
+(`licences.ts`, from the code actually in the build), and About → Credits
+links to it. `python3 checks/licences.py` checks it after `npm run build`.
+
+**Sounds:** `clear-chime.wav` and `drinking-hum.wav` are from
+[Mixkit](https://mixkit.co), used under the Mixkit Sound Effects Free License;
+`a-few-tone.wav` and `moderate-tone.wav` are those two, pitch-shifted. They
+are **not** covered by the MIT licence and may not be reused from this
+repository; see `src/assets/sounds/README.md`.
+
+Built and checked with Vite, TypeScript, Vitest, fake-indexeddb, axe-core and
+Playwright (not shipped in the app).

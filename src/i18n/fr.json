@@ -1,7 +1,7 @@
 {
   "about.bitscribbles": "Clear Tracker est fait par bitScribbles : de petites apps, faites avec soin. Chaque app commence comme un gribouillis – une idée esquissée pour un vrai besoin – et s’affine jusqu’à être simple, privée et agréable à utiliser.",
   "about.credits": "Crédits",
-  "about.creditsBody": "Polices : Space Grotesk, Inter, JetBrains Mono et Caveat, toutes sous licence SIL Open Font License 1.1. Sons créés pour Clear Tracker.",
+  "about.creditsBody": "Conçu avec React, React Router, Dexie et Workbox. Polices : Space Grotesk, Inter, JetBrains Mono et Caveat, sous licence SIL Open Font License 1.1. Deux sons viennent de Mixkit ; les deux autres en sont tirés. <link>Toutes les licences</link>",
   "about.designed": "Comment l’app est pensée",
   "about.disclaimer": "Avertissement",
   "about.disclaimerBody": "Clear Tracker est un outil de suivi personnel, pas un dispositif médical ni un programme de soins. Il ne pose pas de diagnostic et ne traite pas la consommation d’alcool. Si votre consommation vous inquiète, parlez-en à un professionnel de santé, ou consultez les Ressources d’aide pour les lignes d’écoute de votre région.",

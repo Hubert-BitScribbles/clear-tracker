@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import pkg from './package.json' with { type: 'json' };
+import { licences } from './licences';
 
 // base: './' keeps asset paths relative, so the build works from any
 // static host or sub-folder without extra configuration.
@@ -10,6 +11,8 @@ export default defineConfig({
   define: { __APP_VERSION__: JSON.stringify(pkg.version) },
   plugins: [
     react(),
+    // licenses.txt: every open-source part that ships, with its licence (About → Credits).
+    licences(pkg.version),
     // Installable, and works offline: a service worker caches the whole app
     // (code, fonts, icons, sounds) on first visit and updates it in the
     // background when a new version is published.
@@ -35,11 +38,11 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,png,svg,wav,woff2,webmanifest}'],
+        globPatterns: ['**/*.{js,css,html,png,svg,wav,woff2,webmanifest,txt}'],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
-        // The privacy pages (privacy.html, privacy-de.html) are their own pages, not the app: don't answer them with
-        // the app's index.html (it's still precached, so it works offline).
-        navigateFallbackDenylist: [/\/privacy(-\w+)?\.html$/],
+        // The privacy pages (privacy.html, privacy-de.html, …) and licenses.txt are their own pages, not the
+        // app: don't answer them with the app's index.html (they're still precached, so they work offline).
+        navigateFallbackDenylist: [/\/privacy(-\w+)?\.html$/, /\/licenses\.txt$/],
       },
     }),
   ],

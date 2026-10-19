@@ -14,3 +14,7 @@
   Cache-Control: no-cache
 /registerSW.js
   Cache-Control: no-cache
+
+# The licences page: plain text, read as UTF-8 (names and © signs).
+/licenses.txt
+  Content-Type: text/plain; charset=utf-8

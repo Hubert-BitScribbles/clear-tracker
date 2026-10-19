@@ -44,6 +44,13 @@ Both load test data from `test/helpers.ts`, so they never touch real data.
   more than six months ago (`--months 3` for sooner, `--all` for every
   entry, oldest first). Needs no server. Exits 1 when something is due, so
   run it before a release.
+- `python3 checks/licences.py` — after `npm run build`: `licenses.txt`
+  lists every open-source package in the built code, every font, and the
+  parts of Workbox in the service worker, with Dexie's notice and the
+  sounds' source. Needs no server; run it before a release.
+- `python3 checks/report_trends.py` — reports: section order, and the
+  month-by-month trends (off until ticked, both charts, a year report, 320 px,
+  one month logged).
 - `python3 checks/language.py` — the Language setting: an English device
   stays English until Deutsch is chosen, the switch and back, Help's
   English-only note, and a German device in Vienna getting German and

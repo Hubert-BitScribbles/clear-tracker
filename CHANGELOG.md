@@ -23,6 +23,15 @@ on the branch, before merging.
   another language, country and province. The separate "Where are you?"
   step is gone, so setup is one step shorter. A French-language phone on
   Toronto time now starts on Quebec (Quebec reports Toronto's time zone).
+- **Reports: month-by-month trends**, as an option under "Choose what's
+  included" (left out until ticked): clear days each month, and estimated
+  drinks a week each month, over the 12 months ending with the report (a
+  year report: its own months). Each has a chart with the values written on
+  it, so it prints, and the last 3 and 6 months against the same before
+  (clear days as a share of logged days, so months with gaps compare fairly).
+- Report sections in a new order: the days, by day of week, clear days
+  month by month, drinks, drinks month by month, then weeks by intention,
+  savings, challenges and milestones.
 
 ## 1.2.0 — 17 October 2026
 

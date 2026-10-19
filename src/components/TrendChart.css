@@ -1,0 +1,13 @@
+.tc { margin: 8px 0 2px; }
+.tc-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.tc-axis { stroke: var(--border); stroke-width: 1; }
+.tc-month, .tc-year, .tc-value { font-family: var(--font-body); }
+.tc-month { font-size: 9px; fill: var(--on-card-muted); }
+.tc-year { font-size: 8px; fill: var(--on-card-muted); }
+.tc-value { font-size: 9px; font-weight: 600; fill: var(--on-card-secondary); }
+.tc-none { font-weight: 400; fill: var(--on-card-muted); }
+.tc-bar { fill: var(--clear-fill); stroke: var(--clear-edge); stroke-width: 1; }
+.tc-bar[data-sofar] { stroke-dasharray: 3 2; }
+.tc-line { fill: none; stroke: var(--primary); stroke-width: 2; stroke-linecap: round; }
+.tc-dot { fill: var(--primary); }
+.tc-dot-sofar { fill: var(--card-background); stroke: var(--primary); stroke-width: 1.5; }

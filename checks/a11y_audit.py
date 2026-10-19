@@ -23,6 +23,9 @@ STATES=[
  ('Trends','/trends',"document.querySelectorAll('.tr-dow-row')[4].click(); document.querySelectorAll('.wg-tile')[10].click();"),
  ('Month in review','/trends/review?year=2026&month=8',"document.querySelector('.rv-include summary').click()"),
  ('Year in review','/trends/review?year=2026',None),
+ # Everything ticked, the month-by-month trends included (the choice is kept, so the year follows).
+ ('Month in review: everything included','/trends/review?year=2026&month=8',"document.querySelector('.rv-include summary').click(); document.querySelectorAll('.rv-checks input:not(:checked)').forEach((i) => i.click())"),
+ ('Year in review: everything included','/trends/review?year=2026',None),
  ('Milestones','/milestones',None),
  ('All milestones','/milestones/all',None),
  ('Challenges','/milestones/challenges',None),

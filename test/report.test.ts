@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { Data, dayOfWeekLevels, totalClearDays, trackedDays, weeksMetInYear } from '../src/data/compute';
-import { buildReport, defaultPeriod, previousPeriod } from '../src/data/report';
+import { buildReport, defaultPeriod, previousPeriod, reportTrends } from '../src/data/report';
+import { addDays } from '../src/data/dates';
 import { scenario } from './helpers';
 
 type Lv = 'clear' | 'a-few' | 'moderate' | 'a-lot';
@@ -163,5 +164,45 @@ describe('year report months: no "not logged" for the future or before tracking'
     expect(r.months[2].available).toBe(17); // March 15–31
     expect(r.months[8].available).toBe(30); // September, to today
     expect(r.months[9].available).toBe(0);  // October: hasn't happened
+  });
+});
+
+describe('month-by-month trends in a report', () => {
+  const days = (from: string, to: string, lv: Lv) => {
+    const out = [];
+    for (let x = from; x <= to; x = addDays(x, 1)) out.push(e(x, lv));
+    return out;
+  };
+  // March–May every day Moderate; June–August every day clear.
+  const d = new Data({ entries: [...days('2026-03-01', '2026-05-31', 'moderate'), ...days('2026-06-01', '2026-08-31', 'clear')], intentions: t3 });
+
+  it('a month report covers the 12 months ending with it, from the first logged month', () => {
+    const r = reportTrends(d, { year: 2026, month: 8 }, '2026-09-30');
+    expect(r.months.map((m) => m.month)).toEqual([3, 4, 5, 6, 7, 8]);
+    expect(r.months[0]).toMatchObject({ clear: 0, logged: 31, perWeek: 24.5, soFar: false });
+    expect(r.months[5]).toMatchObject({ clear: 31, logged: 31, perWeek: 0 });
+    const long = new Data({ entries: days('2024-01-01', '2026-08-31', 'clear'), intentions: t3 });
+    const m = reportTrends(long, { year: 2026, month: 8 }, '2026-09-30').months;
+    expect([m.length, m[0].year, m[0].month, m[11].month]).toEqual([12, 2025, 9, 8]);
+  });
+
+  it('a year report covers its months up to today; the running month is marked', () => {
+    const r = reportTrends(d, { year: 2026, month: null }, '2026-09-30');
+    expect(r.months.map((m) => m.month)).toEqual([3, 4, 5, 6, 7, 8, 9]);
+    expect(r.months[6]).toMatchObject({ logged: 0, perWeek: null, soFar: true });
+  });
+
+  it('the last 3 months against the 3 before: share of logged days clear, and drinks a week', () => {
+    const r = reportTrends(d, { year: 2026, month: 8 }, '2026-09-30', [{ start: '2026-07-01', end: '2026-07-31', ym: '2026-07' }, { start: '2025-01-01', end: '2025-01-31', ym: '2025-01' }]);
+    expect(r.three.clear).toEqual({ pct: 100, before: 0 });
+    expect(r.three.drinksDiff).toBeCloseTo(-24.5);
+    expect(r.three.challenges).toEqual(['2026-07']);
+    // Nothing logged before March: no 6-month comparison.
+    expect(r.six).toEqual({ clear: null, drinksDiff: null, challenges: [] });
+  });
+
+  it('needs 30 logged days in each stretch', () => {
+    const thin = new Data({ entries: [...days('2026-03-01', '2026-05-31', 'moderate'), ...days('2026-06-01', '2026-06-29', 'clear')], intentions: t3 });
+    expect(reportTrends(thin, { year: 2026, month: 8 }, '2026-09-30').three.clear).toBeNull();
   });
 });

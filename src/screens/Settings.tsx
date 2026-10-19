@@ -150,7 +150,7 @@ export function Settings() {
             <div className="st-row-text">
               <span className="st-label">
                 {savings.effective
-                  ? t('settings.savingsSummary', { n: wholeDrinks(savings.effective.baselinePerWeek), price: priceText(savings.effective.price) })
+                  ? t('settings.savingsSummary', { count: wholeDrinks(savings.effective.baselinePerWeek), price: priceText(savings.effective.price) })
                   : t('settings.savingsFirst3', { price: priceText(savings.price!) })}
               </span>
               <p className="st-sub">

@@ -267,7 +267,7 @@ export function Trends() {
               <div><p className="tr-hero-value">{data.weeksMet}<span className="tr-of">{t('trends.ofTotal', { total: data.weeksCounted })}</span></p><p className="tr-stat-label">{t('trends.weeksMet')}</p></div>
             </div>
             {data.compare && <p className="tr-compare">{comparisonText(data.total, data.compare.before, data.compare.label)}</p>}
-            <p className="tr-glance-logged">{t('trends.daysLogged', { logged: data.trackedDays, available: data.availableDays })}</p>
+            <p className="tr-glance-logged">{t('trends.daysLogged', { count: data.trackedDays, available: data.availableDays })}</p>
             <div className="tr-glance-levels"><LevelLegend levels={data.levels} /></div>
           </section>
 
@@ -338,8 +338,8 @@ export function Trends() {
                         <button type="button" className="tr-step" aria-label={t('trends.nextWeek')} disabled={at === data.weeks.length - 1} onClick={() => setExpandedWeek(data.weeks[at + 1].weekStartIso)}>›</button>
                       </div>
                       <div className="tr-detail-stats">
-                        <span>{w.target === null ? t('trends.noIntentionYet') : t('trends.intention', { n: w.target })}</span>
-                        <span>{t('trends.actual', { count: w.hasEntries ? w.count : '—', partial: w.hasEntries && (w.logged ?? 7) < 7 ? t('trends.actualPartial', { logged: w.logged ?? 0 }) : '' })}</span>
+                        <span>{w.target === null ? t('trends.noIntentionYet') : t('trends.intention', { count: w.target })}</span>
+                        <span>{t('trends.actual', { count: w.hasEntries ? w.count : '—', partial: w.hasEntries && (w.logged ?? 7) < 7 ? t('trends.actualPartial', { count: w.logged ?? 0 }) : '' })}</span>
                       </div>
                       <Link className="tr-view-week" to={`/?year=${w.weekStartIso.slice(0, 4)}&month=${Number(w.weekStartIso.slice(5, 7))}`}>
                         {t('trends.viewWeek')}

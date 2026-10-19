@@ -4,7 +4,7 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
-## 1.3.0 — 17 October 2026 (in review)
+## 1.3.0 — 19 October 2026
 
 - **French**, addressing people as « vous », including Help and the privacy
   statement. A device set to French gets it straight away; anyone can choose

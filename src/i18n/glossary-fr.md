@@ -3,6 +3,8 @@
 The words Clear Tracker uses for its ideas in French, so every screen says the
 same thing the same way. Proposed 17 October 2026, for review by a French
 speaker in France; Quebec's differences are in `fr-CA.json`.
+Reviewed 19 October 2026 by the reviewer in France: positive; terms
+confirmed, with « Clear » kept as the name (see the row below).
 
 **Address:** vous throughout (Hugh, 17 October 2026), as French and Quebec
 health services and help lines do. Plain and kind, never clinical.

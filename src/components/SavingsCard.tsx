@@ -34,7 +34,7 @@ export function first3WaitingText(f: FirstThreeMonths): string {
   if (f.status === 'none') return t('savings.first3None');
   if (f.status !== 'waiting') return '';
   return f.complete
-    ? t('savings.first3Short', { logged: f.logged, needed: f.needed })
+    ? t('savings.first3Short', { count: f.logged, needed: f.needed })
     : t('savings.first3Waiting', { date: fmt(f.end), needed: f.needed, logged: f.logged });
 }
 

@@ -4,6 +4,19 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.3.1 — 19 October 2026
+
+- **Singular and plural counts fixed**: « 0 jour sans alcool sur 3 » (French
+  uses the singular for 0 and 1) on the Check-in intention card, the weeks
+  chart, days logged, milestone progress and more; and in English and German
+  for 1 ("Aiming for 1 clear day a week", "Clear day streak: 1 day",
+  "1 day/week", „Vorhaben: 1 alkoholfreier Tag“).
+- `src/i18n/README.md` records the decision on "Clear" in other languages
+  (the name stays English; each language uses its own words for the day;
+  the welcome card and Help say what Clear means), and that any number
+  before a noun needs singular and plural forms.
+- The French glossary notes the reviewer's positive review.
+
 ## 1.3.0 — 19 October 2026
 
 - **French**, addressing people as « vous », including Help and the privacy
@@ -41,11 +54,6 @@ on the branch, before merging.
   little more — a clearer head, and a choice that's yours. German and French
   keep "Clear" in English and say what it means (the French reviewer's
   suggestion), rather than « clair » or „klar“ in the wording.
-- **Singular and plural counts fixed**: « 0 jour sans alcool sur 3 » (French
-  uses the singular for 0 and 1) on the Check-in intention card, the weeks
-  chart, days logged, milestone progress and more; and in English and German
-  for 1 ("Aiming for 1 clear day a week", "Clear day streak: 1 day",
-  "1 day/week", „Vorhaben: 1 alkoholfreier Tag“).
 
 ## 1.2.0 — 17 October 2026
 

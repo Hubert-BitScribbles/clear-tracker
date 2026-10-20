@@ -4,6 +4,12 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.3.3 — 20 October 2026
+
+- **bitScribbles™.** About's "Made by bitScribbles" heading now carries the
+  ™ sign, in English, German and French, now that the trademark search came
+  back clear. The drawn byline is unchanged.
+
 ## 1.3.2 — 19 October 2026
 
 - **Open-source credits in full.** About → Credits now names what the app is

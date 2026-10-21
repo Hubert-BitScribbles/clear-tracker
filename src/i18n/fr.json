@@ -130,7 +130,7 @@
   "challenges.label.week": "Semaines sans alcool",
   "challenges.label.weekend": "Week-ends sans alcool",
   "challenges.month": "Un mois sans alcool",
-  "challenges.monthSub": "Choisissez un mois à passer sans alcool. Les jours oubliés peuvent être notés après coup. Un mois choisi est exclu du point de départ « 3 premiers mois » des économies.",
+  "challenges.monthSub": "Choisissez un mois à passer sans alcool. Le mois en cours peut être choisi tant qu’aucun de ses jours n’est noté. Les jours oubliés peuvent être notés après coup. Un mois choisi est exclu du point de départ « 3 premiers mois » des économies.",
   "challenges.monthToAdd": "Mois à ajouter",
   "challenges.remove": "Retirer",
   "challenges.removeLabel": "Retirer : {{title}}",

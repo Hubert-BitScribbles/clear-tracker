@@ -130,7 +130,7 @@
   "challenges.label.week": "Clear weeks",
   "challenges.label.weekend": "Clear weekends",
   "challenges.month": "A clear month",
-  "challenges.monthSub": "Pick a month to keep clear. Days you forget to log can be filled in afterwards. A chosen month is left out of the \"first 3 months\" savings baseline.",
+  "challenges.monthSub": "Pick a month to keep clear. This month can be chosen until any of its days is logged. Days you forget to log can be filled in afterwards. A chosen month is left out of the \"first 3 months\" savings baseline.",
   "challenges.monthToAdd": "Month to add",
   "challenges.remove": "Remove",
   "challenges.removeLabel": "Remove {{title}}",

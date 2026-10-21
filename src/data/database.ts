@@ -317,6 +317,7 @@ export async function getChallengeStatus(today = todayIso()) {
     weekendNow: CH.currentSpan(d, today, settings.weekendRuns, 'weekend'),
     weekNow: CH.currentSpan(d, today, settings.weekRuns, 'week'),
     months: settings.months.map((ym) => CH.monthChallenge(d, today, ym)),
+    monthOptions: CH.monthOptions(d, today),
     // Where a run would start if switched on now (shown before switching on).
     weekendStartsIfOn: CH.weekendStart(d, today),
     weekStartsIfOn: CH.weekStart(d, today),

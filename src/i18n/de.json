@@ -130,7 +130,7 @@
   "challenges.label.week": "Alkoholfreie Wochen",
   "challenges.label.weekend": "Alkoholfreie Wochenenden",
   "challenges.month": "Ein alkoholfreier Monat",
-  "challenges.monthSub": "Wählen Sie einen Monat, den Sie alkoholfrei halten möchten. Vergessene Tage können Sie nachtragen. Ein gewählter Monat zählt nicht zum Ausgangswert „erste 3 Monate“ für die Ersparnis.",
+  "challenges.monthSub": "Wählen Sie einen Monat, den Sie alkoholfrei halten möchten. Den laufenden Monat können Sie wählen, solange noch kein Tag darin eingetragen ist. Vergessene Tage können Sie nachtragen. Ein gewählter Monat zählt nicht zum Ausgangswert „erste 3 Monate“ für die Ersparnis.",
   "challenges.monthToAdd": "Monat hinzufügen",
   "challenges.remove": "Entfernen",
   "challenges.removeLabel": "{{title}} entfernen",

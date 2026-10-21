@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { firstThreeMonths, momentumIncludes } from '../src/data/baseline';
-import { chosenMonthRanges, clearWeekends, clearWeeks, currentSpan, monthChallenge, parseChallenges, toggleRun, weekendStart, weekStart } from '../src/data/challenges';
+import { chosenMonthRanges, clearWeekends, clearWeeks, currentSpan, monthChallenge, monthOptions, parseChallenges, toggleRun, weekendStart, weekStart } from '../src/data/challenges';
 import { Data } from '../src/data/compute';
 
 type Lv = 'clear' | 'a-few' | 'moderate' | 'a-lot';
@@ -100,5 +100,25 @@ describe('challenge months and the baseline', () => {
   it('momentum reports a chosen month inside its 26 weeks', () => {
     expect(momentumIncludes('2026-04-15', jan)).toEqual(['2026-01']);
     expect(momentumIncludes('2026-09-30', jan)).toEqual([]);
+  });
+});
+
+describe('months that can be chosen', () => {
+  it('this month while nothing in it is logged, then the next eleven', () => {
+    const d = new Data({ entries: [e('2026-09-30', 'clear')], intentions: [] });
+    const o = monthOptions(d, '2026-10-20');
+    expect(o[0]).toBe('2026-10');
+    expect(o).toHaveLength(12);
+    expect(o.at(-1)).toBe('2027-09');
+  });
+  it('once a day of this month is logged (clear or not), it starts next month', () => {
+    for (const lv of ['clear', 'a-lot'] as const) {
+      const d = new Data({ entries: [e('2026-10-01', lv)], intentions: [] });
+      expect(monthOptions(d, '2026-10-20')[0]).toBe('2026-11');
+    }
+  });
+  it('rolls over the year', () => {
+    const d = new Data({ entries: [e('2026-12-02', 'clear')], intentions: [] });
+    expect(monthOptions(d, '2026-12-05').slice(0, 2)).toEqual(['2027-01', '2027-02']);
   });
 });

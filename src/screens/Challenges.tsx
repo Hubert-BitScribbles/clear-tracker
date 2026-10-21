@@ -20,13 +20,7 @@ const fmt = dayMonth;
 export function Challenges() {
   const [st, setSt] = useState<Awaited<ReturnType<typeof getChallengeStatus>> | null>(null);
   const today = todayIso();
-  const options = Array.from({ length: 13 }, (_, i) => {
-    const y = Number(today.slice(0, 4));
-    const m = Number(today.slice(5, 7)) - 1 + i;
-    const ym = `${y + Math.floor(m / 12)}-${String((m % 12) + 1).padStart(2, '0')}`;
-    return { ym, label: monthYear((m % 12) + 1, y + Math.floor(m / 12)) };
-  });
-  const [pick, setPick] = useState(options[0].ym);
+  const [pick, setPick] = useState('');
 
   const load = async () => setSt(await getChallengeStatus());
   useEffect(() => {
@@ -34,6 +28,8 @@ export function Challenges() {
   }, []);
 
   if (!st) return <main className="milestones" />;
+  // This month only while none of its days is logged (monthOptions), then the next twelve.
+  const options = st.monthOptions.map((ym) => ({ ym, label: monthYear(Number(ym.slice(5, 7)), Number(ym.slice(0, 4))) }));
   const available = options.filter((o) => !st.settings.months.includes(o.ym));
 
   /** "Starts this Friday, Oct 2" / "Starts next Monday, Oct 5 — this week already has logged days" */

@@ -66,6 +66,23 @@ export function weekStart(d: Data, today: Iso): Iso {
   return mon;
 }
 
+/**
+ * Months that can be chosen: this month only if none of its days is logged
+ * yet (as with weekends and weeks: nothing is taken on after the fact), then
+ * the months after it, `count` in all, as 'YYYY-MM'.
+ */
+export function monthOptions(d: Data, today: Iso, count = 12): string[] {
+  const y = Number(today.slice(0, 4));
+  const m = Number(today.slice(5, 7));
+  const first = isoOf(y, m, 1);
+  let logged = false;
+  for (let x = first; x <= today; x = addDays(x, 1)) if (d.status(x) !== null) logged = true;
+  return Array.from({ length: count }, (_, i) => {
+    const k = y * 12 + (m - 1) + i + (logged ? 1 : 0);
+    return `${Math.floor(k / 12)}-${String((k % 12) + 1).padStart(2, '0')}`;
+  });
+}
+
 /** Switch a run on (from the right start date) or off (ending today). */
 export function toggleRun(runs: Run[], on: boolean, start: Iso, today: Iso): Run[] {
   if (on === isOn(runs)) return runs;

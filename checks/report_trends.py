@@ -10,7 +10,7 @@ def check(name, ok, detail=''):
     results.append(ok); print(('PASS ' if ok else 'FAIL ') + name + ('' if ok else f'  [{detail}]'))
 
 ORDER = ['The days', 'By day of week', 'Clear days, month by month', 'Estimated drinks',
-         'Estimated drinks a week, month by month', 'Weeks by intention', 'Milestones']
+         'Estimated drinks a week, month by month', 'Week by week', 'Milestones']
 
 def open_report(b, entries_js, path='/trends/review?year=2026&month=8', width=390):
     ctx = b.new_context(viewport={"width": width, "height": 844}, timezone_id='America/Vancouver', locale='en-CA')
@@ -37,7 +37,7 @@ SCENARIO = "const s = h.scenario(42, '2026-09-30', {}); await db.restoreFromBack
 with sync_playwright() as p:
     b = p.chromium.launch()
     ctx, pg, errors = open_report(b, SCENARIO)
-    check('trends are left out until ticked', headings(pg) == ['The days', 'By day of week', 'Estimated drinks', 'Weeks by intention'], headings(pg))
+    check('trends are left out until ticked', headings(pg) == ['The days', 'By day of week', 'Estimated drinks', 'Week by week'], headings(pg))
     pg.locator('.rv-include summary').click(); pg.wait_for_timeout(150)
     boxes = [x.strip() for x in pg.locator('.rv-checks label').all_inner_texts()]
     check('the boxes follow the order of the sections', boxes == ORDER, boxes)

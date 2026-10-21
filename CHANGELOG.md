@@ -4,6 +4,16 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.3.3 — 20 October 2026
+
+- **Week by week**: the weekly chart (Trends) and its report section are
+  renamed from "Weeks by intention", and each tile now shows clear days
+  against that week's intention — "5/6" — so how close a week came is
+  visible without tapping it. Colours are unchanged; weeks before the
+  first intention show the count alone. The key under the chart and Help
+  explain it. English, German („Woche für Woche“) and French (« Semaine par
+  semaine »).
+
 ## 1.3.2 — 19 October 2026
 
 - **Open-source credits in full.** About → Credits now names what the app is

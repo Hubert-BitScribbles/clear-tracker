@@ -109,7 +109,7 @@ with sync_playwright() as p:
     check('Up next uses the fixed numbers', '14 clear days' in t and ' clear days in 2026' not in t, t[:400])
 
     pg.goto(BASE + "/trends/review?year=2026&month=8"); pg.wait_for_timeout(1200)
-    t = pg.locator('.rv-section', has=pg.locator('h2', has_text='Intention')).inner_text()
+    t = pg.locator('.rv-section', has=pg.locator('h2', has_text='Week by week')).inner_text()
     check('August report: "came before your first intention"', 'before your first intention' in t, t)
     check('no page errors', not errors, errors)
     b.close()

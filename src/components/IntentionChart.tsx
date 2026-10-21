@@ -49,7 +49,7 @@ type Props = { weeks: MeasuredWeek[]; selected: string; onSelect: (weekStart: st
  * The year's weeks as a grid: one row per month (a week belongs to the month
  * of its Thursday), newest month first, oldest week on the left. Each tile is
  * a week, coloured by how it went against the intention, with its clear days
- * as the number. "2 of 4" at the end of a row is that month's weeks met; the
+ * against the intention as the number ("5/6"). "2 of 4" at the end of a row is that month's weeks met; the
  * week in progress counts only once it's met, as on Check-in.
  *
  * Replaced a bar per week, which looked bare with a few weeks and became too
@@ -131,7 +131,11 @@ export function IntentionChart({ weeks, selected, onSelect, year }: Props) {
                       aria-label={weekLabel(w)}
                       onClick={() => onSelect(w.weekStartIso)}
                     >
-                      <span aria-hidden="true">{w.hasEntries ? w.count : '–'}</span>
+                      {/* Clear days against the week's intention: "5/6" (Hugh, 20 October 2026). Before the first intention, the count alone. */}
+                      <span aria-hidden="true" className="wg-num">
+                        {w.hasEntries ? w.count : '–'}
+                        {w.target !== null && w.hasEntries && <span className="wg-of">/{w.target}</span>}
+                      </span>
                     </button>
                   </span>
                 );

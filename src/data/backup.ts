@@ -11,6 +11,7 @@
 // can't be made from a phone at http://192.168… during development.
 
 import type { DayEntryRow, IntentionRow } from './db';
+import { addDays, todayIso, weekdayOf } from './dates';
 import { t } from '../i18n';
 
 export const FORMAT = 'clear-tracker-backup';
@@ -110,13 +111,15 @@ export async function decryptBackup(fileText: string, passphrase: string): Promi
   if (env?.format !== FORMAT || typeof env.data !== 'string' || !env.kdf?.salt || !env.cipher?.iv) {
     throw new BackupError('not-a-backup', t('backup.err.notBackup'));
   }
-  if (env.version > VERSION) {
+  if (typeof env.version === 'number' && env.version > VERSION) {
     throw new BackupError('not-a-backup', t('backup.err.newer'));
   }
+  const parts = envelopeParts(env);
+  if (!parts) throw new BackupError('not-a-backup', t('backup.err.notBackup'));
   let plain: string;
   try {
-    const key = await deriveKey(passphrase, unb64(env.kdf.salt), env.kdf.iterations);
-    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(env.cipher.iv) }, key, unb64(env.data));
+    const key = await deriveKey(passphrase, parts.salt, parts.iterations);
+    const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: parts.iv }, key, parts.data);
     plain = new TextDecoder().decode(pt);
   } catch {
     throw new BackupError('wrong-passphrase', t('backup.err.passphrase'));
@@ -124,7 +127,38 @@ export async function decryptBackup(fileText: string, passphrase: string): Promi
   return validatePayload(JSON.parse(plain));
 }
 
+/** Rounds a backup may ask for: fewer would be weak; many more would freeze the page while deriving the key. */
+export const MIN_ITERATIONS = 100_000;
+export const MAX_ITERATIONS = 10_000_000;
+
+/**
+ * The envelope's settings, checked before any work is done: a known version,
+ * PBKDF2-SHA-256 with a sensible number of rounds, AES-GCM, a 16-byte salt and
+ * a 12-byte IV, all valid base64. Null if anything is off (an odd or
+ * hand-edited file), which reads as "not a Clear Tracker backup".
+ */
+export function envelopeParts(env: Envelope): { salt: Bytes; iv: Bytes; data: Bytes; iterations: number } | null {
+  const n = env.kdf?.iterations;
+  if (!Number.isInteger(env.version) || env.version < 1 || env.version > VERSION) return null;
+  if (env.kdf?.name !== 'PBKDF2' || env.kdf?.hash !== 'SHA-256' || env.cipher?.name !== 'AES-GCM') return null;
+  if (!Number.isInteger(n) || n < MIN_ITERATIONS || n > MAX_ITERATIONS) return null;
+  try {
+    const salt = unb64(env.kdf.salt);
+    const iv = unb64(env.cipher.iv);
+    const data = unb64(env.data);
+    return salt.length === 16 && iv.length === 12 && data.length > 16 ? { salt, iv, data, iterations: n } : null;
+  } catch {
+    return null; // not base64
+  }
+}
+
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
+/** A real calendar date in YYYY-MM-DD (not 2026-02-30 or 2026-13-01). */
+const realDate = (s: unknown): s is string => {
+  if (typeof s !== 'string' || !ISO.test(s)) return false;
+  const d = new Date(`${s}T00:00:00Z`);
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s; // month 13 is NaN; Feb 30 rolls over
+};
 const AMOUNTS = new Set(['a-few', 'moderate', 'a-lot']);
 
 /** Checks contents before anything is replaced; a bad file is rejected whole. */
@@ -135,9 +169,11 @@ export function validatePayload(data: unknown): BackupPayload {
   }
   const problems: string[] = [];
   const seen = new Set<string>();
+  // A day can't be logged ahead; allow one day for a backup made in a time zone further east.
+  const latest = addDays(todayIso(), 1);
   for (const e of d.dayEntries) {
     const date = e?.entry_date;
-    if (typeof date !== 'string' || !ISO.test(date)) problems.push(t('backup.err.badDate'));
+    if (!realDate(date) || date > latest) problems.push(t('backup.err.badDate'));
     else if (seen.has(date)) problems.push(t('backup.err.twice', { date }));
     else seen.add(date);
     if (e?.status === 'clear' ? e.amount != null : !(e?.status === 'drinking' && AMOUNTS.has(e.amount as string))) {
@@ -145,7 +181,9 @@ export function validatePayload(data: unknown): BackupPayload {
     }
   }
   for (const i of d.intentions) {
-    if (!Number.isInteger(i?.weekly_target) || i.weekly_target < 1 || i.weekly_target > 7 || !ISO.test(i?.effective_date ?? '')) {
+    // Intentions start on a Monday (weekdayOf: 1), at most a week ahead ("from next Monday").
+    const from = i?.effective_date;
+    if (!Number.isInteger(i?.weekly_target) || i.weekly_target < 1 || i.weekly_target > 7 || !realDate(from) || weekdayOf(from) !== 1 || from > addDays(latest, 7)) {
       problems.push(t('backup.err.badIntention'));
     }
   }

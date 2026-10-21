@@ -43,7 +43,9 @@ function asNative(key: string, value: unknown, firstIntention: string | null, fi
 // and 52 weeks for everyone. Weeks are measured from the first intention.
 
 const STREAK_TIERS = [2, 4, 8, 13, 26, 52];
-function bruteStreakTiers(entries: Record<string, unknown>[], intentions: Record<string, unknown>[], today: string) {
+// Weeks with an intention so far, this week included (port 1.3.5: week
+// milestones count a week once it's met, dated the day it got there).
+function bruteWeeks(entries: Record<string, unknown>[], intentions: Record<string, unknown>[], today: string) {
   const ledger = [...intentions].sort((a, b) =>
     (b.effective_date as string).localeCompare(a.effective_date as string) || (b.created_at as string).localeCompare(a.created_at as string));
   if (!ledger.length || !entries.length) return [];
@@ -51,23 +53,34 @@ function bruteStreakTiers(entries: Record<string, unknown>[], intentions: Record
   const firstEntry = entries.map((e) => e.entry_date as string).sort()[0];
   const firstIntention = ledger[ledger.length - 1].effective_date as string;
   let w = mondayUtc(firstEntry) > firstIntention ? mondayUtc(firstEntry) : firstIntention;
-  const weeks: { end: string; met: boolean }[] = [];
-  for (; w < mondayUtc(today); w = plusDays(w, 7)) {
+  const weeks: { start: string; end: string; count: number; target: number; reached: (extra: number) => string | null }[] = [];
+  for (; w <= mondayUtc(today); w = plusDays(w, 7)) {
     const target = ledger.find((i) => (i.effective_date as string) <= w)!.weekly_target as number;
-    let n = 0;
-    for (let k = 0; k < 7; k++) if (clear.has(plusDays(w, k))) n++;
-    weeks.push({ end: plusDays(w, 6), met: n >= target });
+    const days = Array.from({ length: 7 }, (_, k) => plusDays(w, k)).filter((x) => clear.has(x));
+    weeks.push({ start: w, end: plusDays(w, 6), count: days.length, target, reached: (extra) => days[target + extra - 1] ?? null });
   }
-  const out: { tierWeeks: number; reachedWeekEndIso: string }[] = [];
+  return weeks;
+}
+function bruteStreakTiers(entries: Record<string, unknown>[], intentions: Record<string, unknown>[], today: string) {
+  const weeks = bruteWeeks(entries, intentions, today).map((x) => ({ met: x.count >= x.target, reached: x.reached(0) }));
+  const out: { tierWeeks: number; reachedIso: string }[] = [];
   for (let i = 0; i < weeks.length; i++) {
     if (!weeks[i].met || (i > 0 && weeks[i - 1].met)) continue; // start of a run
     let len = 0;
     while (i + len < weeks.length && weeks[i + len].met) len++;
-    for (const t of STREAK_TIERS) if (len >= t) out.push({ tierWeeks: t, reachedWeekEndIso: weeks[i + t - 1].end });
+    for (const t of STREAK_TIERS) if (len >= t) out.push({ tierWeeks: t, reachedIso: weeks[i + t - 1].reached! });
   }
   return out;
 }
-const CHANGED = new Set(['getStreakTierEarnings']);
+function bruteWeekMilestones(entries: Record<string, unknown>[], intentions: Record<string, unknown>[], today: string) {
+  const weeks = bruteWeeks(entries, intentions, today);
+  return {
+    firstWeekMetIso: weeks.find((x) => x.count >= x.target)?.reached(0) ?? null,
+    beyondTargetInstances: weeks.filter((x) => x.count > x.target).reverse()
+      .map((x) => ({ weekStartIso: x.start, weekEndIso: x.end, reachedIso: x.reached(1), count: x.count, target: x.target })),
+  };
+}
+const CHANGED = new Set(['getStreakTierEarnings', 'computeMilestones']);
 
 // ---- Independent answers for the two fixed functions ----------------------
 
@@ -166,6 +179,8 @@ describe(`native vs port (${Intl.DateTimeFormat().resolvedOptions().timeZone})`,
           }
           expect(port.getLongestClearDayStreak).toBe(bruteLongestClear(entries));
           expect(port.getStreakTierEarnings).toEqual(bruteStreakTiers(entries, intentions, today));
+          const nm = native.computeMilestones as { totalClearDays: number; firstClearDate: string | null };
+          expect(port.computeMilestones).toEqual({ totalClearDays: nm.totalClearDays, firstClearDate: nm.firstClearDate, ...bruteWeekMilestones(entries, intentions, today) });
           expect(port.getSameDayDrinkingLogs).toEqual(bruteSameDay(entries));
         });
       }
@@ -181,7 +196,8 @@ describe(`native vs port (${Intl.DateTimeFormat().resolvedOptions().timeZone})`,
     const weeks: [string, string][] = [['2026-09-28', '2026-10-04']];
     const port = await ask(P, [2026], [[2026, 9]], weeks);
     for (const k of Object.keys(port)) port[k] = asNative(k, port[k], null);
-    for (const k of CHANGED) expect(port[k]).toEqual([]);
+    expect(port.getStreakTierEarnings).toEqual([]);
+    expect(port.computeMilestones).toEqual({ totalClearDays: 0, firstClearDate: null, firstWeekMetIso: null, beyondTargetInstances: [] });
     const native = await ask(N, [2026], [[2026, 9]], weeks);
     for (const k of CHANGED) delete port[k], delete native[k];
     expect(port).toEqual(native);

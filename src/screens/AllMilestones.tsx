@@ -127,8 +127,8 @@ export function AllMilestones() {
         size="all"
         glyph="✓"
         title={t('all.firstClearWeek')}
-        sub={m.firstClearWeekEndIso ? t('all.firstWeekSub', { date: formatShort(m.firstClearWeekEndIso) }) : t('all.notYet')}
-        earned={!!m.firstClearWeekEndIso}
+        sub={m.firstWeekMetIso ? t('all.firstWeekSub', { date: formatShort(m.firstWeekMetIso) }) : t('all.notYet')}
+        earned={!!m.firstWeekMetIso}
       />
 
       <h2 className="ms-all-sec">{t('all.consistency')}</h2>

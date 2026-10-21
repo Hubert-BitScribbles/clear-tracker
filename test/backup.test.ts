@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { BackupError, decryptBackup, encryptBackup, payloadFrom, validatePayload } from '../src/data/backup';
+import { BackupError, decryptBackup, encryptBackup, MAX_ITERATIONS, payloadFrom, validatePayload } from '../src/data/backup';
 import * as P from '../src/data/database';
 import { scenario } from './helpers';
 
-const FAST = 1000; // iterations: real exports use 600,000; tests use fewer for speed
+const FAST = 100_000; // iterations: real exports use 600,000; tests use the fewest a backup may have (MIN_ITERATIONS)
 
 async function seeded() {
   const s = scenario(9, '2026-09-30');
@@ -99,5 +99,36 @@ describe('backups', () => {
     await expect(P.restoreBackup(bad)).rejects.toThrow();
     expect(await P.getEntryCount()).toBe(count);
     expect(await P.getSetting('savings_baseline_per_week', '')).toBe('14');
+  });
+});
+
+describe('restore rejects odd files (1.3.5)', () => {
+  const pass = 'correct horse';
+  const make = async () => JSON.parse(await encryptBackup(payloadFrom({ dayEntries: [], intentions: [], settings: [] }), pass, FAST));
+  const rejects = async (env: Record<string, unknown>, kind: string) => {
+    await expect(decryptBackup(JSON.stringify(env), pass)).rejects.toMatchObject({ kind });
+  };
+  it('odd encryption settings read as "not a backup", before any work is done', async () => {
+    const env = await make();
+    await rejects({ ...env, kdf: { ...env.kdf, iterations: 10 } }, 'not-a-backup');
+    await rejects({ ...env, kdf: { ...env.kdf, iterations: MAX_ITERATIONS + 1 } }, 'not-a-backup');
+    await rejects({ ...env, kdf: { ...env.kdf, iterations: 150000.5 } }, 'not-a-backup');
+    await rejects({ ...env, kdf: { ...env.kdf, hash: 'SHA-1' } }, 'not-a-backup');
+    await rejects({ ...env, cipher: { ...env.cipher, name: 'AES-CBC' } }, 'not-a-backup');
+    await rejects({ ...env, kdf: { ...env.kdf, salt: btoa('short') } }, 'not-a-backup');
+    await rejects({ ...env, cipher: { ...env.cipher, iv: btoa('x'.repeat(16)) } }, 'not-a-backup');
+    await rejects({ ...env, cipher: { ...env.cipher, iv: '%%%' } }, 'not-a-backup');
+    await rejects({ ...env, version: 0 }, 'not-a-backup');
+    await rejects({ ...env, version: 1.5 }, 'not-a-backup');
+    await expect(decryptBackup(JSON.stringify(env), pass)).resolves.toMatchObject({ app: 'clear-tracker' }); // the real one still works
+  });
+  it('impossible dates and intentions that don\'t start on a Monday are refused', () => {
+    const day = (entry_date: string) => ({ id: entry_date, entry_date, status: 'clear', amount: null, created_at: '', updated_at: '' });
+    const ok = { app: 'clear-tracker', exportedAt: '', settings: [], intentions: [{ id: 'i', weekly_target: 3, effective_date: '2026-10-05', created_at: '', updated_at: '' }] };
+    for (const bad of ['2026-02-30', '2026-13-01', '2026-04-31', '2099-01-01']) {
+      expect(() => validatePayload({ ...ok, dayEntries: [day(bad)] }), bad).toThrow(BackupError);
+    }
+    expect(() => validatePayload({ ...ok, dayEntries: [day('2024-02-29')] })).not.toThrow(); // a real leap day
+    expect(() => validatePayload({ ...ok, dayEntries: [], intentions: [{ ...ok.intentions[0], effective_date: '2026-10-07' }] })).toThrow(BackupError); // a Wednesday
   });
 });

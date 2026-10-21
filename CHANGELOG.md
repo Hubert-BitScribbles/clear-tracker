@@ -4,6 +4,24 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.3.5 — 20 October 2026
+
+- **Week milestones count a week as soon as it's met** (Hugh's call), like
+  Trends' streak and Check-in already did: week streaks, first week met,
+  beyond your intention and back on track. Each is dated the day the week
+  got there, so the date doesn't move when the week ends. Changing that day
+  back the same evening takes it back, as the record no longer shows it.
+- **Changing the intention twice** no longer lets an earlier "from next
+  Monday" choice take over after a newer "right away" one: the newest
+  choice replaces anything still scheduled.
+- **Restore refuses odd files** before doing any work: unknown versions,
+  other encryption settings, too few or far too many rounds, wrongly sized
+  salt or IV, impossible dates (30 February), days logged ahead, and
+  intentions that don't start on a Monday.
+- **Sounds about 90% smaller:** the four tones are now MP3, with their
+  silent tails trimmed — about 115 KB instead of 1.25 MB, so the first
+  download roughly halves. They sound and start the same.
+
 ## 1.3.4 — 20 October 2026
 
 - **Clear month challenge: this month only before any of it is logged.** The

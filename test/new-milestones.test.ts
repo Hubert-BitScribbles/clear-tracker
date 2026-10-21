@@ -29,13 +29,15 @@ describe('back on track', () => {
       ...week('2026-02-09', 'ccc....'), // met after unlogged → doesn't count
     ];
     const d = new Data({ entries, intentions: [target(3)] });
-    expect(backOnTrackWeeks(d, '2026-03-01')).toEqual(['2026-01-25']);
+    expect(backOnTrackWeeks(d, '2026-03-01')).toEqual(['2026-01-21']); // the day the Jan 19 week met 3
   });
-  it('the week in progress never counts', () => {
-    const entries = [...week('2026-01-05', 'mmmmmmm'), ...week('2026-01-12', 'ccc....')];
-    const d = new Data({ entries, intentions: [target(3)] });
-    expect(backOnTrackWeeks(d, '2026-01-15')).toEqual([]);
-    expect(backOnTrackWeeks(d, '2026-01-19')).toEqual(['2026-01-18']);
+  it('the week in progress counts once met, dated that day (1.3.5)', () => {
+    const missed = week('2026-01-05', 'mmmmmmm');
+    const tuesday = new Data({ entries: [...missed, ...week('2026-01-12', 'cc.....')], intentions: [target(3)] });
+    expect(backOnTrackWeeks(tuesday, '2026-01-13')).toEqual([]); // two clear so far: not yet
+    const d = new Data({ entries: [...missed, ...week('2026-01-12', 'ccc....')], intentions: [target(3)] });
+    expect(backOnTrackWeeks(d, '2026-01-14')).toEqual(['2026-01-14']);
+    expect(backOnTrackWeeks(d, '2026-01-19')).toEqual(['2026-01-14']); // the date doesn't move when the week ends
   });
 });
 

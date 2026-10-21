@@ -85,3 +85,22 @@ describe('storage', () => {
     expect(await P.getCurrentWeeklyTarget('2026-09-28')).toBe(3);
   });
 });
+
+describe('changing the intention (1.3.5)', () => {
+  it('a change from this week drops one still scheduled for next Monday', async () => {
+    await P.resetDatabase();
+    await P.saveIntention(3, '2026-10-12'); // the first, last week
+    await P.saveIntention(5, '2026-10-26'); // a day was logged: from next Monday
+    await P.saveIntention(4, '2026-10-19'); // that day cleared again: right away
+    const all = (await db.intentions.toArray()).map((i) => [i.effective_date, i.weekly_target]).sort();
+    expect(all).toEqual([['2026-10-12', 3], ['2026-10-19', 4]]);
+    expect(await P.getWeekTarget('2026-10-26')).toBe(4); // next week keeps the newest choice
+  });
+  it('keeps earlier weeks as they were', async () => {
+    await P.resetDatabase();
+    await P.saveIntention(3, '2026-10-05');
+    await P.saveIntention(6, '2026-10-12');
+    await P.saveIntention(2, '2026-10-19');
+    expect((await db.intentions.toArray()).length).toBe(3);
+  });
+});

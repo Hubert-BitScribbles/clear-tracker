@@ -1,13 +1,13 @@
-import clearUrl from '../assets/sounds/clear-chime.wav';
-import aFewUrl from '../assets/sounds/a-few-tone.wav';
-import moderateUrl from '../assets/sounds/moderate-tone.wav';
-import aLotUrl from '../assets/sounds/drinking-hum.wav';
+import clearUrl from '../assets/sounds/clear-chime.mp3';
+import aFewUrl from '../assets/sounds/a-few-tone.mp3';
+import moderateUrl from '../assets/sounds/moderate-tone.mp3';
+import aLotUrl from '../assets/sounds/drinking-hum.mp3';
 import type { DayLevel } from '../data/database';
 
 // One sound per logged level; returning a day to unlogged is silent.
 // The four tones step from bright to low: the chime, the chime three
-// semitones lower (a-few-tone.wav), the hum four semitones higher
-// (moderate-tone.wav), and the hum.
+// semitones lower (a-few-tone.mp3), the hum four semitones higher
+// (moderate-tone.mp3), and the hum.
 //
 // Silent switch: on iPhone, plain <audio> plays as media and ignores the
 // ring/silent switch (and pauses other apps' music). So:

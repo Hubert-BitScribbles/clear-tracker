@@ -26,12 +26,14 @@ export const HONEST_LOGGING_TIERS = [1, 10, 25, 50, 100];
  * can't qualify: there's nothing to come back from. Returns week-end dates.
  */
 export function backOnTrackWeeks(d: Data, today: Iso): Iso[] {
-  const weeks = d.intentionWeeks(today); // nothing to come back from before the first intention
+  // Nothing to come back from before the first intention. This week counts
+  // once met, dated the day it was met, like the other week milestones.
+  const weeks = d.intentionWeeksSoFar(today);
   const out: Iso[] = [];
   for (let i = 1; i < weeks.length; i++) {
     // Coming back from a week that was missed for certain — not from one
     // with too little logged to say.
-    if (d.weekMet(weeks[i]) && d.weekMissed(weeks[i - 1])) out.push(addDays(weeks[i], 6));
+    if (d.weekMet(weeks[i]) && d.weekMissed(weeks[i - 1])) out.push(d.reachedDay(weeks[i])!);
   }
   return out;
 }

@@ -135,15 +135,23 @@ export async function getIntentionStart(): Promise<string | null> {
   return (await data()).intentionStart;
 }
 
+/**
+ * Saves a new intention from a week's Monday. The newest choice wins: one
+ * still scheduled for later (say, "from next Monday") is dropped, so it can't
+ * take over afterwards from a "right away" change made since.
+ */
 export async function saveIntention(weeklyTarget: number, effectiveDateIso: string): Promise<void> {
   await initDatabase();
   const t = now();
-  await db.intentions.add({
-    id: generateId(),
-    weekly_target: weeklyTarget,
-    effective_date: effectiveDateIso,
-    created_at: t,
-    updated_at: t,
+  await db.transaction('rw', db.intentions, async () => {
+    await db.intentions.where('effective_date').above(effectiveDateIso).delete();
+    await db.intentions.add({
+      id: generateId(),
+      weekly_target: weeklyTarget,
+      effective_date: effectiveDateIso,
+      created_at: t,
+      updated_at: t,
+    });
   });
   announceChange();
 }
@@ -368,7 +376,7 @@ export async function markMilestonesSeen(ids: string[]): Promise<void> {
 export async function getMilestoneExtras(today = todayIso()) {
   const d = await data();
   const target = d.scaleTarget(mondayOf(today));
-  const beyond = C.milestones(d, today).beyondTargetInstances.map((x) => x.weekEndIso).reverse();
+  const beyond = C.milestones(d, today).beyondTargetInstances.map((x) => x.reachedIso).reverse();
   return {
     target,
     backOnTrack: M.backOnTrackWeeks(d, today),

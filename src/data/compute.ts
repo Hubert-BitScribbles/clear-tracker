@@ -114,6 +114,33 @@ export class Data {
     return false;
   }
 
+  /**
+   * The day a week's clear days reached `extra` past its intention (0: the day
+   * it was met; 1: the day it went beyond), or null. Milestones are dated by
+   * it, so a week counts as soon as it's met, and its date never moves.
+   */
+  reachedDay(weekStart: Iso, extra = 0): Iso | null {
+    const target = this.targetForWeek(weekStart);
+    if (target === null) return null;
+    let n = 0;
+    for (let i = 0; i < 7; i++) {
+      const day = addDays(weekStart, i);
+      if (this.status(day) === 'clear' && ++n >= target + extra) return day;
+    }
+    return null;
+  }
+
+  /**
+   * Weeks with an intention up to now: the completed ones, and this week too
+   * (callers count it only once it's met, as Trends' streak and Check-in do;
+   * a later change that undoes it undoes the count).
+   */
+  intentionWeeksSoFar(today: Iso): Iso[] {
+    const current = mondayOf(today);
+    const done = this.intentionWeeks(today);
+    return this.targetForWeek(current) !== null && this.intentionStart !== null && current >= this.intentionStart ? [...done, current] : done;
+  }
+
   /** A week with no intention is never met (nor missed: callers skip it). */
   weekMet(weekStart: Iso): boolean {
     const target = this.targetForWeek(weekStart);
@@ -176,13 +203,14 @@ export interface DayOfWeekStats {
 export interface BeyondTargetInstance {
   weekStartIso: Iso;
   weekEndIso: Iso;
+  reachedIso: Iso; // the day it went beyond the intention
   count: number;
   target: number;
 }
 export interface MilestonesData {
   totalClearDays: number;
   firstClearDate: Iso | null;
-  firstClearWeekEndIso: Iso | null;
+  firstWeekMetIso: Iso | null; // the day the first week met its intention
   beyondTargetInstances: BeyondTargetInstance[]; // newest first
 }
 export interface LoggingTierEarn {
@@ -191,7 +219,7 @@ export interface LoggingTierEarn {
 }
 export interface StreakTierEarn {
   tierWeeks: number;
-  reachedWeekEndIso: Iso;
+  reachedIso: Iso; // the day the run's last week met its intention
 }
 export interface DayCell {
   status: DayStatus;
@@ -391,19 +419,20 @@ export function clearDatesOrdered(d: Data): Iso[] {
 
 export function milestones(d: Data, today: Iso): MilestonesData {
   const clear = clearDatesOrdered(d);
-  let firstClearWeekEndIso: Iso | null = null;
+  let firstWeekMetIso: Iso | null = null;
   const beyond: BeyondTargetInstance[] = [];
-  for (const w of d.intentionWeeks(today)) {
+  // This week counts too, once met (or beyond), dated the day it got there.
+  for (const w of d.intentionWeeksSoFar(today)) {
     const end = addDays(w, 6);
     const count = d.clearCountBetween(w, end);
     const target = d.scaleTarget(w); // intention weeks always have one
-    if (!firstClearWeekEndIso && count >= target) firstClearWeekEndIso = end;
-    if (count > target) beyond.push({ weekStartIso: w, weekEndIso: end, count, target });
+    if (!firstWeekMetIso && count >= target) firstWeekMetIso = d.reachedDay(w);
+    if (count > target) beyond.push({ weekStartIso: w, weekEndIso: end, reachedIso: d.reachedDay(w, 1)!, count, target });
   }
   return {
     totalClearDays: clear.length,
     firstClearDate: clear[0] ?? null,
-    firstClearWeekEndIso,
+    firstWeekMetIso,
     beyondTargetInstances: beyond.reverse(),
   };
 }
@@ -418,9 +447,13 @@ export function loggingTierEarnings(d: Data): LoggingTierEarn[] {
   return out;
 }
 
-/** Every streak tier reached by each run of met weeks (fixed lengths, STREAK_TIERS_WEEKS). */
+/**
+ * Every streak tier reached by each run of met weeks (fixed lengths,
+ * STREAK_TIERS_WEEKS), dated the day the tier's last week met its intention.
+ * This week counts once met, as in Trends' streak (Hugh, 20 October 2026).
+ */
 export function streakTierEarnings(d: Data, today: Iso): StreakTierEarn[] {
-  const weeks = d.intentionWeeks(today).map((w) => ({ end: addDays(w, 6), met: d.weekMet(w) }));
+  const weeks = d.intentionWeeksSoFar(today).map((w) => ({ reached: d.reachedDay(w), met: d.weekMet(w) }));
   const out: StreakTierEarn[] = [];
   let runStart = -1;
   for (let i = 0; i <= weeks.length; i++) {
@@ -429,7 +462,7 @@ export function streakTierEarnings(d: Data, today: Iso): StreakTierEarn[] {
     else if (!met && runStart !== -1) {
       const length = i - runStart;
       for (const tierWeeks of STREAK_TIERS_WEEKS) {
-        if (length >= tierWeeks) out.push({ tierWeeks, reachedWeekEndIso: weeks[runStart + tierWeeks - 1].end });
+        if (length >= tierWeeks) out.push({ tierWeeks, reachedIso: weeks[runStart + tierWeeks - 1].reached! });
       }
       runStart = -1;
     }
@@ -647,9 +680,9 @@ export function streakTierFirsts(d: Data, today: Iso): StreakTierEarn[] {
   const first = new Map<number, Iso>();
   for (const e of streakTierEarnings(d, today)) {
     const had = first.get(e.tierWeeks);
-    if (!had || e.reachedWeekEndIso < had) first.set(e.tierWeeks, e.reachedWeekEndIso);
+    if (!had || e.reachedIso < had) first.set(e.tierWeeks, e.reachedIso);
   }
-  return STREAK_TIERS_WEEKS.filter((t) => first.has(t)).map((t) => ({ tierWeeks: t, reachedWeekEndIso: first.get(t)! }));
+  return STREAK_TIERS_WEEKS.filter((t) => first.has(t)).map((t) => ({ tierWeeks: t, reachedIso: first.get(t)! }));
 }
 
 /** The longest run of consecutive logged days (clear or drinking), ever. */

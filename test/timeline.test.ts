@@ -26,7 +26,7 @@ describe('earned milestones, one list', () => {
       entries: ['2026-09-07', '2026-09-08', '2026-09-09', '2026-09-10'].map(e),
       intentions: [{ id: 'i', weekly_target: 2, effective_date: '2026-09-07', created_at: '2026-09-01T00:00:00Z', updated_at: '' }] as never,
     });
-    expect(earnedMilestones(d2, '2026-09-30')).toContainEqual({ id: 'beyond:1', title: 'Beyond target', date: '2026-09-13', kind: 'growth' });
+    expect(earnedMilestones(d2, '2026-09-30')).toContainEqual({ id: 'beyond:1', title: 'Beyond target', date: '2026-09-09', kind: 'growth' }); // dated the day it passed 2
   });
   it('the month in review lists exactly the timeline for that month', () => {
     const r = buildReport(d, { year: 2026, month: 8 }, '2026-09-30', null);

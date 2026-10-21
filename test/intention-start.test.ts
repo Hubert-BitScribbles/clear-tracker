@@ -42,7 +42,7 @@ describe('weeks before the first intention', () => {
   });
   it('earn no week milestones', () => {
     const m = milestones(d, today);
-    expect(m.firstClearWeekEndIso).toBe('2026-09-20'); // not Aug 30
+    expect(m.firstWeekMetIso).toBe('2026-09-16'); // the day the Sep 14 week met 3 — not in August
     expect(m.beyondTargetInstances.map((b) => b.weekStartIso)).toEqual(['2026-09-14']);
     // Sep 7 (1 clear, 6 unlogged) isn't missed for certain — not enough logged
     // to say — so Sep 14 isn't "back on track" (rc.6). Sep 7 itself can't be

@@ -4,6 +4,15 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.3.4 — 20 October 2026
+
+- **Clear month challenge: this month only before any of it is logged.** The
+  month list offered the current month even with days already logged, so a
+  month could be taken on after the fact. Now, as with weekends and weeks,
+  this month can be chosen only while none of its days is logged; otherwise
+  the list starts with next month (`monthOptions` in `challenges.ts`). The
+  month challenge's description says so. Noticed by Hugh.
+
 ## 1.3.3 — 20 October 2026
 
 - **Week by week**: the weekly chart (Trends) and its report section are

@@ -38,7 +38,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,png,svg,wav,woff2,webmanifest,txt}'],
+        globPatterns: ['**/*.{js,css,html,png,svg,mp3,woff2,webmanifest,txt}'],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         // The privacy pages (privacy.html, privacy-de.html, …) and licenses.txt are their own pages, not the
         // app: don't answer them with the app's index.html (they're still precached, so they work offline).

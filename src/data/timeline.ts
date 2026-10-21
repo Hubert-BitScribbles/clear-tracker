@@ -50,7 +50,7 @@ export function earnedMilestones(d: Data, today: Iso, opts: TimelineOptions = {}
   add('first-clear', t('ms.firstClear'), base.firstClearDate, 'first');
   const firstIntention = [...d.snap.intentions].sort((a, b) => a.created_at.localeCompare(b.created_at))[0];
   add('first-intention', t('ms.firstIntention'), firstIntention?.effective_date && firstIntention.effective_date <= today ? firstIntention.effective_date : null, 'deciding');
-  add('first-week-met', t('ms.firstWeekMet'), base.firstClearWeekEndIso, 'first');
+  add('first-week-met', t('ms.firstWeekMet'), base.firstWeekMetIso, 'first');
 
   const firstLogging = new Map<number, Iso>();
   for (const e of loggingTierEarnings(d)) if (!firstLogging.has(e.tierDays)) firstLogging.set(e.tierDays, e.reachedDateIso);
@@ -66,7 +66,7 @@ export function earnedMilestones(d: Data, today: Iso, opts: TimelineOptions = {}
   for (const e of tiersFrom(backOnTrackWeeks(d, today), BACK_ON_TRACK_TIERS)) {
     add(`back-on-track:${e.tier}`, e.tier === 1 ? t('ms.back1') : t('ms.backN', { n: e.tier }), e.reachedIso, 'back');
   }
-  const beyond = [...base.beyondTargetInstances].reverse().map((b) => b.weekEndIso);
+  const beyond = [...base.beyondTargetInstances].reverse().map((b) => b.reachedIso);
   for (const e of tiersFrom(beyond, BEYOND_TARGET_TIERS)) add(`beyond:${e.tier}`, e.tier === 1 ? t('ms.beyond1') : t('ms.beyondN', { n: e.tier }), e.reachedIso, 'growth');
 
   for (const b of bestMonths(d)) add(`best-month:${monthKey(b.year, b.month)}`, t('ms.bestMonth', { month: monthYear(b.month, b.year, 'short') }), b.reachedIso, 'best');
@@ -78,7 +78,7 @@ export function earnedMilestones(d: Data, today: Iso, opts: TimelineOptions = {}
   for (const a of trackingAnniversaries(d, today)) if (a.reached) add(`years:${a.years}`, t('ms.years', { count: a.years }), a.reachedIso, 'anniversary');
   // Weeks in a row meeting the intention: for everyone (unlike clear-day
   // streaks, they never punish a chosen drinking day).
-  for (const e of streakTierFirsts(d, today)) add(`week-streak:${e.tierWeeks}`, t('ms.streak', { n: e.tierWeeks }), e.reachedWeekEndIso, 'streak');
+  for (const e of streakTierFirsts(d, today)) add(`week-streak:${e.tierWeeks}`, t('ms.streak', { n: e.tierWeeks }), e.reachedIso, 'streak');
   const c = opts.challenges;
   if (c) {
     for (const e of tiersFrom(clearWeekends(d, today, c.weekendRuns), WEEKEND_TIERS)) {

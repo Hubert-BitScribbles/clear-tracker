@@ -53,7 +53,7 @@ describe('back on track comes after a week missed for certain', () => {
     const d = new Data({ entries: [...week('2026-09-07', first), ...week('2026-09-14', 'ccc....')], intentions: [target(3, '2026-09-07')] });
     return backOnTrackWeeks(d, '2026-09-30');
   };
-  it('after a missed week: yes', () => expect(run('ccmmmmm')).toEqual(['2026-09-20']));
+  it('after a missed week: yes', () => expect(run('ccmmmmm')).toEqual(['2026-09-16'])); // the day it met 3
   it('after a "not enough logged" week: no', () => expect(run('mm.....')).toEqual([]));
   it('after an unlogged week: no', () => expect(run('.......')).toEqual([]));
 });

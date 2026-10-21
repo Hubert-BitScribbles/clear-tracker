@@ -97,11 +97,14 @@ because the native versions have time-zone bugs; see FIX in compute.ts.
 
 ## Logging sounds
 
-`src/assets/sounds/`: `clear-chime.wav` (Clear), `a-few-tone.wav` (A few),
-`moderate-tone.wav` (Moderate), `drinking-hum.wav` (A lot). The chime and
+`src/assets/sounds/`: `clear-chime.mp3` (Clear), `a-few-tone.mp3` (A few),
+`moderate-tone.mp3` (Moderate), `drinking-hum.mp3` (A lot). The chime and
 the hum are from Mixkit (see Licence below); the middle two are the chime
 pitched down three semitones and the hum pitched up four, so the four tones
-step from bright to low.
+step from bright to low. MP3 (LAME, highest VBR quality), with the inaudible
+tail below −60 dB trimmed: about 115 KB for all four, down from 1.25 MB of
+WAV (1.3.5). MP3 plays in every browser, and decoders strip the encoder's
+start-up padding, so a tone starts as promptly as the WAV did.
 
 ## Installable and offline
 
@@ -146,9 +149,9 @@ build writes `licenses.txt` with each one's full licence text and notices
 (`licences.ts`, from the code actually in the build), and About → Credits
 links to it. `python3 checks/licences.py` checks it after `npm run build`.
 
-**Sounds:** `clear-chime.wav` and `drinking-hum.wav` are from
+**Sounds:** `clear-chime.mp3` and `drinking-hum.mp3` are from
 [Mixkit](https://mixkit.co), used under the Mixkit Sound Effects Free License;
-`a-few-tone.wav` and `moderate-tone.wav` are those two, pitch-shifted. They
+`a-few-tone.mp3` and `moderate-tone.mp3` are those two, pitch-shifted. They
 are **not** covered by the MIT licence and may not be reused from this
 repository; see `src/assets/sounds/README.md`.
 

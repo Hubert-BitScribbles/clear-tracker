@@ -6,7 +6,7 @@
 // ranges they are, and never grades.
 
 import { Data } from './compute';
-import { addDays, daysInMonth, isoOf, yearOf, type Iso } from './dates';
+import { addDays, daysInMonth, isoOf, mondayOf, yearOf, type Iso } from './dates';
 import type { DrinkAmount } from './db';
 import { monthChallenge, type ChallengeSettings } from './challenges';
 import { estimate, MIN_LOGGED_MONTH, rate, type DrinksEstimate } from './trend';
@@ -123,7 +123,7 @@ export function buildReport(
     if (c > t) exceeded++;
     if (c < t && !d.weekMissed(w)) unclear++;
   }
-  const backOnTrack = backOnTrackWeeks(d, today).filter((end6) => weekIn(addDays(end6, -6), p)).length;
+  const backOnTrack = backOnTrackWeeks(d, today).filter((day) => weekIn(mondayOf(day), p)).length; // dated the day each week was met
 
   // Estimates need at least a week of logged days to say anything per week.
   const drinksPerWeek = estimate(d, start, end);

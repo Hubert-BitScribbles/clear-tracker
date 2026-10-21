@@ -1,9 +1,9 @@
 # Sounds
 
-`clear-chime.wav` and `drinking-hum.wav` are from Mixkit (https://mixkit.co),
+`clear-chime.mp3` and `drinking-hum.mp3` are from Mixkit (https://mixkit.co),
 chosen in September 2026 and used in Clear Tracker under the Mixkit Sound
-Effects Free License (https://mixkit.co/license/). `a-few-tone.wav` and
-`moderate-tone.wav` are those two, pitch-shifted for Clear Tracker.
+Effects Free License (https://mixkit.co/license/). `a-few-tone.mp3` and
+`moderate-tone.mp3` are those two, pitch-shifted for Clear Tracker.
 
 These files are **not** covered by this repository's MIT licence. Mixkit's
 terms allow using them in a project like this one, but not passing them on

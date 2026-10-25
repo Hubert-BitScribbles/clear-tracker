@@ -17,6 +17,8 @@
   "about.p4": "<b>Calme, pas clinique.</b> Des mots simples, sans avertissements ni reproches, et aucune série qui pénalise un choix que vous avez fait.",
   "about.p5": "<b>Pour tout le monde.</b> Fonctionne avec les lecteurs d’écran et le clavier, en clair, en sombre et en contraste élevé, et respecte la réduction des animations.",
   "about.persistGranted": "Stockage persistant accordé",
+  "about.persistKeptDock": "Conservé par l’app du Dock (Safari ne propose pas de stockage persistant, et ici ce n’est pas nécessaire)",
+  "about.persistKeptHome": "Conservé par l’app de l’écran d’accueil (Safari ne propose pas de stockage persistant, et ici ce n’est pas nécessaire)",
   "about.persistNot": "Stockage persistant non accordé",
   "about.persistUnknown": "Stockage persistant : inconnu dans ce navigateur",
   "about.placeDock": "votre Dock",

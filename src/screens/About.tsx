@@ -80,10 +80,20 @@ export function About() {
           <li>
             <span aria-hidden="true">{installed ? '✓' : '–'}</span> {installed ? t('about.installed') : t('about.notInstalled')}
           </li>
-          <li>
-            <span aria-hidden="true">{persisted ? '✓' : '–'}</span>{' '}
-            {persisted === null ? t('about.persistUnknown') : persisted ? t('about.persistGranted') : t('about.persistNot')}
-          </li>
+          {/* Safari (and every iPhone browser) answers "not granted" since Safari 17
+              (WebKit bug 271401), even for an installed app, which Safari's
+              seven-day rule doesn't touch. So when installed there, say what
+              keeps the record instead of showing a false warning. */}
+          {installed && installKeepsOwnRecord(dev) && !persisted ? (
+            <li>
+              <span aria-hidden="true">✓</span> {isIos(dev) ? t('about.persistKeptHome') : t('about.persistKeptDock')}
+            </li>
+          ) : (
+            <li>
+              <span aria-hidden="true">{persisted ? '✓' : '–'}</span>{' '}
+              {persisted === null ? t('about.persistUnknown') : persisted ? t('about.persistGranted') : t('about.persistNot')}
+            </li>
+          )}
         </ul>
       </div>
 

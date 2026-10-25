@@ -4,6 +4,16 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.3.6 — 25 October 2026
+
+- **About's storage line on iPhone, iPad and Mac Safari.** Installed there,
+  it said "– Persistent storage not granted", which looked like a warning.
+  Since Safari 17, Safari answers "not granted" even for installed apps
+  (WebKit bug 271401), and its seven-day rule doesn't apply to them. It now
+  reads "✓ Kept by the Home Screen app (Safari doesn't offer persistent
+  storage, and doesn't need to here)" — or "the Dock app" on a Mac. Browser
+  tabs, and Chrome and Edge, keep the plain answer. Noticed by Hugh.
+
 ## 1.3.5 — 20 October 2026
 
 - **Week milestones count a week as soon as it's met** (Hugh's call), like

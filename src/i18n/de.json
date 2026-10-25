@@ -17,6 +17,8 @@
   "about.p4": "<b>Ruhig, nicht klinisch.</b> Einfache Worte, keine Warnungen oder Vorwürfe und keine Serie, die eine Entscheidung bestraft.",
   "about.p5": "<b>Für alle gemacht.</b> Funktioniert mit Screenreadern und Tastatur, hell, dunkel und mit hohem Kontrast, und berücksichtigt reduzierte Bewegung.",
   "about.persistGranted": "Dauerhafter Speicher gewährt",
+  "about.persistKeptDock": "Aufbewahrt von der App im Dock (Safari bietet keinen dauerhaften Speicher an, und hier braucht es ihn nicht)",
+  "about.persistKeptHome": "Aufbewahrt von der App auf dem Home-Bildschirm (Safari bietet keinen dauerhaften Speicher an, und hier braucht es ihn nicht)",
   "about.persistNot": "Dauerhafter Speicher nicht gewährt",
   "about.persistUnknown": "Dauerhafter Speicher: in diesem Browser unbekannt",
   "about.placeDock": "Dock",

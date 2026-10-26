@@ -17,6 +17,8 @@
   "about.p4": "<b>Calm, not clinical.</b> Plain words, no warnings or rebukes, and no streak that punishes a choice you made.",
   "about.p5": "<b>Made for everyone.</b> Works with screen readers and keyboards, in light, dark and high contrast, and respects reduced motion.",
   "about.persistGranted": "Persistent storage granted",
+  "about.persistKeptDock": "Kept by the Dock app (Safari doesn’t offer persistent storage, and doesn’t need to here)",
+  "about.persistKeptHome": "Kept by the Home Screen app (Safari doesn’t offer persistent storage, and doesn’t need to here)",
   "about.persistNot": "Persistent storage not granted",
   "about.persistUnknown": "Persistent storage: unknown in this browser",
   "about.placeDock": "Dock",

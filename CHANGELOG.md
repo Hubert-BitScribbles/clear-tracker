@@ -4,6 +4,17 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.3.7 — 26 October 2026
+
+- **bitScribbles Studio Ltd.** Clear Tracker now belongs to bitScribbles
+  Studio Ltd., incorporated in British Columbia on 26 October 2026
+  (BC1613702). The LICENSE and README name the company; About adds
+  "© 2026 bitScribbles Studio Ltd." under Credits, and "bitScribbles" in
+  "Made by bitScribbles" links to bitscribbles.com. The privacy statement
+  (English, German and French) gains a short "Who's responsible" section
+  naming the company — which German readers expect („Verantwortlich") — and
+  a new date. Nothing about data changes.
+
 ## 1.3.6 — 25 October 2026
 
 - **About's storage line on iPhone, iPad and Mac Safari.** Installed there,

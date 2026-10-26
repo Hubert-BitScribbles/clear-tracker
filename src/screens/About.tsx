@@ -45,7 +45,7 @@ export function About() {
       </div>
 
       {/* The brand keeps its casing inside the capitalised heading style. */}
-      <h2 className="ab-sec">{rich('about.madeBy', { brand: (c) => <span className="ab-brand">{c}</span> })}</h2>
+      <h2 className="ab-sec">{rich('about.madeBy', { brand: (c) => <a className="ab-brand" href="https://bitscribbles.com" target="_blank" rel="noopener noreferrer">{c}</a> })}</h2>
       <div className="card ab-card">
         <p className="ab-body">{t('about.bitscribbles')}</p>
         {/* A plain link, no embedded button script: nothing loads from elsewhere unless it's tapped. */}
@@ -118,6 +118,7 @@ export function About() {
           {/* Every open-source part that ships, with its licence: built into licenses.txt (licences.ts). */}
           {rich('about.creditsBody', { link: (c) => <a href="./licenses.txt" target="_blank" rel="noopener">{c}</a> })}
         </p>
+        <p className="ab-body ab-gap">{t('about.copyright')}</p>
       </div>
     </main>
   );

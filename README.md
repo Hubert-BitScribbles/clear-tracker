@@ -138,8 +138,9 @@ data by its exact address, so a new address starts every user from empty.
 
 ## Licence
 
-The code is MIT-licensed — see [LICENSE](LICENSE). The names "Clear Tracker"
-and "bitScribbles" and the logos aren't covered by it.
+The code is MIT-licensed — see [LICENSE](LICENSE) — and owned by bitScribbles
+Studio Ltd. (BC1613702). The names "Clear Tracker" and "bitScribbles" and the
+logos aren't covered by the licence.
 
 The app ships these open-source components, each under its own licence:
 React, React DOM and scheduler (MIT), React Router (MIT), Dexie (Apache 2.0),

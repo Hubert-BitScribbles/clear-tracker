@@ -38,5 +38,5 @@
 .ab-principles { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .ab-principles li { font-size: 12px; line-height: 18px; color: var(--on-card-secondary); }
 .ab-principles strong { color: var(--on-card-primary); }
-.ab-brand { text-transform: none; }
+.ab-brand { text-transform: none; color: var(--primary-text); }
 .ab-coffee { color: var(--primary-text); font-weight: 600; }

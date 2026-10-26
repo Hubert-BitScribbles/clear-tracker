@@ -1,5 +1,6 @@
 {
   "about.bitscribbles": "Clear Tracker ist von bitScribbles: kleine Apps, sorgfältig gemacht. Jede App beginnt als Kritzelei – eine Idee, skizziert für einen echten Bedarf – und wird verfeinert, bis sie einfach, privat und angenehm zu benutzen ist.",
+  "about.copyright": "© 2026 bitScribbles Studio Ltd.",
   "about.credits": "Danksagung",
   "about.creditsBody": "Erstellt mit React, React Router, Dexie und Workbox. Schriften: Space Grotesk, Inter, JetBrains Mono und Caveat, unter der SIL Open Font License 1.1. Zwei Klänge stammen von Mixkit, die anderen zwei sind daraus gemacht. <link>Alle Lizenzen</link>",
   "about.designed": "Wie die App gedacht ist",

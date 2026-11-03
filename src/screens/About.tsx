@@ -7,6 +7,7 @@ import { SegmentNav } from '../components/SegmentNav';
 import './About.css';
 import { rich, t, type Key } from '../i18n';
 import { privacyUrl } from '../lib/privacy';
+import { CONTRIBUTE_URL } from '../lib/support';
 
 // About, the second half of Settings | About. Adapted from the native
 // app/about.tsx, with:
@@ -48,10 +49,11 @@ export function About() {
       <h2 className="ab-sec">{rich('about.madeBy', { brand: (c) => <a className="ab-brand" href="https://bitscribbles.com" target="_blank" rel="noopener noreferrer">{c}</a> })}</h2>
       <div className="card ab-card">
         <p className="ab-body">{t('about.bitscribbles')}</p>
-        {/* A plain link, no embedded button script: nothing loads from elsewhere unless it's tapped. */}
+        {/* A plain link to the studio's Contribute section (Stripe Payment Links live there, not here):
+            nothing loads from elsewhere unless it's tapped. */}
         <p className="ab-body ab-gap">
           {rich('about.free', {
-            coffee: (c) => <a className="ab-coffee" href="https://buymeacoffee.com/bitscribbles" target="_blank" rel="noopener noreferrer">{c}</a>,
+            contribute: (c) => <a className="ab-contribute" href={CONTRIBUTE_URL} target="_blank" rel="noopener noreferrer">{c}</a>,
           })}
         </p>
       </div>

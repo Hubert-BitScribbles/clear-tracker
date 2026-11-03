@@ -6,7 +6,7 @@
   "about.designed": "Comment l’app est pensée",
   "about.disclaimer": "Avertissement",
   "about.disclaimerBody": "Clear Tracker est un outil de suivi personnel, pas un dispositif médical ni un programme de soins. Il ne pose pas de diagnostic et ne traite pas la consommation d’alcool. Si votre consommation vous inquiète, parlez-en à un professionnel de santé, ou consultez les Ressources d’aide pour les lignes d’écoute de votre région.",
-  "about.free": "Clear Tracker est gratuit, sans publicité et sans version payante. S’il vous est utile et que vous souhaitez soutenir bitScribbles, vous pouvez <coffee>m’offrir un café ☕</coffee>.",
+  "about.free": "Clear Tracker est gratuit, sans publicité et sans version payante. S’il vous est utile et que vous souhaitez aider à financer la suite, vous pouvez <contribute>contribuer à bitScribbles</contribute> (page en anglais). C’est entièrement facultatif et ne débloque rien.",
   "about.installed": "Installée comme app",
   "about.madeBy": "Par <brand>bitScribbles</brand>",
   "about.notBackupOwn": "<b>Le stockage du navigateur n’est pas une sauvegarde.</b> Effacer les données de sites de votre navigateur l’efface, et Safari peut supprimer les données d’un site après sept jours sans visite – sauf si l’app a été ajoutée à {{place}}, où elle a son propre suivi. Sauvegardez de temps en temps.",

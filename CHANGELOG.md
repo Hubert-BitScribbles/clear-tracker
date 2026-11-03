@@ -4,6 +4,16 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.3.8 — 3 November 2026
+
+- **About: "Contribute" replaces "Buy me a coffee".** The support line now
+  links to the Contribute section of bitScribbles' Up next page
+  (bitscribbles.com/upnext.html#contribute), where one-time and yearly
+  contributions are taken by Stripe. It says plainly that contributing is
+  optional and unlocks nothing; in German and French it notes the page is
+  in English. Still a plain link on About only: nothing loads from
+  elsewhere unless it's tapped, and nothing about payments is in the app.
+
 ## 1.3.7 — 26 October 2026
 
 - **bitScribbles Studio Ltd.** Clear Tracker now belongs to bitScribbles

@@ -8,6 +8,11 @@ import { detectedDevice, device, deviceLabel, isInstalled } from './install';
 // Routing forwarding support@ to an inbox).
 export const SUPPORT_EMAIL = 'support@bitscribbles.com';
 
+// Optional contributions, on the studio site (Stripe Payment Links there;
+// nothing about payments in this app). Linked from About only — never on
+// Check-in or after milestones.
+export const CONTRIBUTE_URL = 'https://bitscribbles.com/upnext.html#contribute';
+
 /** Technical details for a problem report. No health data, ever. */
 export async function diagnostics(): Promise<string> {
   let persisted = 'unknown';

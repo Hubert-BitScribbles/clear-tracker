@@ -4,6 +4,13 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.3.9 — 4 November 2026
+
+- **About's Contribute link goes to the Take part page**
+  (bitscribbles.com/takepart.html), which now holds bitScribbles'
+  Contribute section; it used to point at the Up next page
+  (`upnext.html#contribute`, which forwards there). Wording unchanged.
+
 ## 1.3.8 — 3 November 2026
 
 - **About: "Contribute" replaces "Buy me a coffee".** The support line now

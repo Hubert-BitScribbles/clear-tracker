@@ -49,7 +49,7 @@ export function About() {
       <h2 className="ab-sec">{rich('about.madeBy', { brand: (c) => <a className="ab-brand" href="https://bitscribbles.com" target="_blank" rel="noopener noreferrer">{c}</a> })}</h2>
       <div className="card ab-card">
         <p className="ab-body">{t('about.bitscribbles')}</p>
-        {/* A plain link to the studio's Contribute section (Stripe Payment Links live there, not here):
+        {/* A plain link to the studio's Take part page (Contribute and its Stripe Payment Links live there, not here):
             nothing loads from elsewhere unless it's tapped. */}
         <p className="ab-body ab-gap">
           {rich('about.free', {

@@ -35,13 +35,13 @@
 
 .ms-inline-link { color: var(--primary-text); font-weight: 600; text-decoration: none; }
 
-/* Year selector, as in Trends */
-.ms-scope { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 12px; }
+/* Year choice, as in Trends */
+.ms-scope { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0 0 12px; }
 .ms-scope-pill {
-  font: inherit; font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: var(--chip-radius);
-  border: var(--card-border) solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer;
+  border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none;
+  padding: 6px 0 4px; font-family: var(--font-ui); font-size: 13px; font-weight: 700; color: var(--text-muted); cursor: pointer;
 }
-.ms-scope-pill[aria-checked='true'] { background: var(--primary); border-color: var(--primary); color: var(--on-accent); }
+.ms-scope-pill[aria-checked='true'] { color: var(--text-primary); background: none; border-color: transparent; border-bottom-color: var(--primary); }
 
 /* Earned timeline, grouped by month */
 .ms-month { margin-bottom: 12px; }

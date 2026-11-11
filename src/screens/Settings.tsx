@@ -99,10 +99,10 @@ export function Settings() {
         <SettingsNav active="settings" />
       </PageHead>
 
-      <h2 className="st-sec" id="language">{t('settings.language')}</h2>
+      <h2 className="sub-head st-sec" id="language">{t('settings.language')}</h2>
       <LanguageCard />
 
-      <h2 className="st-sec">{t('settings.appearance')}</h2>
+      <h2 className="sub-head st-sec">{t('settings.appearance')}</h2>
       <section className="card st-card">
         <div className="st-block">
           <span id="theme-label" className="st-label">{t('settings.theme')}</span>
@@ -124,7 +124,7 @@ export function Settings() {
         />
       </section>
 
-      <h2 className="st-sec">{t('settings.sound')}</h2>
+      <h2 className="sub-head st-sec">{t('settings.sound')}</h2>
       <section className="card st-card">
         <Toggle
           id="audio-cues"
@@ -135,7 +135,7 @@ export function Settings() {
         />
       </section>
 
-      <h2 className="st-sec">{t('settings.milestones')}</h2>
+      <h2 className="sub-head st-sec">{t('settings.milestones')}</h2>
       <section className="card st-card">
         <Toggle
           id="show-clear-day-streak"
@@ -146,7 +146,7 @@ export function Settings() {
         />
       </section>
 
-      <h2 className="st-sec" id="savings">{t('settings.savings')}</h2>
+      <h2 className="sub-head st-sec" id="savings">{t('settings.savings')}</h2>
       {savingsSet && !editingSavings ? (
         <section className="card st-card">
           <div className="st-row">
@@ -188,19 +188,19 @@ export function Settings() {
         />
       )}
 
-      <h2 className="st-sec" id="region">{t('settings.region')}</h2>
+      <h2 className="sub-head st-sec" id="region">{t('settings.region')}</h2>
       <RegionCard key={version} onChange={() => setCurrencyShown((n) => n + 1)} />
 
-      <h2 className="st-sec" id="device">{t('settings.device')}</h2>
+      <h2 className="sub-head st-sec" id="device">{t('settings.device')}</h2>
       <section className="card st-card st-block">
         <DeviceFields intro={t('settings.deviceIntro')} />
         <p className="st-sub">{t('settings.deviceNote')}</p>
       </section>
 
-      <h2 className="st-sec">{t('settings.reminder')}</h2>
+      <h2 className="sub-head st-sec">{t('settings.reminder')}</h2>
       <ReminderCard />
 
-      <h2 className="st-sec">{t('settings.data')}</h2>
+      <h2 className="sub-head st-sec">{t('settings.data')}</h2>
       <section className="card st-card">
         <div className="st-row">
           <div className="st-row-text">
@@ -231,7 +231,7 @@ export function Settings() {
         </p>
       )}
 
-      <h2 className="st-sec">{t('settings.helpResources')}</h2>
+      <h2 className="sub-head st-sec">{t('settings.helpResources')}</h2>
       <section className="card st-card">
         <Link className="st-link" to="/settings/help">
           <span className="st-label">{t('settings.help')}</span>

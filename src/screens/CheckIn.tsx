@@ -398,7 +398,7 @@ export function CheckIn() {
         </div>
       </div>
 
-      <div className="ci-month-header">
+      <div className="sub-head ci-month-header">
         <button type="button" className="ci-arrow" onClick={() => goMonth(-1)} aria-label={t('chart.previousMonth')}>
           ‹
         </button>

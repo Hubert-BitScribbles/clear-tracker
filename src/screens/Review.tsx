@@ -167,7 +167,7 @@ export function Review() {
 
           {show('days') && (
             <section className="rv-section">
-              <h2 className="rv-sec">{t('review.sec.days')}</h2>
+              <h2 className="sub-head rv-sec">{t('review.sec.days')}</h2>
               <div className="card rv-card">
                 <LevelLegend />
                 {period.month ? (
@@ -199,7 +199,7 @@ export function Review() {
 
           {show('patterns') && (
             <section className="rv-section">
-              <h2 className="rv-sec">{t('review.sec.patterns')}</h2>
+              <h2 className="sub-head rv-sec">{t('review.sec.patterns')}</h2>
               <div className="card rv-card">
                 <LevelLegend />
                 <ul className="rv-dow">
@@ -225,7 +225,7 @@ export function Review() {
 
           {show('clearTrend') && trends && (
             <section className="rv-section">
-              <h2 className="rv-sec">{t('review.sec.clearTrend')}</h2>
+              <h2 className="sub-head rv-sec">{t('review.sec.clearTrend')}</h2>
               <div className="card rv-card rv-text">
                 {trends.months.filter((m) => m.logged > 0).length < 2 ? (
                   <p className="rv-muted">{t('review.trendTooFew')}</p>
@@ -251,7 +251,7 @@ export function Review() {
 
           {show('drinks') && (
             <section className="rv-section">
-              <h2 className="rv-sec">{t('review.sec.drinks')}</h2>
+              <h2 className="sub-head rv-sec">{t('review.sec.drinks')}</h2>
               <div className="card rv-card rv-text">
                 <p className="rv-big">{r.drinksPerWeek ? drinksText(r.drinksPerWeek) : t('review.notEnough')}</p>
                 {r.drinksChange && <p className="rv-muted">{drinksChangeText(null, r.drinksChange.diff, prevLabel)}</p>}
@@ -262,7 +262,7 @@ export function Review() {
 
           {show('drinksTrend') && trends && (
             <section className="rv-section">
-              <h2 className="rv-sec">{t('review.sec.drinksTrend')}</h2>
+              <h2 className="sub-head rv-sec">{t('review.sec.drinksTrend')}</h2>
               <div className="card rv-card rv-text">
                 {trends.months.filter((m) => m.perWeek !== null).length < 2 ? (
                   <p className="rv-muted">{t('review.trendTooFew')}</p>
@@ -288,7 +288,7 @@ export function Review() {
 
           {show('intention') && (
             <section className="rv-section">
-              <h2 className="rv-sec">{t('review.sec.intention')}</h2>
+              <h2 className="sub-head rv-sec">{t('review.sec.intention')}</h2>
               <div className="card rv-card rv-text">
                 <p>
                   {r.targets.length === 0
@@ -314,7 +314,7 @@ export function Review() {
 
           {show('savings') && savingsSet && r.savings && (
             <section className="rv-section">
-              <h2 className="rv-sec">{t('review.sec.savings')}</h2>
+              <h2 className="sub-head rv-sec">{t('review.sec.savings')}</h2>
               <div className="card rv-card rv-text">
                 <p className="rv-big">{describeSavings(r.savings.most, r.savings.least)}</p>
                 <p className="rv-foot">{t('review.savingsFoot')}</p>
@@ -324,7 +324,7 @@ export function Review() {
 
           {show('challenges') && r.challenges.length > 0 && (
             <section className="rv-section">
-              <h2 className="rv-sec">{t('review.sec.challenges')}</h2>
+              <h2 className="sub-head rv-sec">{t('review.sec.challenges')}</h2>
               <div className="card rv-card">
                 <ul className="rv-ms">
                   {r.challenges.map((c) => (
@@ -337,7 +337,7 @@ export function Review() {
 
           {show('milestones') && (
             <section className="rv-section">
-              <h2 className="rv-sec">{t('review.sec.milestones')}</h2>
+              <h2 className="sub-head rv-sec">{t('review.sec.milestones')}</h2>
               <div className="card rv-card">
                 {r.milestones.length === 0 ? (
                   <p className="rv-muted">{t('review.noMilestones', { period: label })}</p>

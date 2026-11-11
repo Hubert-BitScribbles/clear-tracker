@@ -206,6 +206,19 @@ button {
   background: var(--background);
 }
 .page-head[data-stuck] { box-shadow: 0 8px 0 var(--background), 0 9px 0 var(--border); }
+/* A section heading (.sub-head) stops under the head as it passes, until the
+   next one arrives and takes its place (1.4.1). The one showing gets the band
+   and hairline instead of the head; earlier ones waiting underneath are made
+   transparent, not hidden, so screen readers still find them. */
+.sub-head {
+  position: sticky;
+  top: calc(env(safe-area-inset-top, 0px) + var(--head-h, 0px) + 8px);
+  z-index: 4;
+  background: var(--background);
+}
+.sub-head[data-stuck] { box-shadow: 0 0 0 8px var(--background), 0 1px 0 8px var(--border); }
+.sub-head[data-under] { opacity: 0; pointer-events: none; }
+.page-head[data-sub] { box-shadow: none; }
 /* Under a notch or status bar, scrolled content stays hidden. */
 body::before {
   content: '';
@@ -217,9 +230,9 @@ body::before {
 }
 /* A short landscape phone has no room to spare; print has no scrolling. */
 @media (max-height: 480px) {
-  .page-head { position: static; }
+  .page-head, .sub-head { position: static; }
 }
 @media print {
-  .page-head { position: static; box-shadow: none; }
+  .page-head, .sub-head { position: static; box-shadow: none; opacity: 1; }
   body::before { display: none; }
 }

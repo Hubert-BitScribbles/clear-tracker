@@ -263,7 +263,7 @@ export function Trends() {
             />
           </div>
 
-          <h2 className="tr-section">{t('trends.atAGlance', { scope: scopeLabel })}</h2>
+          <h2 className="sub-head tr-section">{t('trends.atAGlance', { scope: scopeLabel })}</h2>
           <section className="card tr-glance" aria-label={t('trends.atAGlance', { scope: scopeLabel })}>
             {/* Clear days and weeks met lead; days logged is context (rc.13). */}
             <div className="tr-hero-row">
@@ -275,7 +275,7 @@ export function Trends() {
             <div className="tr-glance-levels"><LevelLegend levels={data.levels} /></div>
           </section>
 
-          <h2 className="tr-section">{t('trends.monthByMonth', { scope: scope === 'all' ? t('trends.last12') : scopeLabel })}</h2>
+          <h2 className="sub-head tr-section">{t('trends.monthByMonth', { scope: scope === 'all' ? t('trends.last12') : scopeLabel })}</h2>
           <div className="card tr-card">
             <MonthlyChart
               kind="bars"
@@ -306,7 +306,7 @@ export function Trends() {
             />
           </div>
 
-          <h2 className="tr-section">
+          <h2 className="sub-head tr-section">
             {t('trends.weeksHead', { year: alignmentYear })}
             {scope === 'all' ? t('trends.mostRecentYear') : ''}
           </h2>
@@ -355,7 +355,7 @@ export function Trends() {
             </div>
           )}
 
-          <h2 className="tr-section">{t('trends.byWeekday', { scope: scopeLabel })}</h2>
+          <h2 className="sub-head tr-section">{t('trends.byWeekday', { scope: scopeLabel })}</h2>
           <div className="card tr-card">
           <LevelLegend />
           <ul className="tr-dow">
@@ -413,7 +413,7 @@ export function Trends() {
           })()}
           </div>
 
-          <h2 className="tr-section tr-est-head">{t('trends.estimates', { scope: scopeLabel })}</h2>
+          <h2 className="sub-head tr-section tr-est-head">{t('trends.estimates', { scope: scopeLabel })}</h2>
           <p className="tr-est-intro">{t('trends.estIntro')}</p>
           <h3 className="tr-sub">{t('trends.drinksAWeek')}</h3>
           <div className="card tr-card">

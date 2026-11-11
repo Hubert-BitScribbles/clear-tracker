@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PageHead } from '../components/PageHead';
 import { useDevice } from '../components/DeviceFields';
 import { installKeepsOwnRecord, isInstalled, isIos } from '../lib/install';
 import { Link } from 'react-router-dom';
@@ -36,8 +37,10 @@ export function About() {
 
   return (
     <main className="about">
-      <h1 className="ab-page-title">{t('about.title')}</h1>
-      <SettingsNav active="about" />
+      <PageHead>
+        <h1 className="ab-page-title">{t('about.title')}</h1>
+        <SettingsNav active="about" />
+      </PageHead>
 
       <div className="ab-app">
         <img src={iconUrl} alt="" width="48" height="48" className="ab-icon" />

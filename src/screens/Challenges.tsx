@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PageHead } from '../components/PageHead';
 import { Link } from 'react-router-dom';
 import { HelpLinks } from '../components/HelpLink';
 import { MilestonesNav } from '../components/SegmentNav';
@@ -97,8 +98,10 @@ export function Challenges() {
 
   return (
     <main className="milestones">
-      <h1 className="ms-title">{t('challenges.title')}</h1>
-      <MilestonesNav active="challenges" />
+      <PageHead>
+        <h1 className="ms-title">{t('challenges.title')}</h1>
+        <MilestonesNav active="challenges" />
+      </PageHead>
       <p className="ch-intro">{t('challenges.intro')}</p>
       <p className="ch-intro">{rich('challenges.caution', { link: (c) => <Link to="/settings/resources">{c}</Link> })}</p>
 

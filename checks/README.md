@@ -51,6 +51,10 @@ Both load test data from `test/helpers.ts`, so they never touch real data.
 - `python3 checks/report_trends.py` — reports: section order, and the
   month-by-month trends (off until ticked, both charts, a year report, 320 px,
   one month logged).
+- `python3 checks/sticky_heads.py` — sticky page heads: what each holds
+  (title, tabs, period choices), staying at the top when scrolled, links to a
+  section landing below the head, not sticky in print or on a short
+  landscape screen.
 - `python3 checks/language.py` — the Language setting: an English device
   stays English until Deutsch is chosen, the switch and back, Help's
   English-only note, and a German device in Vienna getting German and

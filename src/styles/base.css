@@ -14,7 +14,9 @@ body,
 
 html {
   -webkit-text-size-adjust: 100%;
-  scroll-padding-top: env(safe-area-inset-top, 0px);
+  /* Room for the sticky page head (PageHead sets --head-h), so links to a
+     section land below it. */
+  scroll-padding-top: calc(env(safe-area-inset-top, 0px) + var(--head-h, 0px) + 8px);
 }
 
 body {
@@ -188,3 +190,36 @@ button {
 .dv-change { font: inherit; font-size: 13px; font-weight: 600; color: var(--primary-text); background: none; border: 0; padding: 4px 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
 .dv-fields { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; text-align: left; }
 .dv-note { font-size: 11px; line-height: 16px; color: var(--text-muted); }
+
+/* The page head — title, tabs and period choices — stays in view while the
+   page scrolls (components/PageHead.tsx). It bleeds over the page's side
+   padding so nothing shows beside it, and keeps 8px above the title once
+   stuck. Its last line's bottom margin still falls outside it, as before, so
+   nothing on the page moves; once stuck, a band of background 8px deep and
+   a hairline below it cover what scrolls underneath. */
+.page-head {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 5;
+  margin: -8px calc(-1 * var(--page-x, 16px)) 0;
+  padding: 8px var(--page-x, 16px) 0;
+  background: var(--background);
+}
+.page-head[data-stuck] { box-shadow: 0 8px 0 var(--background), 0 9px 0 var(--border); }
+/* Under a notch or status bar, scrolled content stays hidden. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  background: var(--background);
+  z-index: 6;
+}
+/* A short landscape phone has no room to spare; print has no scrolling. */
+@media (max-height: 480px) {
+  .page-head { position: static; }
+}
+@media print {
+  .page-head { position: static; box-shadow: none; }
+  body::before { display: none; }
+}

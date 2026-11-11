@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PageHead } from '../components/PageHead';
 import { HelpLinks } from '../components/HelpLink';
 import { Link } from 'react-router-dom';
 import { Badge } from '../components/Badge';
@@ -67,8 +68,19 @@ export function Milestones() {
 
   return (
     <main className="milestones">
-      <h1 className="ms-title">{t('milestones.title')}</h1>
-      <MilestonesNav active="milestones" />
+      <PageHead>
+        <h1 className="ms-title">{t('milestones.title')}</h1>
+        <MilestonesNav active="milestones" />
+        {hasData && (
+          <div className="ms-scope" role="radiogroup" aria-label={t('milestones.period')}>
+            {[...years.map((y) => [y, String(y)] as const), ['all', t('milestones.allTime')] as const].map(([v, l]) => (
+              <button key={l} type="button" role="radio" aria-checked={scope === v} className="ms-scope-pill" onClick={() => setScope(v)}>
+                {l}
+              </button>
+            ))}
+          </div>
+        )}
+      </PageHead>
       <p className="ms-lede">{t('milestones.lede')}</p>
 
       {!hasData ? (
@@ -78,14 +90,6 @@ export function Milestones() {
         </div>
       ) : (
         <>
-          <div className="ms-scope" role="radiogroup" aria-label={t('milestones.period')}>
-            {[...years.map((y) => [y, String(y)] as const), ['all', t('milestones.allTime')] as const].map(([v, l]) => (
-              <button key={l} type="button" role="radio" aria-checked={scope === v} className="ms-scope-pill" onClick={() => setScope(v)}>
-                {l}
-              </button>
-            ))}
-          </div>
-
           {(scope === thisYear || scope === 'all') && (
             <>
               <h2 className="ms-sec">{t('milestones.upNext')}</h2>

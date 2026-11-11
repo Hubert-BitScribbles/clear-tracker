@@ -64,7 +64,16 @@ with sync_playwright() as p:
             pg.add_script_tag(content=AXE)
             res=pg.evaluate("""async () => { const r = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa','best-practice'] } });
               return r.violations.map(v => ({ id: v.id, impact: v.impact, help: v.help, nodes: v.nodes.map(n => ({ t: n.target.join(' '), s: n.failureSummary.split('\\n').slice(1,2).join(' ') })) })); }""")
+            # A row half-scrolled under the sticky page head (PageHead, 1.4.0) is
+            # what sticky headers do, not a small target: the rest of the row is
+            # in view. Only that case is let through.
             for v in res:
+                if v['id']=='target-size':
+                    v['nodes']=[n for n in v['nodes'] if 'partially obscured' not in n['s'] or not pg.evaluate(
+                        "sel => { const e = document.querySelector(sel), h = document.querySelector('.page-head');"
+                        " if (!e || !h) return false; const a = e.getBoundingClientRect(), b = h.getBoundingClientRect();"
+                        " return a.top < b.bottom && a.bottom > b.bottom; }", n['t'])]
+                    if not v['nodes']: continue
                 f=found[v['id']]; f['impact']=v['impact']; f['help']=v['help']; f['where'].add(f"{name} [{mode}]")
                 for n in v['nodes'][:3]:
                     if len(f['nodes'])<6 and n['t'] not in [x[0] for x in f['nodes']]: f['nodes'].append((n['t'], n['s'][:150]))

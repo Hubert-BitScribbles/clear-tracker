@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PageHead } from '../components/PageHead';
 import { HelpLinks } from '../components/HelpLink';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getCurrentWeeklyTarget, getIntentionHistory, saveIntention, weekHasEntries } from '../data/database';
@@ -75,11 +76,13 @@ export function Intention() {
 
   return (
     <main className="intention">
-      <div className="in-header">
-        <button type="button" className="in-close" onClick={close} aria-label={t('intention.close')}>✕</button>
-        <h1 className="in-title">{t('intention.title')}</h1>
-        <span style={{ width: 36 }} />
-      </div>
+      <PageHead>
+        <div className="in-header">
+          <button type="button" className="in-close" onClick={close} aria-label={t('intention.close')}>✕</button>
+          <h1 className="in-title">{t('intention.title')}</h1>
+          <span style={{ width: 36 }} />
+        </div>
+      </PageHead>
 
       <p className="in-desc">{t('intention.desc')}</p>
 

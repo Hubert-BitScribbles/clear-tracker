@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PageHead } from '../components/PageHead';
 import { Link, useLocation } from 'react-router-dom';
 import { SegmentNav } from '../components/SegmentNav';
 import { getSetting } from '../data/database';
@@ -57,8 +58,10 @@ export function Resources() {
 
   return (
     <main className="support">
-      <h1 className="sp-title">{t('resources.title')}</h1>
-      <HelpNav active="resources" />
+      <PageHead>
+        <h1 className="sp-title">{t('resources.title')}</h1>
+        <HelpNav active="resources" />
+      </PageHead>
       <p className="sp-lede">
         {rich('resources.for', { region: regionLabel(region), b: (c) => <strong>{c}</strong>, link: (c) => <Link to="/settings#region">{c}</Link> })}
       </p>

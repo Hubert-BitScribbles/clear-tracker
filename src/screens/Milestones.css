@@ -36,7 +36,7 @@
 .ms-inline-link { color: var(--primary-text); font-weight: 600; text-decoration: none; }
 
 /* Year selector, as in Trends */
-.ms-scope { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 6px; }
+.ms-scope { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 12px; }
 .ms-scope-pill {
   font: inherit; font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: var(--chip-radius);
   border: var(--card-border) solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer;

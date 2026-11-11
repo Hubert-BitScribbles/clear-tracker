@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PageHead } from '../components/PageHead';
 import { Link } from 'react-router-dom';
 import { Badge } from '../components/Badge';
 import { TierBadges } from '../components/TierBadges';
@@ -92,11 +93,13 @@ export function AllMilestones() {
   }, []);
 
   const header = (
-    <div className="ms-all-header">
-      <Link to="/milestones" className="ms-back" aria-label={t('all.back')}>‹</Link>
-      <h1 className="ms-all-title">{t('all.title')}</h1>
-      <span style={{ width: 36 }} />
-    </div>
+    <PageHead>
+      <div className="ms-all-header">
+        <Link to="/milestones" className="ms-back" aria-label={t('all.back')}>‹</Link>
+        <h1 className="ms-all-title">{t('all.title')}</h1>
+        <span style={{ width: 36 }} />
+      </div>
+    </PageHead>
   );
   if (!data) return <main className="milestones">{header}</main>;
 

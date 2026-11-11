@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PageHead } from '../components/PageHead';
 import { HelpLinks } from '../components/HelpLink';
 import { Link } from 'react-router-dom';
 import {
@@ -209,16 +210,10 @@ export function Trends() {
 
   return (
     <main className="trends">
-      <h1 className="tr-title">{t('trends.title')}</h1>
-      <TrendsNav active="trends" />
-
-      {!data.hasEntries ? (
-        <div className="tr-empty">
-          <h2 className="tr-empty-title">{t('trends.emptyTitle')}</h2>
-          <p className="tr-empty-body">{t('trends.emptyBody')}</p>
-        </div>
-      ) : (
-        <>
+      <PageHead>
+        <h1 className="tr-title">{t('trends.title')}</h1>
+        <TrendsNav active="trends" />
+        {data.hasEntries && (
           <div className="tr-scope" role="group" aria-label={t('trends.period')}>
             {[...data.years, 'all' as const].map((opt) => {
               const label = opt === 'all' ? t('trends.allTime') : String(opt);
@@ -239,7 +234,16 @@ export function Trends() {
               );
             })}
           </div>
+        )}
+      </PageHead>
 
+      {!data.hasEntries ? (
+        <div className="tr-empty">
+          <h2 className="tr-empty-title">{t('trends.emptyTitle')}</h2>
+          <p className="tr-empty-body">{t('trends.emptyBody')}</p>
+        </div>
+      ) : (
+        <>
           <div className="tr-stats">
             {data.showDayStreak && (
               <StreakCard

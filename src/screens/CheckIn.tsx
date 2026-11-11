@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type TouchEvent } from 'react';
+import { PageHead } from '../components/PageHead';
 import { HelpLinks } from '../components/HelpLink';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Byline } from '../components/Byline';
@@ -324,7 +325,9 @@ export function CheckIn() {
       <div className="ci-byline">
         <Byline />
       </div>
-      <h1 className="ci-title">{t('checkin.title')}</h1>
+      <PageHead>
+        <h1 className="ci-title">{t('checkin.title')}</h1>
+      </PageHead>
       {challengeLine && <p className="ci-challenge">{challengeLine}</p>}
       {newMilestone && (
         <div className="ci-milestone" role="status">

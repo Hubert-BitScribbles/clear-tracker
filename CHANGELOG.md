@@ -4,6 +4,20 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.4.0 — 11 November 2026
+
+- **Page titles and tabs stay in view.** On every screen with a title, the
+  title and its tabs (Trends | Reports, Milestones | Challenges, Settings |
+  About, Help | Resources) stay at the top while the page scrolls, with a
+  hairline once something passes underneath. Trends and Milestones keep
+  their year pills there too, and Reports its Month / Year choice and the
+  ‹ October 2026 in review › arrows. Check-in keeps its "Check-in" title;
+  All milestones and Intention keep their back and ✕ buttons. Nothing moves
+  before scrolling, except that Milestones' opening line now sits under the
+  year pills. Links to a section (#savings, #drink, Help topics) land below
+  the head. Not sticky when printing or on a short landscape screen.
+  `PageHead` component; `checks/sticky_heads.py`.
+
 ## 1.3.9 — 4 November 2026
 
 - **About's Contribute link goes to the Take part page**

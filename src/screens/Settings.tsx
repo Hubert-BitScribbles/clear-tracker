@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PageHead } from '../components/PageHead';
 import { DeviceFields, useDevice } from '../components/DeviceFields';
 import { wholeDrinks } from '../lib/reportText';
 import { installKeepsOwnRecord, isAndroid, isIos, linksOpenApp } from '../lib/install';
@@ -93,8 +94,10 @@ export function Settings() {
 
   return (
     <main className="settings">
-      <h1 className="st-title">{t('settings.title')}</h1>
-      <SettingsNav active="settings" />
+      <PageHead>
+        <h1 className="st-title">{t('settings.title')}</h1>
+        <SettingsNav active="settings" />
+      </PageHead>
 
       <h2 className="st-sec" id="language">{t('settings.language')}</h2>
       <LanguageCard />

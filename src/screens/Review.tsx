@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PageHead } from '../components/PageHead';
 import { useDevice } from '../components/DeviceFields';
 import { platform } from '../lib/install';
 import { HelpLinks } from '../components/HelpLink';
@@ -117,25 +118,27 @@ export function Review() {
 
   return (
     <main className="review">
-      <h1 className="rv-page-title rv-noprint">{t('review.title')}</h1>
-      <TrendsNav active="reports" />
-      <div className="rv-header rv-noprint">
-        <div className="rv-kind" role="radiogroup" aria-label={t('review.periodLabel')}>
-          <button type="button" role="radio" aria-checked={!!period.month} className="rv-kind-pill"
-            onClick={() => go(period.month ? period : { year: period.year, month: period.year === Number(today.slice(0, 4)) ? Number(today.slice(5, 7)) : 12 })}>
-            {t('review.month')}
-          </button>
-          <button type="button" role="radio" aria-checked={!period.month} className="rv-kind-pill" onClick={() => go({ year: period.year, month: null })}>
-            {t('review.year')}
-          </button>
+      <PageHead>
+        <h1 className="rv-page-title rv-noprint">{t('review.title')}</h1>
+        <TrendsNav active="reports" />
+        <div className="rv-header rv-noprint">
+          <div className="rv-kind" role="radiogroup" aria-label={t('review.periodLabel')}>
+            <button type="button" role="radio" aria-checked={!!period.month} className="rv-kind-pill"
+              onClick={() => go(period.month ? period : { year: period.year, month: period.year === Number(today.slice(0, 4)) ? Number(today.slice(5, 7)) : 12 })}>
+              {t('review.month')}
+            </button>
+            <button type="button" role="radio" aria-checked={!period.month} className="rv-kind-pill" onClick={() => go({ year: period.year, month: null })}>
+              {t('review.year')}
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div className="rv-title-row">
-        <button type="button" className="rv-arrow rv-noprint" onClick={() => go(previousPeriod(period))} aria-label={t('review.previous')}>‹</button>
-        <h2 className="rv-title">{t('review.inReview', { period: label })}</h2>
-        <button type="button" className="rv-arrow rv-noprint" onClick={() => go(next)} disabled={!canNext} aria-label={t('review.next')}>›</button>
-      </div>
+        <div className="rv-title-row">
+          <button type="button" className="rv-arrow rv-noprint" onClick={() => go(previousPeriod(period))} aria-label={t('review.previous')}>‹</button>
+          <h2 className="rv-title">{t('review.inReview', { period: label })}</h2>
+          <button type="button" className="rv-arrow rv-noprint" onClick={() => go(next)} disabled={!canNext} aria-label={t('review.next')}>›</button>
+        </div>
+      </PageHead>
       <p className="rv-sub">
         {t('review.range', {
           start: fmt(r.start), end: fmt(r.end),

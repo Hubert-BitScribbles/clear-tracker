@@ -1,5 +1,6 @@
 /* Values from the native intention.tsx StyleSheet. */
 .intention {
+  --page-x: 20px;
   max-width: var(--content-max); margin: 0 auto;
   padding: calc(env(safe-area-inset-top, 0px) + 20px) 20px calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px) + 20px);
 }

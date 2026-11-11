@@ -49,7 +49,7 @@ export function About() {
       </div>
 
       {/* The brand keeps its casing inside the capitalised heading style. */}
-      <h2 className="ab-sec">{rich('about.madeBy', { brand: (c) => <a className="ab-brand" href="https://bitscribbles.com" target="_blank" rel="noopener noreferrer">{c}</a> })}</h2>
+      <h2 className="sub-head ab-sec">{rich('about.madeBy', { brand: (c) => <a className="ab-brand" href="https://bitscribbles.com" target="_blank" rel="noopener noreferrer">{c}</a> })}</h2>
       <div className="card ab-card">
         <p className="ab-body">{t('about.bitscribbles')}</p>
         {/* A plain link to the studio's Take part page (Contribute and its Stripe Payment Links live there, not here):
@@ -61,7 +61,7 @@ export function About() {
         </p>
       </div>
 
-      <h2 className="ab-sec">{t('about.designed')}</h2>
+      <h2 className="sub-head ab-sec">{t('about.designed')}</h2>
       <div className="card ab-card">
         <ul className="ab-principles">
           {(['about.p1', 'about.p2', 'about.p3', 'about.p4', 'about.p5'] as Key[]).map((k) => (
@@ -70,7 +70,7 @@ export function About() {
         </ul>
       </div>
 
-      <h2 className="ab-sec">{t('about.stored')}</h2>
+      <h2 className="sub-head ab-sec">{t('about.stored')}</h2>
       <div className="card ab-card">
         <p className="ab-body">{t('about.storedBody')}</p>
         <p className="ab-body ab-gap">
@@ -102,12 +102,12 @@ export function About() {
         </ul>
       </div>
 
-      <h2 className="ab-sec">{t('about.disclaimer')}</h2>
+      <h2 className="sub-head ab-sec">{t('about.disclaimer')}</h2>
       <div className="card ab-card">
         <p className="ab-body">{t('about.disclaimerBody')}</p>
       </div>
 
-      <h2 className="ab-sec">{t('about.support')}</h2>
+      <h2 className="sub-head ab-sec">{t('about.support')}</h2>
       <div className="card ab-card">
         <p className="ab-body">
           {rich('about.supportBody', {
@@ -117,7 +117,7 @@ export function About() {
         </p>
       </div>
 
-      <h2 className="ab-sec">{t('about.credits')}</h2>
+      <h2 className="sub-head ab-sec">{t('about.credits')}</h2>
       <div className="card ab-card">
         <p className="ab-body">
           {/* Every open-source part that ships, with its licence: built into licenses.txt (licences.ts). */}

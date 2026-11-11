@@ -1,9 +1,12 @@
+/* Two related pages under one tab, as text with a line under the one shown
+   (1.4.1, as in D.Goods): slimmer than the segmented control it replaced, so
+   the sticky page head takes less room. */
 .seg-nav {
-  display: flex; padding: 3px; gap: 3px; margin-bottom: 14px; border-radius: 10px;
-  background: var(--track);
+  display: flex; gap: 22px; margin-bottom: 12px;
+  box-shadow: inset 0 -1px 0 var(--border);
 }
 .seg-nav-item {
-  flex: 1; text-align: center; padding: 8px 0; border-radius: 8px; text-decoration: none;
-  font-family: var(--font-ui); font-weight: 700; font-size: 13px; color: var(--text-secondary);
+  padding: 6px 0 7px; text-decoration: none; border-bottom: 2px solid transparent;
+  font-family: var(--font-ui); font-weight: 700; font-size: 15px; color: var(--text-muted);
 }
-.seg-nav-item[aria-current='page'] { background: var(--card-background); color: var(--text-primary); box-shadow: 0 1px 2px rgba(20, 23, 28, 0.12); }
+.seg-nav-item[aria-current='page'] { color: var(--text-primary); border-bottom-color: var(--primary); }

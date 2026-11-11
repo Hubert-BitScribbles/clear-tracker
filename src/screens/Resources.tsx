@@ -71,14 +71,14 @@ export function Resources() {
         <a className="sp-action sp-action-strong" href={`tel:${r.emergency}`}>{t('resources.call', { number: r.emergency })}</a>
       </section>
 
-      <h2 className="sp-sec">{t('resources.talk')}</h2>
+      <h2 className="sub-head sp-sec">{t('resources.talk')}</h2>
       <div className="card sp-card">{r.talk.map((l) => <LineCard key={l.name} line={l} />)}</div>
 
-      <h2 className="sp-sec">{t('resources.drinking')}</h2>
+      <h2 className="sub-head sp-sec">{t('resources.drinking')}</h2>
       <p className="sp-caution">{t('resources.caution')}</p>
       <div className="card sp-card">{r.drinking.map((l) => <LineCard key={l.name} line={l} />)}</div>
 
-      <h2 className="sp-sec">{t('resources.programmes')}</h2>
+      <h2 className="sub-head sp-sec">{t('resources.programmes')}</h2>
       <div className="card sp-card">
         {r.programmes.map((p) => (
           <div key={p.name} className="sp-line">
@@ -91,7 +91,7 @@ export function Resources() {
 
       {r.drinkGuide && (
         <>
-          <h2 id="drink" className="sp-sec">{t('resources.oneDrink')}</h2>
+          <h2 id="drink" className="sub-head sp-sec">{t('resources.oneDrink')}</h2>
           <div className="card sp-card">
             <div className="sp-line">
               <a className="sp-prog" href={r.drinkGuide.url} target="_blank" rel="noopener noreferrer">{r.drinkGuide.name} ↗</a>

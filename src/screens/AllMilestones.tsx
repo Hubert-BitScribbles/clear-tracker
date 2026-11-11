@@ -118,7 +118,7 @@ export function AllMilestones() {
     <main className="milestones">
       {header}
 
-      <h2 className="ms-all-sec">{t('all.firsts')}</h2>
+      <h2 className="sub-head ms-all-sec">{t('all.firsts')}</h2>
       <Badge
         size="all"
         glyph="✓"
@@ -134,7 +134,7 @@ export function AllMilestones() {
         earned={!!m.firstWeekMetIso}
       />
 
-      <h2 className="ms-all-sec">{t('all.consistency')}</h2>
+      <h2 className="sub-head ms-all-sec">{t('all.consistency')}</h2>
       <p className="ms-all-note">{t('all.consistencyNote')}</p>
       {streakTiers.map(({ weeks, reached }) => (
         <Badge
@@ -148,7 +148,7 @@ export function AllMilestones() {
         />
       ))}
 
-      <h2 className="ms-all-sec">{t('all.showingUp')}</h2>
+      <h2 className="sub-head ms-all-sec">{t('all.showingUp')}</h2>
       <p className="ms-all-note">{t('all.showingUpNote')}</p>
       {LOGGING_TIERS.map((d) => {
         const reached = earnedLogging.has(d);
@@ -165,7 +165,7 @@ export function AllMilestones() {
         );
       })}
 
-      <h2 className="ms-all-sec">{t('all.totalClear')}</h2>
+      <h2 className="sub-head ms-all-sec">{t('all.totalClear')}</h2>
       <p className="ms-all-note">{t('all.totalClearNote')}</p>
       {totalTiers.map((tier) => (
         <Badge
@@ -183,25 +183,25 @@ export function AllMilestones() {
         />
       ))}
 
-      <h2 className="ms-all-sec">{t('all.comingBack')}</h2>
+      <h2 className="sub-head ms-all-sec">{t('all.comingBack')}</h2>
       <p className="ms-all-note">{t('all.comingBackNote')}</p>
       <TierBadges size="all" mode="all" glyph="↺" tiers={BACK_ON_TRACK_TIERS}
         earned={tiersFrom(ex.backOnTrack, BACK_ON_TRACK_TIERS)} progress={ex.backOnTrack.length}
         title={(n) => (n === 1 ? t('ms.back1') : t('ms.backN', { n }))} formatDate={formatShort} />
 
-      <h2 className="ms-all-sec">{t('all.keptFew')}</h2>
+      <h2 className="sub-head ms-all-sec">{t('all.keptFew')}</h2>
       <p className="ms-all-note">{t('all.keptFewNote')}</p>
       <TierBadges size="all" mode="all" glyph="✎" tiers={KEPT_TO_A_FEW_TIERS}
         earned={tiersFrom(ex.keptToAFew, KEPT_TO_A_FEW_TIERS)} progress={ex.keptToAFew.length}
         title={(n) => (n === 1 ? t('ms.fewWeek1') : t('ms.fewWeekN', { n }))} formatDate={formatShort} />
 
-      <h2 className="ms-all-sec">{t('all.honest')}</h2>
+      <h2 className="sub-head ms-all-sec">{t('all.honest')}</h2>
       <p className="ms-all-note">{t('all.honestNote')}</p>
       <TierBadges size="all" mode="all" glyph="✎" tiers={HONEST_LOGGING_TIERS}
         earned={tiersFrom(ex.honest, HONEST_LOGGING_TIERS)} progress={ex.honest.length}
         title={(n) => (n === 1 ? t('ms.sameDay1') : t('ms.sameDayN', { n }))} formatDate={formatShort} />
 
-      <h2 className="ms-all-sec">{t('all.bests')}</h2>
+      <h2 className="sub-head ms-all-sec">{t('all.bests')}</h2>
       <p className="ms-all-note">{t('all.bestsNote')}</p>
       {ex.bestMonths.length === 0 ? (
         <Badge size="all" glyph="▲" title={t('all.bestMonth')} sub={t('all.notYet')} earned={false} />
@@ -214,7 +214,7 @@ export function AllMilestones() {
 
       {(data.challenges.settings.weekendRuns.length > 0 || data.challenges.settings.weekRuns.length > 0 || data.challenges.months.some((x) => x.state !== 'ended')) && (
         <>
-          <h2 className="ms-all-sec">{t('all.challenges')}</h2>
+          <h2 className="sub-head ms-all-sec">{t('all.challenges')}</h2>
           <p className="ms-all-note">{t('all.challengesNote')}</p>
           {data.challenges.settings.weekendRuns.length > 0 && (
             <TierBadges size="all" mode="all" glyph="◐" tiers={WEEKEND_TIERS} earned={tiersFrom(data.challenges.weekends, WEEKEND_TIERS)}
@@ -230,7 +230,7 @@ export function AllMilestones() {
         </>
       )}
 
-      <h2 className="ms-all-sec">{t('all.growth')}</h2>
+      <h2 className="sub-head ms-all-sec">{t('all.growth')}</h2>
       <p className="ms-all-note">{t('all.growthNote')}</p>
       <TierBadges size="all" mode="all" glyph="✦" tiers={BEYOND_TARGET_TIERS}
         earned={tiersFrom(ex.beyondTarget, BEYOND_TARGET_TIERS)} progress={ex.beyondTarget.length}

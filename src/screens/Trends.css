@@ -23,13 +23,13 @@
 .tr-empty-body { font-size: 13px; line-height: 20px; color: var(--text-muted); }
 .tr-empty-text { font-size: 12px; text-align: center; margin-top: 20px; color: var(--text-muted); }
 
-/* Scope pills */
-.tr-scope { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+/* Year choice, as text with a line under the one shown (1.4.1) */
+.tr-scope { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-bottom: 14px; }
 .trends .tr-scope-pill {
-  padding: 6px 14px; border-radius: var(--chip-radius); border: var(--card-border) solid var(--border);
-  font-size: 12px; font-weight: 600; color: var(--text-secondary);
+  border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none;
+  padding: 6px 0 4px; font-family: var(--font-ui); font-size: 13px; font-weight: 700; color: var(--text-muted); cursor: pointer;
 }
-.trends .tr-scope-pill[aria-pressed='true'] { background: var(--primary); color: var(--on-accent); }
+.trends .tr-scope-pill[aria-pressed='true'] { color: var(--text-primary); background: none; border-color: transparent; border-bottom-color: var(--primary); }
 
 /* Stat cards */
 .tr-stats { display: flex; gap: 10px; margin-bottom: 10px; }

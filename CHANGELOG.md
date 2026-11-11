@@ -4,6 +4,22 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.4.1 — 11 November 2026
+
+- **Section headings stop under the page head as they pass.** Scrolling
+  Trends from "2026 at a glance" into "Month by month · 2026", the new
+  heading takes the old one's place just under the head; the same for
+  Reports' sections, Milestones, All milestones, Settings, About and
+  Resources. On Check-in the month line (‹ November 2026 › Today) stops
+  under the title, where the page is long enough to scroll that far. The
+  hairline moves under whichever heading is showing; earlier headings wait
+  underneath, transparent, so screen readers still find them. Links to a
+  section land with its heading in that place. (Hugh's request.)
+- **Tabs and period choices are text** with a line under the one shown, as
+  in D.Goods: Trends | Reports and the other pairs, the year choice on
+  Trends and Milestones, and Month / Year on Reports. Slimmer, so the head
+  takes less of the screen. (Hugh: "if we're short on space".)
+
 ## 1.4.0 — 11 November 2026
 
 - **Page titles and tabs stay in view.** On every screen with a title, the

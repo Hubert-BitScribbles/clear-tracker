@@ -92,7 +92,7 @@ export function Milestones() {
         <>
           {(scope === thisYear || scope === 'all') && (
             <>
-              <h2 className="ms-sec">{t('milestones.upNext')}</h2>
+              <h2 className="sub-head ms-sec">{t('milestones.upNext')}</h2>
               {data.dayStreak.on && (
                 <Badge
                   glyph="●"
@@ -107,7 +107,7 @@ export function Milestones() {
             </>
           )}
 
-          <h2 className="ms-sec">{t('milestones.earned', { scope: scopeLabel })}</h2>
+          <h2 className="sub-head ms-sec">{t('milestones.earned', { scope: scopeLabel })}</h2>
           {groups.length === 0 ? (
             <p className="ms-note">{t('milestones.nothingEarned', { scope: scopeLabel })}</p>
           ) : (

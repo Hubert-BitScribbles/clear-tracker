@@ -66,6 +66,13 @@ Both load test data from `test/helpers.ts`, so they never touch real data.
   or cut off. It sets `--t` as base.css does on an iPhone (Chromium can't
   read Larger Text); `SNAP_TEXT=1.35` (or `2`) does the same for
   `snapshots.py`. Try the real setting on a phone too.
+- `python3 checks/clips.py` — the install how-to clips (1.6.0): offered only
+  on iPhone Safari 27+ and Chrome on iPhone, in English, in a browser tab;
+  closed until "Show me how"; opening downloads the clip and makes a muted,
+  looping, inline video with its poster and label; reduced motion, offline,
+  axe on the open clip, Help → Installing, and (after `npm run build`) that
+  the clips aren't precached. Chromium can't play H.264, so try it on an
+  iPhone too.
 - `python3 checks/language.py` — the Language setting: an English device
   stays English until Deutsch is chosen, the switch and back, Help's
   English-only note, and a German device in Vienna getting German and

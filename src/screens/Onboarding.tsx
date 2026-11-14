@@ -7,6 +7,7 @@ import { getSetting, nextLevel, saveIntention, setSetting, type DayLevel } from 
 import { mondayOf, todayIso } from '../data/dates';
 import { DeviceFields, useDevice } from '../components/DeviceFields';
 import { installGuide } from '../components/InstallSteps';
+import { InstallClip } from '../components/InstallClip';
 import {
   canPromptInstall, installKeepsOwnRecord, isAndroid, isInstalled, isIos, onInstallAvailability, promptInstall, requestPersistentStorage,
 } from '../lib/install';
@@ -166,6 +167,7 @@ export function Onboarding() {
                   </ol>
                 )}
                 {g.note && <p className="ob-note ob-install-note">{g.note}</p>}
+                {g.clip && <InstallClip which={g.clip} />}
               </div>
             </div>
             <div className="ob-actions">

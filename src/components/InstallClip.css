@@ -1,0 +1,17 @@
+/* The how-to clip under the install steps (1.6.0). The video keeps its size
+   with larger text; only the words grow. */
+.ic { margin-top: 6px; }
+.ic-toggle {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0; margin: 0 0 -8px;
+  border: 0; background: none; font: inherit; font-size: calc(14 * var(--t)); font-weight: 600;
+  color: var(--primary-text); cursor: pointer; text-align: left;
+}
+.ic-length { font-weight: 400; color: var(--on-card-muted); }
+.ic-frame { margin: 14px auto 0; width: 200px; max-width: 100%; text-align: center; }
+.ic-frame video {
+  display: block; width: 100%; aspect-ratio: 9 / 16; object-fit: cover;
+  border-radius: 16px; border: 1px solid var(--border); background: var(--background);
+}
+.ic-frame figcaption { margin-top: 6px; font-size: calc(11 * var(--t)); color: var(--on-card-muted); }
+.ic-note { margin: 10px 0 0; font-size: calc(12 * var(--t)); color: var(--on-card-muted); }
+@media print { .ic { display: none; } }

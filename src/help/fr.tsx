@@ -131,14 +131,14 @@ export function articles({ d, P }: HelpContext): Article[] {
     ),
   },
   {
-    id: 'accessibility', title: 'Accessibilité', keywords: 'voiceover lecteur d’écran clavier contraste animation zoom',
+    id: 'accessibility', title: 'Accessibilité', keywords: 'voiceover lecteur d’écran clavier contraste animation zoom texte plus grand taille police',
     body: (
       <>
         <ul>
           <li><strong>VoiceOver et clavier{sp}:</strong> chaque commande est étiquetée{sp}; chaque jour du calendrier annonce sa date et son niveau{sp}; les graphiques fonctionnent comme des curseurs (balayez vers le haut ou le bas, ou utilisez les touches fléchées), avec les détails en dessous.</li>
           <li><strong>Contraste élevé</strong> (Réglages){sp}: texte et bordures plus marqués, et repères du calendrier plus grands.</li>
           <li><strong>Clair et sombre</strong> suivent votre appareil, ou choisissez dans les Réglages. La réduction des animations est respectée.</li>
-          <li>Pour agrandir le texte, utilisez le zoom de votre navigateur.</li>
+          <li><strong>Le texte plus grand</strong> suit la taille du texte de votre téléphone, jusqu’au double de la taille habituelle : sur iPhone et iPad, dans Réglages → Accessibilité → Affichage et taille du texte → Police plus grande ; sur Android, avec la taille de police dans les paramètres. Sur un ordinateur, utilisez le zoom de votre navigateur.</li>
         </ul>
       </>
     ),

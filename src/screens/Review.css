@@ -2,41 +2,41 @@
   max-width: var(--content-max); margin: 0 auto;
   padding: calc(env(safe-area-inset-top, 0px) + 16px) 16px calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px) + 24px);
 }
-.rv-page-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.rv-page-title { font-size: calc(20 * var(--t)); font-weight: 700; margin-bottom: 4px; }
 .rv-header { display: flex; justify-content: center; align-items: center; margin-bottom: 4px; }
-.rv-back { font-size: 22px; line-height: 1; padding: 4px 8px; min-width: 36px; min-height: 36px; display: flex; align-items: center; color: var(--text-secondary); text-decoration: none; }
+.rv-back { font-size: calc(22 * var(--t)); line-height: 1; padding: 4px 8px; min-width: 36px; min-height: 36px; display: flex; align-items: center; color: var(--text-secondary); text-decoration: none; }
 /* Month or year, as text with a line under the one shown (1.4.1) */
 .rv-kind { display: flex; gap: 18px; }
 .rv-kind-pill {
   border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none;
   padding: 18px 6px 4px; margin: -12px -6px 0; min-width: 44px; text-align: center; /* 44px to tap, reaching into the gap above */
-  font-family: var(--font-ui); font-size: 13px; font-weight: 700; color: var(--text-muted); cursor: pointer;
+  font-family: var(--font-ui); font-size: calc(13 * var(--t)); font-weight: 700; color: var(--text-muted); cursor: pointer;
 }
 .rv-kind-pill[aria-checked='true'] { color: var(--text-primary); background: linear-gradient(var(--primary), var(--primary)) bottom center / calc(100% - 12px) 2px no-repeat; border-color: transparent; }
 .rv-title-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.rv-title { font-size: 20px; font-weight: 700; text-align: center; flex: 1; }
-.rv-arrow { font: inherit; font-size: 22px; min-width: 44px; min-height: 44px; margin: -4px; background: none; border: 0; color: var(--text-secondary); cursor: pointer; }
+.rv-title { font-size: calc(20 * var(--t)); font-weight: 700; text-align: center; flex: 1; }
+.rv-arrow { font: inherit; font-size: calc(22 * var(--t)); min-width: 44px; min-height: 44px; margin: -4px; background: none; border: 0; color: var(--text-secondary); cursor: pointer; }
 .rv-arrow:disabled { opacity: 0.3; cursor: default; }
-.rv-sub { font-size: 12px; text-align: center; margin: 2px 0 16px; color: var(--text-muted); }
+.rv-sub { font-size: calc(12 * var(--t)); text-align: center; margin: 2px 0 16px; color: var(--text-muted); }
 .rv-section { margin-top: 18px; break-inside: avoid; }
-.rv-sec { font-family: var(--font-body); font-weight: 400; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; color: var(--text-muted); }
+.rv-sec { font-family: var(--font-body); font-weight: 400; font-size: calc(11 * var(--t)); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; color: var(--text-muted); }
 /* .rv-card takes its padding from .card. (A 14px padding here never applied:
    while Check-in imported this screen, this file loaded before base.css.) */
 .rv-text p + p { margin-top: 6px; }
-.rv-text { font-size: 13px; line-height: 19px; color: var(--on-card-secondary); }
-.rv-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
-.rv-stat-value { font-family: var(--font-ui); font-weight: 700; font-size: 22px; color: var(--on-card-primary); }
-.rv-of { font-size: 14px; color: var(--on-card-muted); }
-.rv-stat-label { font-size: 11px; color: var(--on-card-muted); }
+.rv-text { font-size: calc(13 * var(--t)); line-height: calc(19 * var(--t)); color: var(--on-card-secondary); }
+.rv-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(calc(72 * var(--t)), 1fr)); /* three across, fewer with large text */ gap: 8px; text-align: center; }
+.rv-stat-value { font-family: var(--font-ui); font-weight: 700; font-size: calc(22 * var(--t)); color: var(--on-card-primary); }
+.rv-of { white-space: nowrap; /* "/ 31" stays together */ font-size: calc(14 * var(--t)); color: var(--on-card-muted); }
+.rv-stat-label { font-size: calc(11 * var(--t)); color: var(--on-card-muted); }
 .rv-compare { text-align: center; margin-top: 10px; }
 .rv-glance-levels { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; justify-content: center; }
 .rv-glance-levels .lvl-legend { margin: 0; justify-content: center; }
 .rv-glance-drinks { text-align: center; margin-top: 10px; }
 .rv-glance-drinks .rv-big { margin: 0 0 4px; }
-.rv-muted { font-size: 12px; color: var(--on-card-muted); }
-.rv-big { font-family: var(--font-ui); font-weight: 700; font-size: 17px; color: var(--on-card-primary); }
-.rv-foot { font-size: 11px; line-height: 16px; margin-top: 6px; color: var(--on-card-muted); }
-.rv-levels { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; margin-bottom: 10px; color: var(--on-card-secondary); }
+.rv-muted { font-size: calc(12 * var(--t)); color: var(--on-card-muted); }
+.rv-big { font-family: var(--font-ui); font-weight: 700; font-size: calc(17 * var(--t)); color: var(--on-card-primary); }
+.rv-foot { font-size: calc(11 * var(--t)); line-height: calc(16 * var(--t)); margin-top: 6px; color: var(--on-card-muted); }
+.rv-levels { display: flex; flex-wrap: wrap; gap: 12px; font-size: calc(12 * var(--t)); margin-bottom: 10px; color: var(--on-card-secondary); }
 .rv-levels > span { display: inline-flex; align-items: center; gap: 4px; }
 .rv-sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
 .rv-sw-clear, .rv-seg-clear { background: var(--clear-fill); border: 1px solid var(--clear-edge); }
@@ -45,20 +45,20 @@
 .rv-seg-lot { background: var(--lot-fill); border: 1px solid var(--lot-edge); }
 .rv-seg-none { background: var(--track); }
 .rv-cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
-.rv-wd { text-align: center; font-size: 11px; color: var(--on-card-muted); padding-bottom: 2px; }
+.rv-wd { text-align: center; font-size: calc(11 * var(--t)); color: var(--on-card-muted); padding-bottom: 2px; }
 .rv-months, .rv-dow { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .rv-months li, .rv-dow li { display: flex; align-items: center; gap: 8px; }
-.rv-m-name { width: 30px; font-size: 11px; color: var(--on-card-muted); }
+.rv-m-name { width: calc(30 * var(--t)); font-size: calc(11 * var(--t)); color: var(--on-card-muted); }
 .rv-m-bar { flex: 1; height: 12px; display: flex; border-radius: 4px; overflow: hidden; }
 .rv-seg { height: 100%; box-sizing: border-box; }
-.rv-m-n { width: 36px; text-align: right; font-size: 11px; color: var(--on-card-secondary); }
+.rv-m-n { width: calc(36 * var(--t)); text-align: right; font-size: calc(11 * var(--t)); color: var(--on-card-secondary); }
 .rv-ms { list-style: none; margin: 0; padding: 0; }
-.rv-ms li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; font-size: 13px; color: var(--on-card-primary); }
+.rv-ms li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; font-size: calc(13 * var(--t)); color: var(--on-card-primary); }
 .rv-ms li + li { border-top: var(--card-border) solid var(--border); }
-.rv-generated { font-size: 10px; line-height: 15px; text-align: center; margin-top: 20px; color: var(--text-muted); }
+.rv-generated { font-size: calc(10 * var(--t)); line-height: calc(15 * var(--t)); text-align: center; margin-top: 20px; color: var(--text-muted); }
 .rv-share { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; text-align: center; }
 .rv-share-btn { width: 100%; border-radius: 10px; }
-.rv-include { text-align: left; font-size: 13px; color: var(--text-secondary); }
+.rv-include { text-align: left; font-size: calc(13 * var(--t)); color: var(--text-secondary); }
 .rv-include summary { cursor: pointer; padding: 14px 0; margin: -6px 0; color: var(--primary-text); font-weight: 600; }
 .rv-checks { display: flex; flex-direction: column; gap: 0; padding: 0 0 8px; }
 .rv-checks label { display: flex; align-items: center; min-height: 44px; cursor: pointer; }

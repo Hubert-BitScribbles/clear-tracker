@@ -28,7 +28,7 @@
   text-decoration: none;
   /* iOS tab bars use the system font, as the native app does. */
   font-family: system-ui, -apple-system, sans-serif;
-  font-size: 10px;
+  font-size: calc(10 * var(--t-tab));
   font-weight: 500;
 }
 .tab.active {

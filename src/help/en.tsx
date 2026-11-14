@@ -128,14 +128,14 @@ export function articles({ d, P }: HelpContext): Article[] {
     ),
   },
   {
-    id: 'accessibility', title: 'Accessibility', keywords: 'voiceover screen reader keyboard contrast motion zoom',
+    id: 'accessibility', title: 'Accessibility', keywords: 'voiceover screen reader keyboard contrast motion zoom larger text size font',
     body: (
       <>
         <ul>
           <li><strong>VoiceOver and keyboards:</strong> every control is labelled; each calendar day reads its date and level; the charts work like sliders (swipe up or down, or use the arrow keys), with details below.</li>
           <li><strong>High contrast</strong> (Settings): stronger text and borders, and larger calendar marks.</li>
           <li><strong>Light and dark</strong> follow your device, or choose one in Settings. Reduced motion is respected.</li>
-          <li>To make text larger, use your browser's zoom.</li>
+          <li><strong>Larger text</strong> follows your phone's text size, up to twice the usual size: on iPhone and iPad, Settings → Accessibility → Display & Text Size → Larger Text; on Android, your phone's font size setting. On a computer, use your browser's zoom.</li>
         </ul>
       </>
     ),

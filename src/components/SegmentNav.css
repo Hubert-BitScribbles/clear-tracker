@@ -9,7 +9,7 @@
    title; the margin keeps the row where it was. */
 .seg-nav-item {
   padding: 12px 6px 7px; margin: -6px -6px 0; min-width: 44px; text-align: center; text-decoration: none; border-bottom: 2px solid transparent;
-  font-family: var(--font-ui); font-weight: 700; font-size: 15px; color: var(--text-muted);
+  font-family: var(--font-ui); font-weight: 700; font-size: calc(15 * var(--t)); color: var(--text-muted);
 }
 /* The line sits under the word, not the wider tap area. */
 .seg-nav-item[aria-current='page'] {

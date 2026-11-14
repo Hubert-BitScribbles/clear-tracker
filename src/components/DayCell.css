@@ -52,7 +52,7 @@ button.day-cell:focus-visible .day-inner {
   position: relative;
   top: 2px;
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: calc(13 * var(--t-cell));
   color: var(--text-primary);
 }
 .day-clear .day-numeral,

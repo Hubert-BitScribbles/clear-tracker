@@ -50,3 +50,7 @@ alle Aktionen anzeigen“ instead of quoting Apple's German label for the share
 sheet's "View More" button, which we don't know yet; `install.ios.shareSafariMenu`
 shows only the ≡ symbol, not the menu's name. „Drucken“ (Print, in
 `viewMoreChrome`) is assumed. A screenshot of each settles them.
+
+**For the reviewer (1.5.0, Help → Barrierefreiheit):** the iPhone path
+„Einstellungen → Bedienungshilfen → Anzeige & Textgröße → Größerer Text“ is
+Apple's German as we believe it; a screenshot confirms it.

@@ -399,25 +399,26 @@ export function CheckIn() {
       </div>
 
       <div className="sub-head ci-month-header">
-        <button type="button" className="ci-arrow" onClick={() => goMonth(-1)} aria-label={t('chart.previousMonth')}>
-          ‹
-        </button>
-        <button
-          type="button"
-          className="ci-month-title"
-          onClick={() => setPickerOpen((o) => !o)}
-          aria-expanded={pickerOpen}
-        >
-          {monthYear(month, year)}
-        </button>
-        <div className="ci-month-right">
+        {/* The arrows stay either side of the month; with large text, Today moves to its own line. */}
+        <div className="ci-month-nav">
+          <button type="button" className="ci-arrow" onClick={() => goMonth(-1)} aria-label={t('chart.previousMonth')}>
+            ‹
+          </button>
+          <button
+            type="button"
+            className="ci-month-title"
+            onClick={() => setPickerOpen((o) => !o)}
+            aria-expanded={pickerOpen}
+          >
+            {monthYear(month, year)}
+          </button>
           <button type="button" className="ci-arrow" onClick={() => goMonth(1)} aria-label={t('chart.nextMonth')}>
             ›
           </button>
-          <button type="button" className="ci-today" onClick={goToday}>
-            {t('checkin.today')}
-          </button>
         </div>
+        <button type="button" className="ci-today" onClick={goToday}>
+          {t('checkin.today')}
+        </button>
       </div>
 
       {pickerOpen && (

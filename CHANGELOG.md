@@ -4,6 +4,29 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.5.0 — 14 November 2026
+
+**Text follows the phone's text size.** On iPhone and iPad, Clear Tracker
+now follows Settings → Accessibility → Display & Text Size → Larger Text, in
+Safari and in the Home Screen app, up to twice the usual size (the size the
+studio's phone standard is tested at). At the usual size nothing moves:
+every screen was compared pixel by pixel with 1.4.3, in English at 390 and
+320 px and in German. Android's font size already applied; a computer
+browser's own font size setting now applies too.
+
+- Every text size is written against the phone's base size (`--t` in
+  `base.css`): 1/17 of Safari's `-apple-system-body` on iPhone and iPad,
+  1/16 of the browser's base size elsewhere; Mac Safari is left out.
+- So large text still fits: Check-in's month arrows stay beside the month
+  and Today moves to its own line; the report's three figures stack; the
+  labels beside bars and week rows widen with the text; long addresses wrap.
+- Numbers in the calendar cells and week tiles stop growing at 135%, and
+  milestone badges at 150%, so they keep clear of the marks; the tab bar's
+  labels stop at 120%, as iOS's own tab bars barely grow.
+- Settings' app address wraps instead of scrolling sideways.
+- Help → Accessibility says where the setting is.
+- New check: `checks/larger_text.py`; `snapshots.py` takes `SNAP_TEXT`.
+
 ## 1.4.3 — 14 November 2026
 
 The iPhone install steps match what people see now (from Hugh's screen

@@ -127,14 +127,14 @@ export function articles({ d, P }: HelpContext): Article[] {
     ),
   },
   {
-    id: 'accessibility', title: 'Barrierefreiheit', keywords: 'voiceover screenreader tastatur kontrast bewegung zoom',
+    id: 'accessibility', title: 'Barrierefreiheit', keywords: 'voiceover screenreader tastatur kontrast bewegung zoom größerer text schriftgröße',
     body: (
       <>
         <ul>
           <li><strong>VoiceOver und Tastatur:</strong> Jedes Bedienelement ist beschriftet; jeder Kalendertag nennt Datum und Stufe; die Diagramme funktionieren wie Schieberegler (nach oben oder unten wischen oder die Pfeiltasten nutzen), mit Details darunter.</li>
           <li><strong>Hoher Kontrast</strong> (Einstellungen): kräftigere Schrift und Rahmen und größere Kalendermarkierungen.</li>
           <li><strong>Hell und dunkel</strong> folgen Ihrem Gerät, oder Sie wählen in den Einstellungen. Reduzierte Bewegung wird berücksichtigt.</li>
-          <li>Für größere Schrift nutzen Sie den Zoom Ihres Browsers.</li>
+          <li><strong>Größere Schrift</strong> folgt der Textgröße Ihres Telefons, bis zur doppelten Größe: auf dem iPhone und iPad unter Einstellungen → Bedienungshilfen → Anzeige & Textgröße → Größerer Text; auf Android über die Schriftgröße in den Einstellungen. Am Computer nutzen Sie den Zoom Ihres Browsers.</li>
         </ul>
       </>
     ),

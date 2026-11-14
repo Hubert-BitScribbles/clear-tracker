@@ -1,17 +1,17 @@
 /* Week grid: one row per month, a tile per week (see IntentionChart.tsx). */
 .wg { display: flex; flex-direction: column; gap: 10px; }
-.wg-row { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 8px; }
-.wg-month { font-size: 12px; font-weight: 600; color: var(--on-card-secondary); }
+.wg-row { display: grid; grid-template-columns: calc(34 * var(--t)) 1fr auto; align-items: center; gap: 8px; }
+.wg-month { font-size: calc(12 * var(--t)); font-weight: 600; color: var(--on-card-secondary); }
 .wg-weeks { display: grid; grid-template-columns: repeat(5, minmax(0, 40px)); gap: 6px; }
 .wg-cell { display: block; }
 .wg-tile {
   position: relative; display: flex; align-items: center; justify-content: center;
   width: 100%; aspect-ratio: 1; padding: 0; border: 0; border-radius: 8px; cursor: pointer;
-  font: inherit; font-family: var(--font-ui); font-weight: 700; font-size: 14px;
+  font: inherit; font-family: var(--font-ui); font-weight: 700; font-size: calc(14 * var(--t-cell));
 }
 .wg-num { display: inline-flex; align-items: baseline; line-height: 1; }
 /* The intention, smaller, in the same colour as the count (so it keeps its contrast). */
-.wg-of { font-size: 10px; font-weight: 600; margin-left: 1px; letter-spacing: -0.02em; }
+.wg-of { font-size: calc(10 * var(--t-cell)); font-weight: 600; margin-left: 1px; letter-spacing: -0.02em; }
 .wg-tile:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 /* Selected week: a teal bar beneath, as for the selected day on Check-in. */
 .wg-tile[data-selected]::after {
@@ -21,7 +21,7 @@
 .wg-partial { background: var(--align-partial); color: #14171c; }
 .wg-met { background: var(--align-met); color: var(--align-met-glyph); }
 .wg-exceeded { background: var(--align-exceeded); color: var(--align-exceeded-glyph); }
-.wg-sum { font-size: 12px; color: var(--on-card-muted); white-space: nowrap; min-width: 44px; text-align: right; }
+.wg-sum { font-size: calc(12 * var(--t)); color: var(--on-card-muted); white-space: nowrap; min-width: 44px; text-align: right; }
 /* Not enough logged: neutral, dashed edge (shape, not colour, tells it apart). */
 .wg-tile.wg-unclear { background: var(--align-unlogged); border: 1.5px dashed var(--align-unlogged-edge); color: var(--on-card-primary); }
 /* Before the first intention: shown, not measured. */

@@ -1,4 +1,4 @@
-.lvl-legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; margin: 0 0 10px; color: var(--on-card-secondary); }
+.lvl-legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: calc(12 * var(--t)); margin: 0 0 10px; color: var(--on-card-secondary); }
 .lvl-legend > span { display: inline-flex; align-items: center; gap: 4px; }
 .lvl-sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
 .lvl-clear { background: var(--clear-fill); border: 1px solid var(--clear-edge); }

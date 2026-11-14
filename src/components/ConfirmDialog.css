@@ -4,11 +4,11 @@
   background: var(--sheet-background); color: var(--text-primary);
   border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 10px;
 }
-.confirm-title { font-family: var(--font-ui); font-weight: 700; font-size: 16px; }
-.confirm-body { font-size: 13px; line-height: 19px; color: var(--text-secondary); }
+.confirm-title { font-family: var(--font-ui); font-weight: 700; font-size: calc(16 * var(--t)); }
+.confirm-body { font-size: calc(13 * var(--t)); line-height: calc(19 * var(--t)); color: var(--text-secondary); }
 .confirm-actions { display: flex; gap: 10px; margin-top: 8px; }
 .confirm-btn {
-  flex: 1; font: inherit; font-family: var(--font-ui); font-weight: 600; font-size: 14px;
+  flex: 1; font: inherit; font-family: var(--font-ui); font-weight: 600; font-size: calc(14 * var(--t));
   padding: 12px; border-radius: 10px; cursor: pointer;
   border: 1px solid var(--border); background: transparent; color: var(--text-primary);
 }

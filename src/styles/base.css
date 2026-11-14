@@ -12,6 +12,38 @@ body,
   height: 100%;
 }
 
+/* Text follows the phone's text size (1.5.0). Every font-size and px
+   line-height is written as N × --t, N being its size in px at the default
+   setting. Everywhere else --t is 1/16 of the browser's base size (16px
+   unless someone changed it), so nothing moves. On iPhone and iPad,
+   -apple-system-body is the system's body text size, 17px at the default
+   Larger Text setting, so --t is 1/17 of it and the whole app scales with
+   that setting, up to twice the default (the 200% the phone standard is
+   tested at). Mac Safari knows -apple-system-body too, at 13px with no
+   Larger Text, so (hover: none) leaves it out. Checks emulate a size by
+   setting --t on <html> (checks/larger_text.py). */
+:root {
+  --t: calc(1rem / 16);
+  /* Glyphs in fixed circles (milestone badges) grow up to 150%, then stop. */
+  --t-glyph: min(var(--t), 1.5px);
+  /* Numbers in the fixed-size calendar cells and week tiles stop at 135%,
+     the largest standard Larger Text step, so they keep clear of the marks. */
+  --t-cell: min(var(--t), 1.35px);
+  /* Tab bar labels stop at 120%, as iOS's own tab bars barely grow, so four
+     labels still fit side by side on a 320px screen. */
+  --t-tab: min(var(--t), 1.2px);
+}
+@supports (font: -apple-system-body) {
+  @media (hover: none) {
+    html {
+      font: -apple-system-body;
+    }
+    :root {
+      --t: min(calc(1rem / 17), 2px);
+    }
+  }
+}
+
 html {
   -webkit-text-size-adjust: 100%;
   /* Room for the sticky page head (PageHead sets --head-h), so links to a
@@ -24,8 +56,9 @@ body {
   background: var(--background); /* flat, never a gradient */
   color: var(--text-primary);
   font-family: var(--font-body);
-  font-size: 16px;
+  font-size: calc(16 * var(--t));
   line-height: 1.5;
+  overflow-wrap: break-word; /* a long address breaks rather than running off a narrow screen */
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }
@@ -37,9 +70,9 @@ h3 {
   line-height: 1.2;
   margin: 0;
 }
-h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.01em; }
-h2 { font-size: 1.125rem; font-weight: 600; }
-h3 { font-size: 1rem; font-weight: 600; }
+h1 { font-size: calc(28 * var(--t)); font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: calc(18 * var(--t)); font-weight: 600; }
+h3 { font-size: calc(16 * var(--t)); font-weight: 600; }
 
 p { margin: 0; }
 
@@ -161,7 +194,7 @@ button {
 .in-slider::-moz-range-thumb {
   width: 24px; height: 24px; border-radius: 50%; background: #FFFFFF; border: 2px solid var(--primary);
 }
-.in-callout { border-radius: 10px; padding: 14px; background: var(--primary-light); color: var(--text-primary); font-size: 12px; line-height: 18px; }
+.in-callout { border-radius: 10px; padding: 14px; background: var(--primary-light); color: var(--text-primary); font-size: calc(12 * var(--t)); line-height: calc(18 * var(--t)); }
 
 /* Toggle switch. The thumb position carries the state as well as colour. */
 /* 44px tall to tap (studio standard); the 52 × 32 track is drawn inside it,
@@ -183,22 +216,22 @@ button {
 
 /* Form fields (Settings, onboarding) */
 .st-field { display: flex; flex-direction: column; gap: 4px; }
-.st-field-label { font-size: 12px; color: var(--on-card-secondary); }
+.st-field-label { font-size: calc(12 * var(--t)); color: var(--on-card-secondary); }
 .st-select {
-  font: inherit; font-size: 16px; min-height: 44px; padding: 9px 10px; border-radius: 8px;
+  font: inherit; font-size: calc(16 * var(--t)); min-height: 44px; padding: 9px 10px; border-radius: 8px;
   border: 1px solid var(--border); background: var(--background); color: var(--text-primary);
 }
 
 /* A quiet link to a Help article or Resources, used across screens. */
-.help-link { display: inline-flex; align-items: center; min-height: 44px; font-size: 12px; font-weight: 600; color: var(--primary-text); text-decoration: none; }
+.help-link { display: inline-flex; align-items: center; min-height: 44px; font-size: calc(12 * var(--t)); font-weight: 600; color: var(--primary-text); text-decoration: none; }
 .help-link:hover { text-decoration: underline; }
 .help-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 18px; margin-top: 5px; }
 
 /* Device and browser line, with a way to correct it (onboarding, Settings) */
-.dv-line { font-size: 13px; line-height: 20px; }
-.dv-change { font: inherit; font-size: 13px; font-weight: 600; color: var(--primary-text); background: none; border: 0; padding: 12px 0; margin: -8px 0; min-height: 44px; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.dv-line { font-size: calc(13 * var(--t)); line-height: calc(20 * var(--t)); }
+.dv-change { font: inherit; font-size: calc(13 * var(--t)); font-weight: 600; color: var(--primary-text); background: none; border: 0; padding: 12px 0; margin: -8px 0; min-height: 44px; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
 .dv-fields { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; text-align: left; }
-.dv-note { font-size: 11px; line-height: 16px; color: var(--text-muted); }
+.dv-note { font-size: calc(11 * var(--t)); line-height: calc(16 * var(--t)); color: var(--text-muted); }
 
 /* The page head — title, tabs and period choices — stays in view while the
    page scrolls (components/PageHead.tsx). It bleeds over the page's side

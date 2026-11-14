@@ -53,3 +53,7 @@ les actions » instead of quoting Apple's French label for the share sheet's
 "View More" button, which we don't know yet; `install.ios.shareSafariMenu`
 shows only the ≡ symbol, not the menu's name. « Imprimer » (Print, in
 `viewMoreChrome`) is assumed. A screenshot of each settles them.
+
+**For the reviewer (1.5.0, Help → Accessibilité):** the iPhone path
+« Réglages → Accessibilité → Affichage et taille du texte → Police plus
+grande » is Apple's French as we believe it; a screenshot confirms it.

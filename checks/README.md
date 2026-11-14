@@ -60,6 +60,12 @@ Both load test data from `test/helpers.ts`, so they never touch real data.
   (title, tabs, period choices), staying at the top when scrolled, links to a
   section landing below the head, not sticky in print or on a short
   landscape screen.
+- `python3 checks/larger_text.py` — the phone's text size (1.5.0): the
+  default unchanged, every font size following `--t`, and every screen at
+  135% and 200% text, 390 and 320 px wide, with nothing wider than the screen
+  or cut off. It sets `--t` as base.css does on an iPhone (Chromium can't
+  read Larger Text); `SNAP_TEXT=1.35` (or `2`) does the same for
+  `snapshots.py`. Try the real setting on a phone too.
 - `python3 checks/language.py` — the Language setting: an English device
   stays English until Deutsch is chosen, the switch and back, Help's
   English-only note, and a German device in Vienna getting German and
@@ -71,7 +77,8 @@ Both load test data from `test/helpers.ts`, so they never touch real data.
 ## Each release, by hand (studio standard)
 
 A quick pass on a phone, as the brand guide asks: the phone's larger text
-on, dark mode, a 320px-wide screen (or Safari's smallest), and a Lighthouse
+on (on iPhone the app follows it from 1.5.0: Settings → Accessibility →
+Display & Text Size → Larger Text), dark mode, a 320px-wide screen (or Safari's smallest), and a Lighthouse
 run (accessibility and best practices) as a smoke test, not a score to
 chase. Before a release that changes how the app works: about five people
 on their own phones, each doing a real task while you watch without

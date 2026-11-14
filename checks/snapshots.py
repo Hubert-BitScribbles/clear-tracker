@@ -1,6 +1,7 @@
 # Screenshots of every screen, for proving a change altered nothing visible.
 #   python3 checks/snapshots.py <out-dir>              take screenshots (dev server on 5173, or SNAP_URL)
 #   SNAP_LANG=de python3 checks/snapshots.py <out-dir>  the same in German (onboarding buttons found by position)
+#   SNAP_TEXT=1.35 python3 checks/snapshots.py <out-dir>  as if the phone's text size were 135% (1.5.0; sets --t)
 #   python3 checks/snapshots.py --compare <dirA> <dirB>  report screens whose pixels differ
 # Same data, clock and screen states as a11y_audit.py, in light and dark, plus
 # regions whose wording or currency differs (UK nations, euro countries, New Zealand).
@@ -28,6 +29,10 @@ OUT = sys.argv[1]
 BASE = os.environ.get("SNAP_URL", "http://localhost:5173")
 LANG = os.environ.get("SNAP_LANG", "en")
 WIDTH = int(os.environ.get("SNAP_WIDTH", "390"))
+TEXT = os.environ.get("SNAP_TEXT")  # e.g. 1.35: the phone's text size as a multiple of the default
+TEXT_SCRIPT = ("new MutationObserver((_, o) => { if (document.documentElement) { "
+               f"document.documentElement.style.setProperty('--t', '{TEXT}px'); o.disconnect(); }} }})"
+               ".observe(document, { childList: true });") if TEXT else None
 WIDE = []  # screens wider than the window: something doesn't fit
 os.makedirs(OUT, exist_ok=True)
 OB_FORWARD = ['Get started', 'Continue in the browser', 'Continue', 'Continue', 'Continue']
@@ -76,6 +81,7 @@ with sync_playwright() as p:
     for theme in ['light', 'dark']:
         ctx = b.new_context(viewport={"width": WIDTH, "height": 844}, timezone_id="America/Vancouver", locale='en-CA')
         pg = ctx.new_page()
+        if TEXT_SCRIPT: pg.add_init_script(TEXT_SCRIPT)
         pg.clock.install(time=datetime.datetime(2026, 9, 30, 20, 0, tzinfo=datetime.timezone(datetime.timedelta(hours=-7))))
         pg.goto(BASE + "/#/settings"); pg.wait_for_timeout(400)
         pg.evaluate(f"""async () => {{ localStorage.setItem('ct-appearance', JSON.stringify({{theme:'{theme}',highContrast:false}}));

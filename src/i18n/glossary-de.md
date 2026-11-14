@@ -43,3 +43,10 @@ Times: „9–20 Uhr“.
 **To check on a phone:** menu names in install and reminder steps (Safari,
 Chrome, Samsung Internet, Google Calendar, Reminders) follow each app's German
 interface as far as known; a tester's screenshots settle them.
+
+**For the reviewer (1.4.3, iPhone install steps, iOS 27):** the keys
+`install.ios.viewMore` and `install.ios.viewMoreChrome` say „Lassen Sie sich
+alle Aktionen anzeigen“ instead of quoting Apple's German label for the share
+sheet's "View More" button, which we don't know yet; `install.ios.shareSafariMenu`
+shows only the ≡ symbol, not the menu's name. „Drucken“ (Print, in
+`viewMoreChrome`) is assumed. A screenshot of each settles them.

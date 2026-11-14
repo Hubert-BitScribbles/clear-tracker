@@ -24,12 +24,13 @@
 .tr-empty-text { font-size: 12px; text-align: center; margin-top: 20px; color: var(--text-muted); }
 
 /* Year choice, as text with a line under the one shown (1.4.1) */
-.tr-scope { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-bottom: 14px; }
+.tr-scope { display: flex; flex-wrap: wrap; gap: 0 18px; margin-bottom: 14px; }
 .trends .tr-scope-pill {
   border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none;
-  padding: 6px 0 4px; font-family: var(--font-ui); font-size: 13px; font-weight: 700; color: var(--text-muted); cursor: pointer;
+  padding: 18px 6px 4px; margin: -12px -6px 0; min-width: 44px; text-align: center; /* 44px to tap, reaching into the gap above */
+  font-family: var(--font-ui); font-size: 13px; font-weight: 700; color: var(--text-muted); cursor: pointer;
 }
-.trends .tr-scope-pill[aria-pressed='true'] { color: var(--text-primary); background: none; border-color: transparent; border-bottom-color: var(--primary); }
+.trends .tr-scope-pill[aria-pressed='true'] { color: var(--text-primary); background: linear-gradient(var(--primary), var(--primary)) bottom center / calc(100% - 12px) 2px no-repeat; border-color: transparent; }
 
 /* Stat cards */
 .tr-stats { display: flex; gap: 10px; margin-bottom: 10px; }
@@ -54,7 +55,7 @@
 /* Day of week */
 .tr-dow-header { display: flex; justify-content: flex-end; margin-bottom: 5px; }
 .tr-dow-header span { width: 74px; font-size: 10px; text-align: right; color: var(--text-muted); }
-.tr-dow { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.tr-dow { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0; }
 .tr-dow-row { display: flex; align-items: center; gap: 8px; }
 .tr-dow-label { width: 32px; font-size: 12px; color: var(--text-muted); }
 .tr-dow-track {
@@ -95,7 +96,7 @@
   display: flex; justify-content: space-between; margin-top: 6px; font-size: 12px; color: var(--on-card-secondary);
 }
 .tr-view-week {
-  display: inline-block; margin-top: 10px; font-size: 12px; font-weight: 600;
+  display: inline-flex; align-items: center; min-height: 44px; margin: -3px 0 -13px; font-size: 12px; font-weight: 600;
   color: var(--primary-text); text-decoration: none;
 }
 
@@ -129,6 +130,9 @@
 .trends .tr-row-btn, .trends .tr-dow-row {
   width: 100%; display: flex; align-items: center; gap: 8px; text-align: left; position: relative; padding: 2px 0; border-radius: 4px;
 }
+/* Each day of the week is a 44px row to tap (studio standard). */
+.trends .tr-dow-row { min-height: 44px; }
+.trends .tr-dow-row[aria-pressed='true']::before { top: 12px; bottom: 12px; }
 .tr-dow-li { list-style: none; }
 .trends .tr-row-btn[aria-pressed='true']::before, .trends .tr-dow-row[aria-pressed='true']::before {
   content: ''; position: absolute; left: -8px; top: 3px; bottom: 3px; width: 3px; border-radius: 2px; background: var(--primary);
@@ -144,7 +148,7 @@
 .tr-detail-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .tr-detail-nav .tr-detail-week { flex: 1; text-align: center; margin: 0; }
 .trends .tr-step {
-  min-width: 36px; min-height: 36px; font-size: 20px; line-height: 1; border-radius: 8px;
+  min-width: 44px; min-height: 44px; margin: -4px; font-size: 20px; line-height: 1; border-radius: 8px;
   color: var(--on-card-secondary); display: inline-flex; align-items: center; justify-content: center;
 }
 .trends .tr-step:disabled { opacity: 0.3; cursor: default; }

@@ -17,15 +17,16 @@
 .sp-line-meta { font-size: 12px; line-height: 17px; margin-top: 3px; color: var(--on-card-secondary); }
 .sp-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
 .sp-action {
-  display: inline-flex; align-items: center; min-height: 36px; padding: 6px 12px; border-radius: 10px;
+  display: inline-flex; align-items: center; min-height: 44px; padding: 6px 12px; border-radius: 10px;
   border: 1px solid var(--border); font-size: 13px; font-weight: 600; text-decoration: none; color: var(--primary-text);
 }
 .sp-action-strong { background: var(--primary); border-color: var(--primary); color: var(--on-accent); }
-.sp-prog { font-size: 13px; font-weight: 600; color: var(--primary-text); text-decoration: none; }
+.sp-prog { display: inline-flex; align-items: center; min-height: 44px; margin: -10px 0 -3px; font-size: 13px; font-weight: 600; color: var(--primary-text); text-decoration: none; }
 .sp-foot { font-size: 11px; line-height: 16px; padding: 8px 0 10px; color: var(--on-card-muted); border-top: var(--card-border) solid var(--border); }
 .sp-checked { font-size: 11px; line-height: 16px; margin-top: 14px; color: var(--text-muted); }
 
 /* Help articles */
+.sp-search-label { display: block; margin-bottom: 4px; }
 .sp-search { width: 100%; font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--card-background); color: var(--text-primary); margin-bottom: 4px; }
 .sp-articles { padding: 0 14px; }
 .sp-article + .sp-article { border-top: var(--card-border) solid var(--border); }

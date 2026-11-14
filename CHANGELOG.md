@@ -4,6 +4,33 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.4.2 — 13 November 2026
+
+The studio's new phone standard ("Designing for phones — the bitScribbles
+way", brand guide, 12 November 2026), applied:
+
+- **Everything you tap is at least 44 × 44.** The text tabs and period
+  choices (from 1.4.1), the ‹ › arrows, ✕ and back, Today, Later, the
+  switches, the slider, Back up now, How logging works and the other
+  stand-alone links, the programme links on Resources, the report's
+  "Choose what's included" and its ticks, Settings' theme and Copy link
+  buttons, the fields and the Add button. Most grow into the space around
+  them, so the screens look the same; the day-of-week rows on Trends are
+  now 44px apart (they were 22px, under the 24px minimum). The week tiles
+  stay 40 × 40, with space between them.
+- **Zoomed in to 200%, nothing runs off the side:** Check-in's month line
+  and stat cards, the tabs, and Challenges' month and Add wrap instead.
+- **Every field has a visible label:** "Search help" on Help and "Month to
+  add" on Challenges were only for screen readers.
+- **Small grey text is Ink at 65%** on light backgrounds (the studio's
+  colour rule); dark mode is unchanged.
+- **Erase all data has its own place at the bottom of Settings,** away from
+  Back up and Restore.
+- The line under the chosen tab or period sits under the word, not the
+  wider tap area (a border again in Windows high contrast).
+- `checks/phone_standard.py`; the checks README lists the standard's
+  by-hand checks for each release.
+
 ## 1.4.1 — 11 November 2026
 
 - **Section headings stop under the page head as they pass.** Scrolling

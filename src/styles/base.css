@@ -147,9 +147,12 @@ button {
 /* ---- Shared controls (Intention, Onboarding, Settings) ------------------ */
 
 /* Slider: track filled with the accent up to the thumb. */
+/* 44px tall to tap (studio standard); the 6px track and its fill are a
+   background band in the middle (the fill comes from Intention.tsx). */
 .in-slider {
-  -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 3px; margin: 26px 0;
-  outline-offset: 6px; cursor: pointer;
+  -webkit-appearance: none; appearance: none; width: 100%; height: 44px; border-radius: 3px; margin: 7px 0;
+  background-size: 100% 6px !important; background-position: center !important; background-repeat: no-repeat !important;
+  background-color: transparent; outline-offset: 2px; cursor: pointer;
 }
 .in-slider::-webkit-slider-thumb {
   -webkit-appearance: none; appearance: none; width: 28px; height: 28px; border-radius: 50%;
@@ -161,13 +164,19 @@ button {
 .in-callout { border-radius: 10px; padding: 14px; background: var(--primary-light); color: var(--text-primary); font-size: 12px; line-height: 18px; }
 
 /* Toggle switch. The thumb position carries the state as well as colour. */
+/* 44px tall to tap (studio standard); the 52 × 32 track is drawn inside it,
+   and the margins keep the old footprint. */
 .switch {
-  position: relative; flex: none; width: 52px; height: 32px; border-radius: var(--chip-radius);
-  border: 1px solid var(--border); background: var(--track); cursor: pointer; padding: 0; transition: background 150ms;
+  position: relative; flex: none; width: 56px; height: 44px; margin: -6px -2px;
+  border: 0; background: none; cursor: pointer; padding: 0;
 }
-.switch[aria-checked='true'] { background: var(--primary); border-color: var(--primary); }
+.switch::before {
+  content: ''; position: absolute; left: 2px; top: 6px; width: 52px; height: 32px; box-sizing: border-box;
+  border-radius: var(--chip-radius); border: 1px solid var(--border); background: var(--track); transition: background 150ms;
+}
+.switch[aria-checked='true']::before { background: var(--primary); border-color: var(--primary); }
 .switch-thumb {
-  position: absolute; top: 50%; left: 3px; width: 24px; height: 24px; border-radius: 50%;
+  position: absolute; top: 50%; left: 6px; width: 24px; height: 24px; border-radius: 50%;
   background: #FFFFFF; box-shadow: 0 1px 2px rgba(20, 23, 28, 0.3); transform: translateY(-50%); transition: transform 150ms;
 }
 .switch[aria-checked='true'] .switch-thumb { transform: translate(20px, -50%); }
@@ -176,18 +185,18 @@ button {
 .st-field { display: flex; flex-direction: column; gap: 4px; }
 .st-field-label { font-size: 12px; color: var(--on-card-secondary); }
 .st-select {
-  font: inherit; font-size: 16px; padding: 9px 10px; border-radius: 8px;
+  font: inherit; font-size: 16px; min-height: 44px; padding: 9px 10px; border-radius: 8px;
   border: 1px solid var(--border); background: var(--background); color: var(--text-primary);
 }
 
 /* A quiet link to a Help article or Resources, used across screens. */
-.help-link { font-size: 12px; font-weight: 600; color: var(--primary-text); text-decoration: none; }
+.help-link { display: inline-flex; align-items: center; min-height: 44px; font-size: 12px; font-weight: 600; color: var(--primary-text); text-decoration: none; }
 .help-link:hover { text-decoration: underline; }
-.help-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 18px; margin-top: 18px; }
+.help-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 18px; margin-top: 5px; }
 
 /* Device and browser line, with a way to correct it (onboarding, Settings) */
 .dv-line { font-size: 13px; line-height: 20px; }
-.dv-change { font: inherit; font-size: 13px; font-weight: 600; color: var(--primary-text); background: none; border: 0; padding: 4px 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.dv-change { font: inherit; font-size: 13px; font-weight: 600; color: var(--primary-text); background: none; border: 0; padding: 12px 0; margin: -8px 0; min-height: 44px; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
 .dv-fields { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; text-align: left; }
 .dv-note { font-size: 11px; line-height: 16px; color: var(--text-muted); }
 
@@ -235,4 +244,11 @@ body::before {
 @media print {
   .page-head, .sub-head { position: static; box-shadow: none; opacity: 1; }
   body::before { display: none; }
+}
+
+/* Windows high contrast drops background images, so the line under the
+   chosen tab or period becomes a border there. */
+@media (forced-colors: active) {
+  .seg-nav-item[aria-current='page'], .tr-scope-pill[aria-pressed='true'],
+  .ms-scope-pill[aria-checked='true'], .rv-kind-pill[aria-checked='true'] { border-bottom-color: CanvasText !important; }
 }

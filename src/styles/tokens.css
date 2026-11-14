@@ -24,11 +24,13 @@
   /* text */
   --text-primary: #14171C;
   --text-secondary: #3A404A;
-  --text-muted: #6B7280;
+  /* Small muted text: Ink at 65% (brand guide, 12 November 2026); 5.5:1 on
+     the page, 5.7:1 on white cards. */
+  --text-muted: rgba(20, 23, 28, 0.65);
   --on-accent: #FFFFFF;
   --on-card-primary: #14171C;
   --on-card-secondary: #3A404A;
-  --on-card-muted: #6B7280;
+  --on-card-muted: rgba(20, 23, 28, 0.65);
 
   /* interactive */
   --primary: #0E8175;
@@ -217,8 +219,8 @@
     color-scheme: light;
     --background: #FFFFFF; --card-background: #FFFFFF; --sheet-background: #FFFFFF;
     --border: #DEE1E5; --track: #EEF0F2;
-    --text-primary: #14171C; --text-secondary: #3A404A; --text-muted: #6B7280;
-    --on-card-primary: #14171C; --on-card-secondary: #3A404A; --on-card-muted: #6B7280;
+    --text-primary: #14171C; --text-secondary: #3A404A; --text-muted: rgba(20, 23, 28, 0.65);
+    --on-card-primary: #14171C; --on-card-secondary: #3A404A; --on-card-muted: rgba(20, 23, 28, 0.65);
     --primary: #0E8175; --primary-text: #0E8175; --primary-light: #C6E7E1; --on-accent: #FFFFFF;
     --clear-fill: #C6E7E1; --clear-mark: #0E8175; --clear-edge: #9BD6CC;
     --drinking-fill: #E9D7CB; --drinking-mark: #8C5643; --drinking-edge: #D8BCA8;

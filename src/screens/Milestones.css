@@ -15,14 +15,14 @@
 .ms-sec { font-family: var(--font-ui); font-weight: 700; font-size: 13px; margin-top: 20px; }
 .ms-note { font-size: 11px; margin-bottom: 8px; color: var(--text-muted); }
 .ms-view-all {
-  display: block; text-align: center; margin: 18px 0 8px;
+  display: flex; align-items: center; justify-content: center; min-height: 44px; margin: 6px 0 -4px;
   font-size: 13px; font-weight: 600; color: var(--primary-text); text-decoration: none;
 }
 
 /* All milestones */
 .ms-all-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .ms-back {
-  font-size: 22px; line-height: 1; padding: 4px 8px; min-width: 36px; min-height: 36px;
+  font-size: 22px; line-height: 1; padding: 4px 8px; min-width: 44px; min-height: 44px; margin: -4px;
   color: var(--text-secondary); text-decoration: none; display: flex; align-items: center;
 }
 .ms-all-title { font-size: 16px; font-weight: 700; }
@@ -36,12 +36,13 @@
 .ms-inline-link { color: var(--primary-text); font-weight: 600; text-decoration: none; }
 
 /* Year choice, as in Trends */
-.ms-scope { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0 0 12px; }
+.ms-scope { display: flex; flex-wrap: wrap; gap: 0 18px; margin: 0 0 12px; }
 .ms-scope-pill {
   border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none;
-  padding: 6px 0 4px; font-family: var(--font-ui); font-size: 13px; font-weight: 700; color: var(--text-muted); cursor: pointer;
+  padding: 18px 6px 4px; margin: -12px -6px 0; min-width: 44px; text-align: center; /* 44px to tap, reaching into the gap above */
+  font-family: var(--font-ui); font-size: 13px; font-weight: 700; color: var(--text-muted); cursor: pointer;
 }
-.ms-scope-pill[aria-checked='true'] { color: var(--text-primary); background: none; border-color: transparent; border-bottom-color: var(--primary); }
+.ms-scope-pill[aria-checked='true'] { color: var(--text-primary); background: linear-gradient(var(--primary), var(--primary)) bottom center / calc(100% - 12px) 2px no-repeat; border-color: transparent; }
 
 /* Earned timeline, grouped by month */
 .ms-month { margin-bottom: 12px; }

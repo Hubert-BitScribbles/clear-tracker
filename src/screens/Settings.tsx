@@ -220,16 +220,7 @@ export function Settings() {
           <span className="st-label">{t('settings.restore')}</span>
           <span className="st-chevron" aria-hidden="true">›</span>
         </Link>
-        <div className="st-divider" />
-        <button type="button" className="st-link" onClick={async () => setEraseCount(await getEntryCount())}>
-          <span className="st-label st-danger">{t('settings.erase')}</span>
-        </button>
       </section>
-      {notice && (
-        <p className="st-notice" role="status">
-          {notice}
-        </p>
-      )}
 
       <h2 className="sub-head st-sec">{t('settings.helpResources')}</h2>
       <section className="card st-card">
@@ -243,6 +234,19 @@ export function Settings() {
           <span className="st-chevron" aria-hidden="true">›</span>
         </Link>
       </section>
+
+      {/* Erase on its own at the bottom, away from Back up and Restore
+          (studio standard: destructive actions apart from the ones used most). */}
+      <section className="card st-card st-erase-card">
+        <button type="button" className="st-link" onClick={async () => setEraseCount(await getEntryCount())}>
+          <span className="st-label st-danger">{t('settings.erase')}</span>
+        </button>
+      </section>
+      {notice && (
+        <p className="st-notice" role="status">
+          {notice}
+        </p>
+      )}
 
       {import.meta.env.DEV && (
         <p className="st-dev">

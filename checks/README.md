@@ -51,6 +51,11 @@ Both load test data from `test/helpers.ts`, so they never touch real data.
 - `python3 checks/report_trends.py` — reports: section order, and the
   month-by-month trends (off until ticked, both charts, a year report, 320 px,
   one month logged).
+- `python3 checks/phone_standard.py` — the studio's phone standard (brand
+  guide, "Designing for phones — the bitScribbles way", 12 November 2026),
+  the measurable parts: every target 44 × 44 (links in a sentence and the
+  40 × 40 week tiles excepted), inputs at 16px with visible labels, nothing
+  wider than the screen at 200% zoom.
 - `python3 checks/sticky_heads.py` — sticky page heads: what each holds
   (title, tabs, period choices), staying at the top when scrolled, links to a
   section landing below the head, not sticky in print or on a short
@@ -62,3 +67,13 @@ Both load test data from `test/helpers.ts`, so they never touch real data.
 - In German: `SNAP_LANG=de` for `snapshots.py` (add `SNAP_WIDTH=320` for the
   narrowest phones; it lists any screen wider than the window) and
   `AUDIT_LANG=de` for `a11y_audit.py`.
+
+## Each release, by hand (studio standard)
+
+A quick pass on a phone, as the brand guide asks: the phone's larger text
+on, dark mode, a 320px-wide screen (or Safari's smallest), and a Lighthouse
+run (accessibility and best practices) as a smoke test, not a score to
+chase. Before a release that changes how the app works: about five people
+on their own phones, each doing a real task while you watch without
+helping — include someone who uses larger text or has less-steady hands,
+and someone on the other platform.

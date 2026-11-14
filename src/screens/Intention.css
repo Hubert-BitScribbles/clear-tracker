@@ -6,7 +6,7 @@
 }
 .in-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
 .in-close {
-  font: inherit; font-size: 18px; min-width: 36px; min-height: 36px; background: none; border: 0;
+  font: inherit; font-size: 18px; min-width: 44px; min-height: 44px; margin: -4px; background: none; border: 0;
   color: var(--text-secondary); cursor: pointer;
 }
 .in-title { font-size: 16px; font-weight: 700; }

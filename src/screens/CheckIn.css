@@ -30,23 +30,24 @@
 .ci-challenge { font-size: 13px; margin: -14px 0 16px; color: var(--text-secondary); }
 
 /* Stat cards */
-.ci-stats { display: flex; gap: 10px; margin-bottom: 16px; }
-.ci-stat { flex: 1; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; }
+.ci-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+/* Side by side on a phone; one above the other when zoomed in. */
+.ci-stat { flex: 1 1 140px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; }
 /* Values line up along the bottom even when one label wraps. */
 .ci-stat-label { font-size: 11px; margin-bottom: 4px; color: var(--on-card-muted); }
 .ci-stat-value { font-family: var(--font-ui); font-weight: 700; font-size: 20px; line-height: 1.2; }
 
 /* Month header */
 .ci-month-header {
-  display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; row-gap: 4px; margin-bottom: 16px;
 }
 .checkin .ci-arrow {
   font-size: 22px; line-height: 1; padding: 4px 8px; color: var(--text-secondary);
-  min-width: 36px; min-height: 36px;
+  min-width: 44px; min-height: 44px; margin: -4px;
 }
-.checkin .ci-month-title { font-family: var(--font-ui); font-weight: 700; font-size: 17px; }
+.checkin .ci-month-title { font-family: var(--font-ui); font-weight: 700; font-size: 17px; padding: 9px 6px; margin: -9px -6px; min-height: 44px; }
 .ci-month-right { display: flex; align-items: center; gap: 12px; }
-.checkin .ci-today { font-size: 13px; font-weight: 600; color: var(--primary); padding: 6px 0; }
+.checkin .ci-today { font-size: 13px; font-weight: 600; color: var(--primary); padding: 12px 0; margin: -6px 0; min-width: 44px; }
 
 /* Month picker */
 .ci-picker { border-radius: 12px; padding: 14px; margin-bottom: 16px; }
@@ -108,8 +109,8 @@
 .ci-note { padding: 12px 14px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; }
 .ci-note-text { font-size: 12px; line-height: 18px; color: var(--on-card-secondary); }
 .ci-note-actions { display: flex; gap: 16px; align-items: center; }
-.ci-note-link { font-size: 13px; font-weight: 600; color: var(--primary-text); text-decoration: none; }
-.checkin .ci-note-later { font-size: 13px; color: var(--on-card-muted); padding: 4px 0; }
+.ci-note-link { display: inline-flex; align-items: center; min-height: 44px; margin: -12px 0; font-size: 13px; font-weight: 600; color: var(--primary-text); text-decoration: none; }
+.checkin .ci-note-later { font-size: 13px; color: var(--on-card-muted); padding: 12px 6px; margin: -12px -6px; min-height: 44px; min-width: 44px; }
 .checkin .ci-grid { touch-action: pan-y; } /* sideways moves are month swipes */
 
 /* A milestone just earned: its title, linking to Milestones, and a dismiss ✕. */

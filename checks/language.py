@@ -33,7 +33,7 @@ with sync_playwright() as p:
     pg.goto(BASE + "/"); pg.wait_for_timeout(900)
     check('Check-in in German', pg.locator('h1').inner_text() == 'Check-in' and 'Alkoholfreie Tage im September' in pg.inner_text('main'), pg.inner_text('main')[:200])
     pg.goto(BASE + "/settings/help"); pg.wait_for_timeout(900)
-    check('Help in German', 'Tage eintragen' in pg.inner_text('main') and 'Hilfe durchsuchen' == pg.locator('#help-search').get_attribute('placeholder'))
+    check('Help in German', 'Tage eintragen' in pg.inner_text('main') and 'Hilfe durchsuchen' == pg.locator('label[for=help-search]').inner_text())
     pg.goto(BASE + "/settings/about"); pg.wait_for_timeout(900)
     check('About links to the German privacy page', pg.locator('a[href$="privacy-de.html"]').count() == 1)
     pg.goto(BASE + "/settings"); pg.wait_for_timeout(900)

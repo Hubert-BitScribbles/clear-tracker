@@ -46,3 +46,10 @@ e-mail, « signets » for favoris. Only lines that differ go there.
 
 **To check on a phone:** menu names in install and reminder steps (Safari,
 Chrome, Samsung Internet, Google Agenda, Rappels).
+
+**For the reviewer (1.4.3, iPhone install steps, iOS 27):** the keys
+`install.ios.viewMore` and `install.ios.viewMoreChrome` say « Affichez toutes
+les actions » instead of quoting Apple's French label for the share sheet's
+"View More" button, which we don't know yet; `install.ios.shareSafariMenu`
+shows only the ≡ symbol, not the menu's name. « Imprimer » (Print, in
+`viewMoreChrome`) is assumed. A screenshot of each settles them.

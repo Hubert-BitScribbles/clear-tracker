@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { BROWSER_NAMES, installKeepsOwnRecord, isAndroid, isIos, type Device } from '../lib/install';
+import { BROWSER_NAMES, currentSafariMajor, installKeepsOwnRecord, isAndroid, isIos, type Device } from '../lib/install';
 
 const B = { b: (c: ReactNode) => <strong>{c}</strong>, icon: (c: ReactNode) => <span aria-hidden="true">{c}</span> };
 const r = (key: Key, vars: Record<string, string> = {}) => <>{rich(key, { ...B, ...vars })}</>;
@@ -23,7 +23,27 @@ export interface InstallGuide {
   canInstall: boolean;
 }
 
-const ios = (d: Device): ReactNode[] => {
+/**
+ * Safari on iPhone from version 27 opens its page menu from ≡ at the left of
+ * the address bar (the bottom-right button opens the tabs); version 26 has ⋯
+ * at the bottom right; 18 and earlier have Share in the toolbar, which the
+ * step's last sentence covers. From Hugh's screen recordings, iOS 27.2.1
+ * (13 November 2026); see claude/platform/install-clips/README.md.
+ */
+export const SAFARI_MENU_AT_LEFT = 27;
+
+const ios = (d: Device, safari: number | null): ReactNode[] => {
+  const open = r('install.ios.open');
+  // iPhone, Safari 27 or later (or a version we can't read, e.g. Safari chosen
+  // under "Not right? Change" in another browser): ≡ → Share → View More.
+  if (d.os === 'iphone' && d.browser === 'safari' && (safari === null || safari >= SAFARI_MENU_AT_LEFT)) {
+    return [r('install.ios.shareSafariMenu'), r('install.ios.viewMore'), r('install.ios.addWebApp'), open];
+  }
+  // iPhone, Chrome: Share at the left of the address bar, which can be at the
+  // top or the bottom; Add to Home Screen is in the share sheet's second group.
+  if (d.os === 'iphone' && d.browser === 'chrome') {
+    return [r('install.ios.shareChrome'), r('install.ios.viewMoreChrome'), r('install.ios.addWebApp'), open];
+  }
   const share =
     d.browser === 'safari' ? (
       r('install.ios.shareSafari')
@@ -32,14 +52,11 @@ const ios = (d: Device): ReactNode[] => {
     ) : (
       r('install.ios.shareOther', { browser: d.browser === 'other' ? t('install.ios.theBrowser') : BROWSER_NAMES[d.browser] })
     );
-  return [
-    share,
-    r('install.ios.add'),
-    r('install.ios.open'),
-  ];
+  return [share, r('install.ios.add'), open];
 };
 
-export function installGuide(d: Device, browserOffersInstall: boolean): InstallGuide {
+/** safari: Safari's major version (see currentSafariMajor); only iPhone Safari's steps use it. */
+export function installGuide(d: Device, browserOffersInstall: boolean, safari: number | null = currentSafariMajor()): InstallGuide {
   const browser = d.browser === 'other' ? t('install.thisBrowser') : BROWSER_NAMES[d.browser];
   const clearer = d.browser === 'safari' ? t('install.clearerSafari') : d.os === 'ipad' ? t('install.clearerIpad') : t('install.clearerIphone');
   const ownRecordWhy = t('install.ownRecordWhy', { clearer });
@@ -50,7 +67,7 @@ export function installGuide(d: Device, browserOffersInstall: boolean): InstallG
       heading: t('install.headingHomeScreen'),
       place: t('install.placeHomeScreen'),
       why: ownRecordWhy,
-      steps: ios(d),
+      steps: ios(d, safari),
       note: t('install.iosNote', { browser }),
       canInstall: true,
     };

@@ -7,6 +7,8 @@ from playwright.sync_api import sync_playwright
 BASE = "http://localhost:5173/#"
 UA = {
     'iPhone · Safari': "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Mobile/15E148 Safari/604.1",
+    'iPhone · Safari 27': "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Mobile/15E148 Safari/604.1",
+    'iPhone · Safari 26': "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.1 Mobile/15E148 Safari/604.1",
     'iPhone · Chrome': "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/140.0.7339.122 Mobile/15E148 Safari/604.1",
     'Mac · Safari': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Safari/605.1.15",
     'Mac · Chrome': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
@@ -16,12 +18,22 @@ UA = {
 # What each path should say: (welcome phrase, install heading, install must include, reminder has link, Help/About must include)
 EXPECT = {
     'iPhone · Safari': ('an iPhone, in Safari', 'Add it to your Home Screen first', 'separate from Safari', False, 'Home Screen app'),
-    'iPhone · Chrome': ('an iPhone, in Chrome', 'Add it to your Home Screen first', 'address bar', False, 'Home Screen app'),
+    'iPhone · Safari 27': ('an iPhone, in Safari', 'Add it to your Home Screen first', '≡ at the left of the address bar', False, 'Home Screen app'),
+    'iPhone · Safari 26': ('an iPhone, in Safari', 'Add it to your Home Screen first', '⋯ next to the address bar', False, 'Home Screen app'),
+    'iPhone · Chrome': ('an iPhone, in Chrome', 'Add it to your Home Screen first', 'in the address bar', False, 'Home Screen app'),
     'Mac · Safari': ('a Mac, in Safari', 'Add it to your Dock first', 'File → Add to Dock', False, 'Dock app'),
     'Mac · Chrome': ('a Mac, in Chrome', 'Install it as an app', 'share one record', True, 'share one record'),
     'Mac · Firefox': ('a Mac, in Firefox', 'Keep it handy', 'Bookmark this page', False, 'stay in Firefox'),
     'Android · Samsung Internet': ('an Android device, in Samsung Internet', 'Add it to your Home Screen first', 'Add page to', True, 'share one record'),
 }
+# iPhone install steps, in order (1.4.3: Safari's menu follows its version; Chrome's Share is in the address bar).
+STEPS = {
+    'iPhone · Safari 27': ['≡ at the left of the address bar', 'View More', 'Keep Open as Web App on', 'from your Home Screen'],
+    'iPhone · Chrome': ['Share (□↑) in the address bar', 'View More', 'below Print', 'Keep Open as Web App on', 'from your Home Screen'],
+    'iPhone · Safari 26': ['⋯ next to the address bar', 'Add to Home Screen', 'from your Home Screen'],
+    'iPhone · Safari': ['⋯ next to the address bar', 'If Share is already in the toolbar', 'Add to Home Screen'],
+}
+NOT_SAID = {'iPhone · Safari 27': ['⋯'], 'iPhone · Safari 26': ['≡', 'View More'], 'iPhone · Chrome': ['at the right', '≡', '⋯']}
 res = []
 def check(n, c, d=''): res.append((bool(c), n, d))
 
@@ -42,6 +54,13 @@ with sync_playwright() as p:
         t = pg.locator('main').inner_text()
         check(f'{name}: install step "{heading}"', pg.locator('h1').inner_text() == heading, pg.locator('h1').inner_text())
         check(f'{name}: install step mentions "{inst}"', inst in t, t)
+        if name in STEPS:
+            pos = [t.find(w) for w in STEPS[name]]
+            check(f'{name}: install steps in order {STEPS[name]}', all(x >= 0 for x in pos) and pos == sorted(pos), pos)
+            if name == 'iPhone · Safari 27' or name == 'iPhone · Chrome':
+                check(f'{name}: four numbered steps', pg.locator('.ob-steps > li').count() == 4)
+        for w in NOT_SAID.get(name, []):
+            check(f'{name}: install step doesn\'t say "{w}"', w not in pg.locator('.ob-steps').inner_text())
         if own:
             check(f'{name}: later install won\'t carry days across', "won't move across" in t)
         # Settings: reminder link only where links open the app; device row shown

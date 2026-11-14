@@ -2,7 +2,7 @@
 # Run against `npm run dev` (5173).
 import datetime
 from playwright.sync_api import sync_playwright
-UA={'ios':"Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+UA={'ios':"Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Mobile/15E148 Safari/604.1",  # iOS 27 (the iOS version is frozen at 18_6)
     'android':"Mozilla/5.0 (Linux; Android 15; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36",
     'other':None}
 res=[]
@@ -19,7 +19,7 @@ with sync_playwright() as p:
               ('Already added Clear Tracker to your Home Screen' in t and 'search for' in t) == (plat=='ios'), t[-300:])
         pg.get_by_role('button',name='Get started').click(); pg.wait_for_timeout(200)
         t=pg.locator('main').inner_text()
-        if plat=='ios': check('ios onboarding: Share steps, data won\'t move', 'Add to Home Screen' in t and "won't move across" in t)
+        if plat=='ios': check('ios onboarding: ≡ → Share → View More → Add to Home Screen, data won\'t move', all(w in t for w in ('≡', 'View More', 'Add to Home Screen', 'Open as Web App')) and "won't move across" in t, t[-500:])
         if plat=='android': check('android onboarding: ⋮ → Install app, days come with you', 'Install app' in t and 'days come with you' in t and "won't move" not in t, t[-300:])
         if plat=='other': check('computer (Chrome) onboarding: install as an app, same record, days come with you', 'Install it as an app' in t and 'share one record' in t and 'days come with you' in t, t[-400:])
         for k in range(2): pg.get_by_role('button',name='Continue' if k else 'Continue in the browser',exact=True).click(); pg.wait_for_timeout(150)

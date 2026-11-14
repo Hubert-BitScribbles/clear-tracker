@@ -157,6 +157,22 @@ with sync_playwright() as p:
     check('Contact: asks for no health or personal details', "Please don't include health details or anything personal" in body)
     check('no page errors (screens)', not pg.errors, pg.errors)
     ctx.close()
+
+    # ---- iPhone Safari 27 install step in German and French (1.4.3): ≡ shown,
+    # Apple's "View More" label not guessed (reviewers to confirm), no English left.
+    IOS27 = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.2 Mobile/15E148 Safari/604.1"
+    for loc, tz, want in (('de-DE', 'Europe/Berlin', ['≡', 'Teilen', 'alle Aktionen', 'Zum Home-Bildschirm', 'Als Web-App öffnen']),
+                          ('fr-FR', 'Europe/Paris', ['≡', 'Partager', 'toutes les actions', 'Sur l’écran d’accueil', 'Ouvrir comme web app'])):
+        ctx = b.new_context(viewport={"width": 390, "height": 844}, locale=loc, timezone_id=tz, user_agent=IOS27)
+        pg = ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
+        pg.goto(BASE + '/onboarding'); pg.wait_for_timeout(1200)
+        pg.locator('.ob-button').first.click(); pg.wait_for_timeout(250)
+        steps = pg.locator('.ob-steps').inner_text()
+        pos = [steps.find(w) for w in want]
+        check(f'{loc} iPhone Safari 27: steps in order, translated', all(x >= 0 for x in pos) and pos == sorted(pos), (pos, steps))
+        check(f'{loc} iPhone Safari 27: no English label guessed or left', not any(w in steps for w in ('View More', 'Add to Home Screen', 'Share', '⋯')), steps)
+        check(f'{loc}: no page errors', not errs, errs)
+        ctx.close()
     b.close()
 
 for ok, name, detail in results:

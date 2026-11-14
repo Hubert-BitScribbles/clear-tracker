@@ -86,6 +86,23 @@ export function detectDevice(ua: string, touchMac = false): Device {
   return { os, browser };
 }
 
+/**
+ * Safari's major version, from its "Version/NN" token, or null when there's
+ * none (another browser, or a Home Screen app). The iOS version in Safari's
+ * user agent is frozen (it says 18_6 on iOS 26 and later), but "Version/"
+ * still follows the release, and Safari's page menu moved with it: ⋯ at the
+ * bottom right in iOS 26, ≡ at the left of the address bar from iOS 27.
+ */
+export function safariMajor(ua: string): number | null {
+  if (detectDevice(ua).browser !== 'safari') return null;
+  const m = /Version\/(\d+)/.exec(ua);
+  return m ? Number(m[1]) : null;
+}
+
+/** This browser's Safari version (null outside Safari). */
+export const currentSafariMajor = (): number | null =>
+  typeof navigator === 'undefined' ? null : safariMajor(navigator.userAgent);
+
 const DEVICE_KEY = 'ct-device';
 const OSES = Object.keys(OS_NAMES) as Os[];
 const BROWSERS = Object.keys(BROWSER_NAMES) as Browser[];

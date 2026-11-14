@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { detectDevice, installKeepsOwnRecord, linksOpenApp, platform } from '../src/lib/install';
+import { detectDevice, installKeepsOwnRecord, linksOpenApp, platform, safariMajor } from '../src/lib/install';
 
 // Real user-agent strings (2025–2026 versions).
 const UA = {
@@ -56,5 +56,15 @@ describe('what each path means', () => {
   });
   it('platform keeps its three-way split', () => {
     expect([d('iphoneChrome'), d('androidSamsung'), d('macSafari')].map((x) => platform(x))).toEqual(['ios', 'android', 'other']);
+  });
+});
+
+describe("safariMajor (1.4.3: Safari's menu moved in 27)", () => {
+  const ios = (v: string) => `Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/${v} Mobile/15E148 Safari/604.1`;
+  it('reads Safari\'s Version/ token, not the frozen iOS version', () => {
+    expect([ios('27.2'), ios('26.1'), ios('18.6')].map(safariMajor)).toEqual([27, 26, 18]);
+  });
+  it('is null outside Safari: Chrome, Edge (its Version/ token is not Safari\'s), a Home Screen app', () => {
+    expect([UA.iphoneChrome, UA.iphoneEdge, UA.iphoneHomeScreen, UA.androidChrome].map(safariMajor)).toEqual([null, null, null, null]);
   });
 });

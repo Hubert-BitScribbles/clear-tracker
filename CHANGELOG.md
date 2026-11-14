@@ -4,6 +4,25 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.4.3 — 14 November 2026
+
+The iPhone install steps match what people see now (from Hugh's screen
+recordings on iOS 27.2.1):
+
+- **Safari's steps follow the Safari version.** From Safari 27 the page menu
+  is **≡ at the left of the address bar** (the bottom-right button now opens
+  the tabs), then Share, **View More** and Add to Home Screen; Safari 26
+  keeps ⋯. Read from Safari's "Version/" token, since the iOS version in its
+  user agent is frozen. Every version still says "If Share is already in the
+  toolbar, tap it there".
+- **Chrome on iPhone:** Share is in the address bar (at its left, and the
+  bar can be at the top or the bottom), then View More, then Add to Home
+  Screen in the second group, below Print.
+- Both end with: keep **Open as Web App** on, then tap Add. Help's "Other
+  devices" line says the same.
+- German and French describe the "View More" step without quoting Apple's
+  label until the reviewers confirm it from their phones.
+
 ## 1.4.2 — 13 November 2026
 
 The studio's new phone standard ("Designing for phones — the bitScribbles

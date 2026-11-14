@@ -14,6 +14,12 @@ const placeholders = (s: string) => [...s.matchAll(/\{\{(\w+)\}\}/g)].map((m) =>
 const tags = (s: string) => [...s.matchAll(/<(\w+)>/g)].map((m) => m[1]).sort();
 
 // German that needs a value English doesn't (word order differs), and passes it in code.
+// Lines that describe an iPhone control instead of quoting Apple's label in
+// that language, until the reviewers confirm it from a screenshot (1.4.3), so
+// they bold one thing fewer than English.
+const UNQUOTED_LABEL = new Set(['install.ios.viewMore', 'install.ios.viewMoreChrome']);
+const sameTags = (k: string, v: string, english: string) =>
+  UNQUOTED_LABEL.has(k) ? tags(v).every((x) => tags(english).includes(x)) : tags(v).join() === tags(english).join();
 const EXTRA_VARS: Record<string, string[]> = { 'challenge.spanSameMonth': ['startDay', 'end'] };
 
 describe('German text (de.json)', () => {
@@ -29,7 +35,7 @@ describe('German text (de.json)', () => {
       const ok = EXTRA_VARS[k]
         ? de.every((p) => [...placeholders(E[k]), ...EXTRA_VARS[k]].includes(p)) // its own word order
         : de.join() === placeholders(E[k]).join();
-      if (!ok || tags(D[k]).join() !== tags(E[k]).join()) wrong.push(k);
+      if (!ok || !sameTags(k, D[k], E[k])) wrong.push(k);
     }
     expect(wrong).toEqual([]);
   });
@@ -110,7 +116,7 @@ describe('French text (fr.json, and Quebec’s lines in fr-CA.json)', async () =
       for (const k of Object.keys(words)) {
         const fr = placeholders(words[k]);
         const ok = EXTRA_VARS[k] ? fr.every((p) => [...placeholders(E[k]), ...EXTRA_VARS[k]].includes(p)) : fr.join() === placeholders(E[k]).join();
-        if (!ok || tags(words[k]).join() !== tags(E[k]).join()) wrong.push(`${file} ${k}`);
+        if (!ok || !sameTags(k, words[k], E[k])) wrong.push(`${file} ${k}`);
       }
     }
     expect(wrong).toEqual([]);

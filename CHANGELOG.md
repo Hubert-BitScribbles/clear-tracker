@@ -4,6 +4,29 @@ The version shows in Settings → About and in "Report a problem", so a report
 can be matched to what was live. The number lives in `package.json`; update it
 on the branch, before merging.
 
+## 1.6.0 — 14 November 2026
+
+**How-to clips for installing on iPhone.** Under the written install steps,
+in onboarding and in Help → Installing, "Show me how · 26 s video" opens a
+short clip of the same steps, drawn from Hugh's own screen recordings: the
+Safari clip for Safari 27 and later on iPhone, the Chrome clip for Chrome on
+iPhone. Beside the written steps, never instead of them.
+
+- Closed until tapped (Hugh's choice over playing by itself), so the step
+  looks as before and only people who want help download it (about 0.5 MB).
+  "Hide the video" closes it.
+- Muted, looping, inline, with a still frame first; with reduced motion it
+  stays still, with play controls. A label for screen readers says the
+  steps; the written steps stay the full version.
+- Downloaded whole and played from memory, so it doesn't depend on how the
+  server answers the byte-range requests iPhone Safari makes for streamed
+  video. Not stored for offline use; offline, a short note says the steps
+  above say the same.
+- Only in a browser tab (not in the installed app), and in English for now:
+  German and French keep the written steps until the reviewers confirm
+  Apple's labels. iPad, Safari 26 and other paths keep the written steps.
+- New check: `checks/clips.py`.
+
 ## 1.5.0 — 14 November 2026
 
 **Text follows the phone's text size.** On iPhone and iPad, Clear Tracker

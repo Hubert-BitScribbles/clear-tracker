@@ -3,6 +3,7 @@
 
 import { Link } from 'react-router-dom';
 import { installGuide } from '../components/InstallSteps';
+import { InstallClip } from '../components/InstallClip';
 import { BROWSER_NAMES, canPromptInstall, installKeepsOwnRecord, isIos, OS_NAMES } from '../lib/install';
 import { privacyUrl } from '../lib/privacy';
 import { Contact, SoundTest } from './parts';
@@ -95,6 +96,7 @@ export function articles({ d, P }: HelpContext): Article[] {
                 <p>Nutzen Sie die Schaltfläche <strong>Installieren</strong>, die Ihr Browser anbietet (beim ersten Start oder als Symbol in der Adressleiste).</p>
               )}
               {g.note && <p>{g.note}</p>}
+              {g.clip && <InstallClip which={g.clip} />}
             </>
           );
         })()}

@@ -3,7 +3,8 @@ import { BROWSER_NAMES, currentSafariMajor, installKeepsOwnRecord, isAndroid, is
 
 const B = { b: (c: ReactNode) => <strong>{c}</strong>, icon: (c: ReactNode) => <span aria-hidden="true">{c}</span> };
 const r = (key: Key, vars: Record<string, string> = {}) => <>{rich(key, { ...B, ...vars })}</>;
-import { rich, t, type Key } from '../i18n';
+import { language, rich, t, type Key } from '../i18n';
+import type { Clip } from './InstallClip';
 
 // How to install Clear Tracker on each path, shared by onboarding and Help.
 // See web-app-platform-notes in the Project for why the paths differ.
@@ -21,7 +22,20 @@ export interface InstallGuide {
   note: string;
   /** Can this path install at all? (Firefox on a computer can't.) */
   canInstall: boolean;
+  /** A how-to clip to offer beside the steps (1.6.0): iPhone Safari 27+ and
+   *  Chrome on iPhone, in English until the reviewers confirm Apple's German
+   *  and French labels. */
+  clip?: Clip;
 }
+
+const clipFor = (d: Device, safari: number | null): Clip | undefined =>
+  language() !== 'en' || d.os !== 'iphone'
+    ? undefined
+    : d.browser === 'safari' && (safari === null || safari >= SAFARI_MENU_AT_LEFT)
+      ? 'safari'
+      : d.browser === 'chrome'
+        ? 'chrome'
+        : undefined;
 
 /**
  * Safari on iPhone from version 27 opens its page menu from ≡ at the left of
@@ -70,6 +84,7 @@ export function installGuide(d: Device, browserOffersInstall: boolean, safari: n
       steps: ios(d, safari),
       note: t('install.iosNote', { browser }),
       canInstall: true,
+      clip: clipFor(d, safari),
     };
   }
   if (d.os === 'mac' && d.browser === 'safari') {

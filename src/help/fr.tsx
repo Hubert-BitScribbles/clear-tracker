@@ -4,6 +4,7 @@
 
 import { Link } from 'react-router-dom';
 import { installGuide } from '../components/InstallSteps';
+import { InstallClip } from '../components/InstallClip';
 import { BROWSER_NAMES, canPromptInstall, installKeepsOwnRecord, isIos, OS_NAMES } from '../lib/install';
 import { privacyUrl } from '../lib/privacy';
 import { locale } from '../i18n';
@@ -99,6 +100,7 @@ export function articles({ d, P }: HelpContext): Article[] {
                 <p>Utilisez le bouton <strong>Installer</strong> que propose votre navigateur (au premier lancement, ou l’icône d’installation dans la barre d’adresse).</p>
               )}
               {g.note && <p>{g.note}</p>}
+              {g.clip && <InstallClip which={g.clip} />}
             </>
           );
         })()}

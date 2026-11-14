@@ -136,7 +136,7 @@ export function Challenges() {
         ))}
         {available.length > 0 && (
           <div className="ch-row ch-add">
-            <label className="sr-only" htmlFor="ch-month">{t('challenges.monthToAdd')}</label>
+            <label className="st-field-label ch-add-label" htmlFor="ch-month">{t('challenges.monthToAdd')}</label>
             <select id="ch-month" className="ch-select" value={available.some((o) => o.ym === pick) ? pick : available[0].ym} onChange={(e) => setPick(e.target.value)}>
               {available.map((o) => <option key={o.ym} value={o.ym}>{o.label}</option>)}
             </select>

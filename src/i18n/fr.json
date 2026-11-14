@@ -261,7 +261,6 @@
   "help.results_one": "{{count}} article",
   "help.results_other": "{{count}} articles",
   "help.searchLabel": "Rechercher dans l’aide",
-  "help.searchPlaceholder": "Rechercher dans l’aide",
   "helpLinks.label": "Aide et ressources",
   "helpLinks.resources": "Ressources d’aide",
   "helpNav.help": "Aide",

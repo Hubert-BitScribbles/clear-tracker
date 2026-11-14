@@ -22,7 +22,7 @@
 .st-divider { height: var(--card-border); background: var(--border); margin-left: 14px; }
 .st-pills { display: flex; gap: 8px; }
 .st-pill {
-  flex: 1; padding: 8px 0; border-radius: 8px; border: var(--card-border) solid var(--border);
+  flex: 1; min-height: 44px; padding: 8px 0; border-radius: 8px; border: var(--card-border) solid var(--border);
   background: transparent; font: inherit; font-size: 12px; font-weight: 600;
   color: var(--on-card-secondary); cursor: pointer;
 }
@@ -44,8 +44,10 @@
   user-select: all;
 }
 .st-copy {
-  flex: none; font: inherit; font-size: 12px; font-weight: 600; padding: 8px 12px; border-radius: 8px;
+  flex: none; font: inherit; font-size: 12px; font-weight: 600; min-height: 44px; padding: 8px 12px; border-radius: 8px;
   border: 1px solid var(--border); background: transparent; color: var(--primary-text); cursor: pointer;
 }
 .st-dev { margin-top: 18px; font-size: 13px; }
 
+
+.st-erase-card { margin-top: 32px; }

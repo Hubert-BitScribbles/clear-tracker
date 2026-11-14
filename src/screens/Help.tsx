@@ -46,8 +46,8 @@ export function Help() {
         <h1 className="sp-title">{t('helpNav.help')}</h1>
         <HelpNav active="help" />
       </PageHead>
-      <label className="sr-only" htmlFor="help-search">{t('help.searchLabel')}</label>
-      <input id="help-search" className="sp-search" type="search" placeholder={t('help.searchPlaceholder')} value={query} onChange={(e) => setQuery(e.target.value)} />
+      <label className="st-field-label sp-search-label" htmlFor="help-search">{t('help.searchLabel')}</label>
+      <input id="help-search" className="sp-search" type="search" value={query} onChange={(e) => setQuery(e.target.value)} />
       {q && <p className="sp-lede" role="status">{shown.length ? t('help.results', { count: shown.length }) : t('help.noMatch')}</p>}
       <div className="card sp-articles">
         {(shown.length ? shown : ARTICLES.filter((a) => a.id === 'contact')).map((a) => (
